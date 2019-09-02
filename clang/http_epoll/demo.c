@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -228,34 +230,32 @@ static void uthread_run(conn_t *c) {
 static void do_http(conn_t *c) {
     char buf[4096];
     int n;
-    char *oft;
+    void *body;
     int all_n = 0;
     int count = 4096;
 
     /* memset(buf, '\0', 4096); */
-
-    int again_n = 0;
-
 again:
     n = conn_read(c, buf + all_n, count);
     if (n == -1) {
         handle_error("read error");
     }
-    /* if (n == 0 && again_n++ > 3) { */
     if (n == 0) {
         printf("conn fd:%d broken\n", c->conn_fd);
         return;
     }
 
-    oft = memchr(buf+all_n, '\n', n);
+    char *end = "\r\n\r\n";
+
+    body = memmem(buf+all_n, n, end, strlen(end));
 
     all_n += n;
 
-    if (oft == NULL) {
+    if (body == NULL) {
         count -= n;
 
         if (count < 1) {
-            handle_error("request error");
+            handle_error("request tobig error");
         }
 
         puts("read again");
