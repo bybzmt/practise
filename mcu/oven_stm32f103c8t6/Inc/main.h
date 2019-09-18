@@ -8,12 +8,25 @@
 #include "debug.h"
 #include "adc.h"
 #include "spi.h"
-// #include "MAX31865.h"
-#include "MAX31865_gpio.h"
+#include "MAX31865.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
+#define MY_TICK_BASE 100
+
+#define MODE_FERMENT 1
+#define MODE_BAKE    2
+#define MODE_FAN     4
+#define MODE_ROTATE  8
+
+extern uint8_t mode;
+extern int16_t setting_top_temperature;
+extern int16_t setting_bottom_temperature;
+extern int16_t top_temperature;
+extern int16_t bottom_temperature;
+
+void my_tick();
 
 
 #endif /* __MAIN_H */

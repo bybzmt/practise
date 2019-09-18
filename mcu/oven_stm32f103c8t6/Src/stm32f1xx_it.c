@@ -103,6 +103,8 @@ void PendSV_Handler(void)
 {
 }
 
+static uint16_t my_tick_inc = 0;
+
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
@@ -110,6 +112,12 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+    if (my_tick_inc++ > MY_TICK_BASE) {
+        my_tick_inc = 0;
+
+        my_tick();
+    }
+
   HAL_IncTick();
 }
 

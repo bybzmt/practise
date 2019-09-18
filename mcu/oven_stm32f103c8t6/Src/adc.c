@@ -1,5 +1,6 @@
 #include "adc.h"
 #include "debug.h"
+#include "main.h"
 
 /* ADC handler declaration */
 ADC_HandleTypeDef    AdcHandle;
@@ -102,8 +103,26 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
 {
     UNUSED(AdcHandle);
 
-    /* Report to main program that ADC sequencer has reached its end */
-    ubSequenceCompleted = SET;
+    //3700是调温时250度的adc值
+    uint16_t setting_top_temperature = (uint32_t)(aADCxConvertedValues[0]) * 2500 / 3700;
+    uint16_t setting_bottom_temperature = (uint32_t)(aADCxConvertedValues[1]) * 2500 / 3700;
+
+    uint16_t max = 0;
+
+    if (mode & MODE_FERMENT) {
+        //发酵模式30度
+        max = 30 * 10;
+    } else if (mode & MODE_BAKE) {
+        //烘培模式最高250度
+        max = 250 * 10;
+    }
+
+    if (setting_top_temperature > max) {
+        setting_top_temperature = max;
+    }
+    if (setting_bottom_temperature > max) {
+        setting_bottom_temperature = max;
+    }
 }
 
 

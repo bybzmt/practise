@@ -6,18 +6,63 @@ void temps_config();
 
 void gpio_init();
 
-MAX31865_GPIO temp1;
-MAX31865_GPIO temp2;
+MAX31865 temp1;
+MAX31865 temp2;
+
+uint8_t mode;
+int16_t setting_top_temperature;
+int16_t setting_bottom_temperature;
+int16_t top_temperature;
+int16_t bottom_temperature;
+
+static uint16_t temp_tick;
+static uint16_t relay_tick;
+extern AdcHandle;
+
+void my_tick()
+{
+    //adc扫描
+    HAL_ADC_Start(&AdcHandle);
+
+    temp_tick += MY_TICK_BASE;
+    if (temp_tick > 500) {
+        temp_tick = 0;
+
+        //主板闪灯
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+        //温度检查
+        top_temperature = MAX31865_readTemp(&temp1) * 10;
+        bottom_temperature = MAX31865_readTemp(&temp2) * 10;
+    }
+
+    //继电器控制
+    relay_tick += MY_TICK_BASE;
+    if (relay_tick > 1000) {
+        relay_tick = 0;
+
+        //上加热管
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, top_temperature < setting_top_temperature);
+        //下加热管
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, bottom_temperature < setting_bottom_temperature);
+        //热风烤
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, (mode & MODE_FAN) > 0);
+        //旋转烤架
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, (mode & MODE_ROTATE) > 0);
+    }
+}
+
+//数码管挡描显示
+void nixie_tube_display()
+{
+    HAL_Delay(1);
+}
 
 int main(void)
 {
-    HAL_Init();
     SystemClock_Config();
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-
+    HAL_Init();
 
     printf("boot\n");
 
@@ -32,49 +77,8 @@ int main(void)
 
     while (1)
     {
-        //主板闪灯
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-
-        bool input1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
-        bool input2 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
-
-        uint16_t max_temp = 0;
-
-        if (input2) {
-            max_temp = 250 * 10;
-        }
-
-        if (input1) {
-            max_temp = 30 * 10;
-        }
-
-        printf("max_temp:%d\n", max_temp);
-
-        uint16_t now_a=0, now_b=0;
-        ADC_Read(&now_a, &now_b);
-
-        printf("adc top:%d down:%d\n", now_a, now_b);
-
-        //3700是调温时250度的adc值
-        uint16_t need_t1 = (uint32_t)now_a * 2500 / 3700;
-        uint16_t need_t2 = (uint32_t)now_b * 2500 / 3700;
-
-        if (need_t1 > max_temp) {
-            need_t1 = max_temp;
-        }
-        if (need_t2 > max_temp) {
-            need_t2 = max_temp;
-        }
-
-        uint16_t now_t1 = MAX31865_readTemp(&temp1) * 10;
-        uint16_t now_t2 = MAX31865_readTemp(&temp2) * 10;
-
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, now_t1 < need_t1);
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, now_t2 < need_t2);
-
-        printf("temp top:%d/%d down:%d/%d\n", now_t1, need_t1, now_t2, need_t2);
-
-        HAL_Delay(1000);
+        //数码管挡描显示
+        nixie_tube_display();
     }
 }
 
@@ -107,14 +111,9 @@ void gpio_init() {
     GPIO_InitStruct.Pull  = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-    //输入 模式选择
-    GPIO_InitStruct.Mode  = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
     //输出继电器
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+    GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     //板子灯
@@ -123,7 +122,7 @@ void gpio_init() {
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* Configure GPIO pin of the selected ADC channel */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
@@ -174,6 +173,11 @@ void SystemClock_Config(void)
         /* Initialization Error */
         while(1);
     }
+
+    //启动GPIO时钟
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 }
 
 

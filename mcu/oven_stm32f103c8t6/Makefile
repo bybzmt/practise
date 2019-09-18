@@ -53,7 +53,7 @@ INC_FLAGS= $(addprefix -I, $(C_H_DIR))
 #所有的需编译文件
 C_SRC= main.c stm32f1xx_it.c debug.c
 C_SRC+=adc.c
-C_SRC+=MAX31865_gpio.c
+C_SRC+=MAX31865.c
 C_SRC+=spi.c
 C_SRC+=stm32f1xx_hal_msp.c
 C_SRC+=system_stm32f1xx.c

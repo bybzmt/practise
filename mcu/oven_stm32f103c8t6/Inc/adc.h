@@ -9,10 +9,6 @@
 #define ADCx_FORCE_RESET()              __HAL_RCC_ADC1_FORCE_RESET()
 #define ADCx_RELEASE_RESET()            __HAL_RCC_ADC1_RELEASE_RESET()
 
-/* Definition of ADCx channels */
-#define ADCx_CHANNELa                   ADC_CHANNEL_0
-#define ADCx_CHANNELb                   ADC_CHANNEL_1
-
 /* Definition of ADCx DMA resources */
 #define ADCx_DMA_CLK_ENABLE()           __HAL_RCC_DMA1_CLK_ENABLE()
 #define ADCx_DMA                        DMA1_Channel1
@@ -32,7 +28,7 @@
 #define VDD_APPLI                      ((uint32_t) 3300)   /* Value of analog voltage supply Vdda (unit: mV) */
 #define RANGE_12BITS                   ((uint32_t) 4095)   /* Max value with a full range of 12 bits */
 
-#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t)    2)   /* Size of array containing ADC converted values: set to ADC sequencer number of ranks converted, to have a rank in each address */
+#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t)    3)   /* Size of array containing ADC converted values: set to ADC sequencer number of ranks converted, to have a rank in each address */
 
 /* Internal temperature sensor: constants data used for indicative values in  */
 /* this example. Refer to device datasheet for min/typ/max values.            */

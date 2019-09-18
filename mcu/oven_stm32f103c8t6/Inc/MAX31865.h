@@ -1,5 +1,5 @@
-#ifndef MAX31865_GPIO_H
-#define MAX31865_GPIO_H
+#ifndef MAX31865_H
+#define MAX31865_H
 
 #include <stdbool.h>
 #include "stm32f1xx_hal.h"
@@ -19,10 +19,10 @@ typedef struct {
     uint16_t MISO_PIN;
 
     bool Is3Wire;
-} MAX31865_GPIO;
+} MAX31865;
 
 
-float MAX31865_readTemp(MAX31865_GPIO *max_gpio);
-void MAX31865_init(MAX31865_GPIO *max_gpio);
+float MAX31865_readTemp(MAX31865 *max_gpio);
+void MAX31865_init(MAX31865 *max_gpio);
 
 #endif

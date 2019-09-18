@@ -1,7 +1,7 @@
 /**
  * Olivier Van den Eede (4ilo) 2019
  */
-#include "MAX31865_gpio.h"
+#include "MAX31865.h"
 
 /********************* MAX31865 registers and config bits *********************/
 
@@ -23,7 +23,7 @@
 
 /*********************** Begin Private functions *************************/
 
-static uint8_t spixfer(MAX31865_GPIO *gpio, uint8_t x) {
+static uint8_t spixfer(MAX31865 *gpio, uint8_t x) {
     uint8_t reply = 0;
 
     for (int i=7; i>=0; i--) {
@@ -50,7 +50,7 @@ static uint8_t spixfer(MAX31865_GPIO *gpio, uint8_t x) {
  * @param buffer    Pointer to rx buffer
  * @param len       Amount of bytes to read
  */
-static void MAX31865_read(MAX31865_GPIO *gpio, uint8_t addr, uint8_t *buffer, uint8_t len)
+static void MAX31865_read(MAX31865 *gpio, uint8_t addr, uint8_t *buffer, uint8_t len)
 {
     HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_RESET);
 
@@ -69,7 +69,7 @@ static void MAX31865_read(MAX31865_GPIO *gpio, uint8_t addr, uint8_t *buffer, ui
  * @param addr      Register addr to write to
  * @param buffer    Tx data
  */
-static void MAX31865_write(MAX31865_GPIO *gpio, uint8_t addr, uint8_t data)
+static void MAX31865_write(MAX31865 *gpio, uint8_t addr, uint8_t data)
 {
     addr |= MAX31865_WRITE;                                 // Force write bit on address
 
@@ -85,7 +85,7 @@ static void MAX31865_write(MAX31865_GPIO *gpio, uint8_t addr, uint8_t data)
  * Enable of disable MAX831865 bias voltage
  * @param enable Enable of disable
  */
-void enableBias(MAX31865_GPIO *gpio, uint8_t enable)
+void enableBias(MAX31865 *gpio, uint8_t enable)
 {
     uint8_t status;
     MAX31865_read(gpio, MAX31856_REG_CONFIG, &status, 1);
@@ -105,7 +105,7 @@ void enableBias(MAX31865_GPIO *gpio, uint8_t enable)
  * Enable of disable MAX831865 auto convert
  * @param enable Enable of disable
  */
-void autoConvert(MAX31865_GPIO *gpio, uint8_t enable)
+void autoConvert(MAX31865 *gpio, uint8_t enable)
 {
     uint8_t status;
     MAX31865_read(gpio, MAX31856_REG_CONFIG, &status, 1);
@@ -125,7 +125,7 @@ void autoConvert(MAX31865_GPIO *gpio, uint8_t enable)
  * Set the amount of wires the temperature sensor uses
  * @param numwires 2,3 or 4 wires
  */
-void setWires(MAX31865_GPIO *gpio)
+void setWires(MAX31865 *gpio)
 {
     uint8_t status;
     MAX31865_read(gpio, MAX31856_REG_CONFIG, &status, 1);
@@ -144,7 +144,7 @@ void setWires(MAX31865_GPIO *gpio)
 /**
  * Perform a single shot conversion
  */
-void single_shot(MAX31865_GPIO *gpio)
+void single_shot(MAX31865 *gpio)
 {
     uint8_t status;
 
@@ -162,10 +162,10 @@ void single_shot(MAX31865_GPIO *gpio)
 /**
  * Initialise MAX31865 for single shot temperature conversion
  *
- * @param max_gpio  MAX31865_GPIO structure with pinout
+ * @param max_gpio  MAX31865 structure with pinout
  * @param wires     Amount of wires on the temperature probe (2,3 or 4)
  */
-void MAX31865_init(MAX31865_GPIO *gpio)
+void MAX31865_init(MAX31865 *gpio)
 {
     GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
@@ -200,7 +200,7 @@ void MAX31865_init(MAX31865_GPIO *gpio)
  *
  * @return  Temperature as float
  */
-float MAX31865_readTemp(MAX31865_GPIO *gpio)
+float MAX31865_readTemp(MAX31865 *gpio)
 {
     uint8_t cfg = MAX31856_CONFIG_1SHOT | MAX31856_CONFIG_BIAS | MAX31865_CONFIG_CLEARFAULT;
     if (gpio->Is3Wire) {
