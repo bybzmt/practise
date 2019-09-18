@@ -45,7 +45,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
     GPIO_InitTypeDef  GPIO_InitStruct;
 
-    if (hspi->Instance == SPIx)
+    if (hspi->Instance == SPI1)
     {
         printf("HAL_SPI_MspInit\n");
 
@@ -129,7 +129,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 {
-    if (hspi->Instance == SPIx)
+    if (hspi->Instance == SPI1)
     {
         /*##-1- Disable peripherals and GPIO Clocks ################################*/
         /* Configure SPI SCK as alternate function  */

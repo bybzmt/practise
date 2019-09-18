@@ -2,12 +2,14 @@
 #include "main.h"
 
 void SystemClock_Config(void);
-void temps_config();
+void sensor_config();
 
 void gpio_init();
 
-MAX31865 temp1;
-MAX31865 temp2;
+SPI_HandleTypeDef SpiHandle;
+
+MAX31865 top_sensor;
+MAX31865 bottom_sensor;
 
 uint8_t mode;
 int16_t setting_top_temperature;
@@ -17,7 +19,9 @@ int16_t bottom_temperature;
 
 static uint16_t temp_tick;
 static uint16_t relay_tick;
-extern AdcHandle;
+static uint16_t sensor_reset_tick;
+
+extern ADC_HandleTypeDef AdcHandle;
 
 void my_tick()
 {
@@ -32,8 +36,8 @@ void my_tick()
         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
         //温度检查
-        top_temperature = MAX31865_readTemp(&temp1) * 10;
-        bottom_temperature = MAX31865_readTemp(&temp2) * 10;
+        top_temperature = MAX31865_Read(&top_sensor) * 10;
+        bottom_temperature = MAX31865_Read(&bottom_sensor) * 10;
     }
 
     //继电器控制
@@ -49,6 +53,15 @@ void my_tick()
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, (mode & MODE_FAN) > 0);
         //旋转烤架
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, (mode & MODE_ROTATE) > 0);
+    }
+
+    //每10秒重置一下传感器
+    sensor_reset_tick += MY_TICK_BASE;
+    if (sensor_reset_tick > 10000) {
+        sensor_reset_tick = 0;
+
+        MAX31856_AutoConvert(&top_sensor);
+        MAX31856_AutoConvert(&bottom_sensor);
     }
 }
 
@@ -69,9 +82,7 @@ int main(void)
     gpio_init();
     ADC_init();
 
-    temps_config();
-    MAX31865_init(&temp1);
-    MAX31865_init(&temp2);
+    sensor_config();
 
     printf("book ok\n");
 
@@ -82,28 +93,55 @@ int main(void)
     }
 }
 
-void temps_config() {
-    temp1.Is3Wire = true;
-    temp1.CE_PIN = GPIO_PIN_3;
-    temp1.CE_PORT = GPIOA;
+void sensor_config()
+{
+    top_sensor.spi.CE_PIN = GPIO_PIN_3;
+    top_sensor.spi.CE_PORT = GPIOA;
+    top_sensor.Is3Wire = true;
 
-    temp2.Is3Wire = true;
-    temp2.CE_PIN = GPIO_PIN_4;
-    temp2.CE_PORT = GPIOA;
+    bottom_sensor.spi.CE_PIN = GPIO_PIN_4;
+    bottom_sensor.spi.CE_PORT = GPIOA;
+    bottom_sensor.Is3Wire = true;
 
-    temp1.CLK_PIN = GPIO_PIN_5;
-    temp1.CLK_PORT = GPIOA;
-    temp1.MISO_PIN = GPIO_PIN_6;
-    temp1.MISO_PORT = GPIOA;
-    temp1.MOSI_PIN = GPIO_PIN_7;
-    temp1.MOSI_PORT = GPIOA;
+#ifdef SPI_GPIO
+    top_sensor->spi.CLK_PIN = GPIO_PIN_5;
+    top_sensor->spi.CLK_PORT = GPIOA;
+    top_sensor->spi.MISO_PIN = GPIO_PIN_6;
+    top_sensor->spi.MISO_PORT = GPIOA;
+    top_sensor->spi.MOSI_PIN = GPIO_PIN_7;
+    top_sensor->spi.MOSI_PORT = GPIOA;
 
-    temp2.CLK_PIN = GPIO_PIN_5;
-    temp2.CLK_PORT = GPIOA;
-    temp2.MISO_PIN = GPIO_PIN_6;
-    temp2.MISO_PORT = GPIOA;
-    temp2.MOSI_PIN = GPIO_PIN_7;
-    temp2.MOSI_PORT = GPIOA;
+    bottom_sensor->spi.CLK_PIN = GPIO_PIN_5;
+    bottom_sensor->spi.CLK_PORT = GPIOA;
+    bottom_sensor->spi.MISO_PIN = GPIO_PIN_6;
+    bottom_sensor->spi.MISO_PORT = GPIOA;
+    bottom_sensor->spi.MOSI_PIN = GPIO_PIN_7;
+    bottom_sensor->spi.MOSI_PORT = GPIOA;
+#else
+    SpiHandle.Instance = SPI1;
+    SpiHandle.Init.Mode = SPI_MODE_MASTER;
+    SpiHandle.Init.Direction = SPI_DIRECTION_2LINES;
+    SpiHandle.Init.DataSize = SPI_DATASIZE_8BIT;
+    SpiHandle.Init.CLKPolarity = SPI_POLARITY_HIGH;
+    SpiHandle.Init.CLKPhase = SPI_PHASE_2EDGE;
+    SpiHandle.Init.NSS = SPI_NSS_SOFT;
+    SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+    SpiHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    SpiHandle.Init.TIMode = SPI_TIMODE_DISABLE;
+    SpiHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    SpiHandle.Init.CRCPolynomial = 7;
+
+    top_sensor.spi.hspi = &SpiHandle;
+    bottom_sensor.spi.hspi = &SpiHandle;
+#endif
+
+    //初始化spi
+    SPI_Init(&top_sensor.spi);
+    SPI_Init(&bottom_sensor.spi);
+
+    //启动传感器
+    MAX31856_AutoConvert(&top_sensor);
+    MAX31856_AutoConvert(&bottom_sensor);
 }
 
 void gpio_init() {
@@ -179,9 +217,4 @@ void SystemClock_Config(void)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
 }
-
-
-
-
-
 
