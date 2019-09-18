@@ -115,7 +115,7 @@ debug: $(TARGET)
 	$(GDB) -iex 'target extended | $(OOCD) $(OOCDFLAGS) -c "gdb_port pipe"' \
 		-iex 'mon halt' $<
 
-%.d:%.c %.h
+%.d:%.c
 	@set -e; \
 	$(CC) -MM $(CFLAGS) $< > $(BUILD)/$@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $(BUILD)/$@.$$$$ > $(BUILD)/$@; \

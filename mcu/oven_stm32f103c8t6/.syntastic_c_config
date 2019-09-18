@@ -1,0 +1,15 @@
+-I./Inc
+-I./Drivers/STM32F1xx_HAL_Driver/Inc
+-I./Drivers/CMSIS/Include
+-I./Drivers/CMSIS/Device/ST/STM32F1xx/Include
+-Wall
+-std=gnu11
+-mcpu=cortex-m3
+-mthumb
+-ffunction-sections
+-fdata-sections
+-lc
+-lm
+-specs=nano.specs
+-specs=nosys.specs
+-D STM32F103x6

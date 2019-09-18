@@ -41,7 +41,7 @@ int main(void)
         uint16_t max_temp = 0;
 
         if (input2) {
-            max_temp = 255 * 10;
+            max_temp = 250 * 10;
         }
 
         if (input1) {
@@ -55,8 +55,9 @@ int main(void)
 
         printf("adc top:%d down:%d\n", now_a, now_b);
 
-        uint16_t need_t1 = (uint32_t)now_a * 2500 / RANGE_12BITS;
-        uint16_t need_t2 = (uint32_t)now_b * 2500 / RANGE_12BITS;
+        //3700是调温时250度的adc值
+        uint16_t need_t1 = (uint32_t)now_a * 2500 / 3700;
+        uint16_t need_t2 = (uint32_t)now_b * 2500 / 3700;
 
         if (need_t1 > max_temp) {
             need_t1 = max_temp;
