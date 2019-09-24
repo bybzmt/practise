@@ -1,6 +1,7 @@
 #ifndef __DEBUG_H
 #define __DEBUG_H
 
+void UART_init();
 void Error_Handler(char *msg);
 
 void printHex(const char *msg, const uint8_t *data, size_t len);

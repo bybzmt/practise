@@ -112,13 +112,8 @@ static uint16_t my_tick_inc = 0;
   */
 void SysTick_Handler(void)
 {
-    if (my_tick_inc++ > MY_TICK_BASE) {
-        my_tick_inc = 0;
-
-        my_tick();
-    }
-
-  HAL_IncTick();
+    HAL_IncTick();
+    my_tick();
 }
 
 /******************************************************************************/

@@ -3,34 +3,6 @@
 static DMA_HandleTypeDef hdma_tx;
 static DMA_HandleTypeDef hdma_rx;
 
-void HAL_UART_MspInit(UART_HandleTypeDef *huart)
-{
-    UNUSED(huart);
-
-    GPIO_InitTypeDef  GPIO_InitStruct;
-
-    /*##-1- Enable peripherals and GPIO Clocks #################################*/
-    /* Enable GPIO TX/RX clock */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    /* Enable USARTx clock */
-    __HAL_RCC_USART1_CLK_ENABLE();
-
-    /*##-2- Configure peripheral GPIO ##########################################*/
-    GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull  = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-
-    /* UART TX GPIO pin configuration  */
-    GPIO_InitStruct.Pin = GPIO_PIN_9;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* UART RX GPIO pin configuration  */
-    GPIO_InitStruct.Pin = GPIO_PIN_10;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-}
-
-
 /**
   * @brief SPI MSP Initialization
   *        This function configures the hardware resources used in this example:
@@ -51,9 +23,10 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 
         /*##-1- Enable peripherals and GPIO Clocks #################################*/
         /* Enable GPIO TX/RX clock */
-        SPIx_SCK_GPIO_CLK_ENABLE();
-        SPIx_MISO_GPIO_CLK_ENABLE();
-        SPIx_MOSI_GPIO_CLK_ENABLE();
+        /* SPIx_SCK_GPIO_CLK_ENABLE(); */
+        /* SPIx_MISO_GPIO_CLK_ENABLE(); */
+        /* SPIx_MOSI_GPIO_CLK_ENABLE(); */
+
         /* Enable SPI1 clock */
         SPIx_CLK_ENABLE();
         /* Enable DMA clock */

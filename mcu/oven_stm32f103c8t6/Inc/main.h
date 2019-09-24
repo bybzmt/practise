@@ -13,8 +13,7 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
-#define MY_TICK_BASE 100
-
+#define MODE_IDLE    0
 #define MODE_FERMENT 1
 #define MODE_BAKE    2
 #define MODE_FAN     4
@@ -23,8 +22,10 @@
 extern uint8_t mode;
 extern int16_t setting_top_temperature;
 extern int16_t setting_bottom_temperature;
-extern int16_t top_temperature;
-extern int16_t bottom_temperature;
+extern float top_temperature;
+extern float bottom_temperature;
+
+void display_format(uint16_t number, bool top, bool dp);
 
 void my_tick();
 

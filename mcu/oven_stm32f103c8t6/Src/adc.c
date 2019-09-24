@@ -26,7 +26,7 @@ static void ADC_Config(void)
     AdcHandle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
     AdcHandle.Init.ScanConvMode          = ADC_SCAN_ENABLE;               /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
     AdcHandle.Init.ContinuousConvMode    = DISABLE;                       /* Continuous mode disabled to have only 1 rank converted at each conversion trig, and because discontinuous mode is enabled */
-    AdcHandle.Init.NbrOfConversion       = 2;                             /* Sequencer of regular group will convert the 3 first ranks: rank1, rank2, rank3 */
+    AdcHandle.Init.NbrOfConversion       = 3;                             /* Sequencer of regular group will convert the 3 first ranks: rank1, rank2, rank3 */
     AdcHandle.Init.DiscontinuousConvMode = ENABLE;                        /* Sequencer of regular group will convert the sequence in several sub-divided sequences */
     AdcHandle.Init.NbrOfDiscConversion   = 1;                             /* Sequencer of regular group will convert ranks one by one, at each conversion trig */
     AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;            /* Trig of conversion start done manually by software, without external event */
@@ -56,6 +56,14 @@ static void ADC_Config(void)
     /* Replicate previous rank settings, change only channel and rank */
     sConfig.Channel      = ADC_CHANNEL_1;
     sConfig.Rank         = ADC_REGULAR_RANK_2;
+
+    if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
+    {
+        Error_Handler("HAL_ADC_ConfigChannel");
+    }
+
+    sConfig.Channel      = ADC_CHANNEL_2;
+    sConfig.Rank         = ADC_REGULAR_RANK_3;
 
     if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
     {
@@ -104,24 +112,50 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
     UNUSED(AdcHandle);
 
     //3700是调温时250度的adc值
-    uint16_t setting_top_temperature = (uint32_t)(aADCxConvertedValues[0]) * 2500 / 3700;
-    uint16_t setting_bottom_temperature = (uint32_t)(aADCxConvertedValues[1]) * 2500 / 3700;
+    uint16_t top = (uint32_t)(aADCxConvertedValues[0]) * 250 / 3700;
+    uint16_t bottom = (uint32_t)(aADCxConvertedValues[1]) * 250 / 3700;
+    uint16_t x3 = aADCxConvertedValues[2];
 
     uint16_t max = 0;
 
-    if (mode & MODE_FERMENT) {
-        //发酵模式30度
-        max = 30 * 10;
-    } else if (mode & MODE_BAKE) {
-        //烘培模式最高250度
-        max = 250 * 10;
+    if (x3 > 2800) {
+    } else if (x3 > 2700) {
+        mode = MODE_IDLE;
+    } else if (x3 > 2400) {
+        mode = MODE_BAKE;
+    } else if (x3 > 2300) {
+        mode = MODE_BAKE | MODE_ROTATE;
+    } else if (x3 > 2200) {
+        mode = MODE_FERMENT;
+    } else if (x3 > 2100) {
+        mode = MODE_BAKE | MODE_FAN;
+    } else if (x3 > 1900) {
+        mode = MODE_BAKE | MODE_ROTATE | MODE_FAN;
     }
 
-    if (setting_top_temperature > max) {
-        setting_top_temperature = max;
+    printf("adc3 %d %d\n", x3, mode);
+
+    if (mode & MODE_FERMENT) {
+        //发酵模式30度
+        max = 30;
+    } else if (mode & MODE_BAKE) {
+        //烘培模式最高250度
+        max = 250;
     }
-    if (setting_bottom_temperature > max) {
-        setting_bottom_temperature = max;
+
+    if (top > max) {
+        top = max;
+    }
+    if (bottom > max) {
+        bottom = max;
+    }
+    if (top != setting_top_temperature) {
+        setting_top_temperature = top;
+        display_format(top, true, true);
+    }
+    if (bottom != setting_bottom_temperature) {
+        setting_bottom_temperature = bottom;
+        display_format(bottom, false, true);
     }
 }
 

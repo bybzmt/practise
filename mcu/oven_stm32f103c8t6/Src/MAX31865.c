@@ -30,11 +30,11 @@
  * @param buffer    Pointer to rx buffer
  * @param len       Amount of bytes to read
  */
-static uint8_t MAX31865_Read_Reg(MAX31865 *gpio, uint8_t addr)
+static uint8_t MAX31865_Read_Reg(MAX31865 *xThis, uint8_t addr)
 {
     uint8_t tx[2] = {addr, 0}, rx[2];
 
-    SPI_TransmitReceive(&gpio->spi, tx, rx, 2);
+    SPI_TransmitReceive(&xThis->spi, tx, rx, 2);
 
     return rx[1];
 }
@@ -45,14 +45,14 @@ static uint8_t MAX31865_Read_Reg(MAX31865 *gpio, uint8_t addr)
  * @param addr      Register addr to write to
  * @param buffer    Tx data
  */
-static void MAX31865_Write_Reg(MAX31865 *gpio, uint8_t addr, uint8_t data)
+static void MAX31865_Write_Reg(MAX31865 *xThis, uint8_t addr, uint8_t data)
 {
     // Force write bit on address
     addr |= MAX31865_WRITE;
 
     uint8_t tx[2] = {addr, data};
 
-    SPI_Transmit(gpio, tx, 2);
+    SPI_Transmit(&xThis->spi, tx, 2);
 }
 
 /*
@@ -77,15 +77,15 @@ static float MAX31856_Calculate(uint8_t *buf)
 /**
  * 1次读取温度(自动重置错误)
  */
-float MAX31865_Read_1shot(MAX31865 *gpio)
+float MAX31865_Read_1shot(MAX31865 *xThis)
 {
     //配置1shot
     uint8_t cfg = MAX31856_CONFIG_1SHOT | MAX31856_CONFIG_BIAS | MAX31865_CONFIG_CLEARFAULT;
-    if (gpio->Is3Wire) {
+    if (xThis->Is3Wire) {
         cfg |= MAX31856_CONFIG_3WIRE;
     }
 
-    MAX31865_Write_Reg(gpio, MAX31856_REG_CONFIG, cfg);
+    MAX31865_Write_Reg(xThis, MAX31856_REG_CONFIG, cfg);
 
     //等待时钟稳定
     HAL_Delay(70);
@@ -93,10 +93,10 @@ float MAX31865_Read_1shot(MAX31865 *gpio)
     //读取数据
     uint8_t tx[3]={MAX31856_REG_RTDMSB, 0,0}, buf[3];
 
-    SPI_TransmitReceive(&gpio->spi, tx, buf, 2);
+    SPI_TransmitReceive(&xThis->spi, tx, buf, 2);
 
     //关闭电源
-    MAX31856_Off(gpio);
+    MAX31856_Off(xThis);
 
     return MAX31856_Calculate(buf+1);
 }
@@ -104,25 +104,25 @@ float MAX31865_Read_1shot(MAX31865 *gpio)
 /**
  * 启动自动转换
  */
-void MAX31856_AutoConvert(MAX31865 *gpio)
+void MAX31856_AutoConvert(MAX31865 *xThis)
 {
     uint8_t cfg = MAX31856_CONFIG_MODEAUTO | MAX31856_CONFIG_BIAS | MAX31865_CONFIG_CLEARFAULT;
 
-    if (gpio->Is3Wire) {
+    if (xThis->Is3Wire) {
         cfg |= MAX31856_CONFIG_3WIRE;
     }
 
-    MAX31865_Write_Reg(gpio, MAX31856_REG_CONFIG, cfg);
+    MAX31865_Write_Reg(xThis, MAX31856_REG_CONFIG, cfg);
 }
 
 /*
  * 读取温度
  */
-float MAX31865_Read(MAX31865 *gpio)
+float MAX31865_Read(MAX31865 *xThis)
 {
     uint8_t tx[3]={MAX31856_REG_RTDMSB, 0,0}, buf[3];
 
-    SPI_TransmitReceive(&gpio->spi, tx, buf, 2);
+    SPI_TransmitReceive(&xThis->spi, tx, buf, 2);
 
     return MAX31856_Calculate(buf+1);
 }
@@ -130,11 +130,11 @@ float MAX31865_Read(MAX31865 *gpio)
 /**
  * 关闭电源
  */
-void MAX31856_Off(MAX31865 *gpio)
+void MAX31856_Off(MAX31865 *xThis)
 {
-    uint8_t status = MAX31865_Read_Reg(gpio, MAX31856_REG_CONFIG);
+    uint8_t status = MAX31865_Read_Reg(xThis, MAX31856_REG_CONFIG);
 
     status &= ~MAX31856_CONFIG_BIAS;
 
-    MAX31865_Write_Reg(gpio, MAX31856_REG_CONFIG, status);
+    MAX31865_Write_Reg(xThis, MAX31856_REG_CONFIG, status);
 }

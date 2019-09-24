@@ -5,23 +5,17 @@
 #include "stm32f1xx_hal.h"
 #include "debug.h"
 
-void UART_init();
 int _read(int fd, uint8_t *buf, size_t count);
 int _write(int fd, uint8_t *buf, size_t count);
 
 static UART_HandleTypeDef UartHandle;
-static bool UART_initd = 0;
 
 int _read (int fd, uint8_t *buf, size_t count)
 {
     UNUSED(fd);
 
-    if (!UART_initd) {
-        UART_init();
-        UART_initd = 1;
-    }
-
     HAL_UART_Receive(&UartHandle, buf, count, 0xFFFF);
+
     return count;
 }
 
@@ -29,12 +23,8 @@ int _write (int fd, uint8_t *buf, size_t count)
 {
     UNUSED(fd);
 
-    if (!UART_initd) {
-        UART_init();
-        UART_initd = 1;
-    }
-
     HAL_UART_Transmit(&UartHandle, buf, count, 0xFFFF);
+
     return count;
 }
 
@@ -55,6 +45,33 @@ void UART_init()
         /* Initialization Error */
         while(1);
     }
+}
+
+void HAL_UART_MspInit(UART_HandleTypeDef *huart)
+{
+    UNUSED(huart);
+
+    GPIO_InitTypeDef  GPIO_InitStruct;
+
+    /*##-1- Enable peripherals and GPIO Clocks #################################*/
+    /* Enable GPIO TX/RX clock */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    /* Enable USARTx clock */
+    __HAL_RCC_USART1_CLK_ENABLE();
+
+    /*##-2- Configure peripheral GPIO ##########################################*/
+    GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull  = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+    /* UART TX GPIO pin configuration  */
+    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* UART RX GPIO pin configuration  */
+    GPIO_InitStruct.Pin = GPIO_PIN_10;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 void Error_Handler(char *msg)

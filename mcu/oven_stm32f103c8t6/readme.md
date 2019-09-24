@@ -33,20 +33,45 @@
 ```
 pa0 ADC1
 pa1 ADC2
+pa2 ADC3
 
-pa3 SPI CS1
-pa4 SPI CS2
+pa3 top_sensor-CS
+pa4 bottom_sensor-CS
 pa5 SPI CLK
 pa6 SPI MISO
 pa7 SPI MOSI
+pa8 wireless-CS
 
-pa9 UART1_tX
-pa10 UART1_RX
+pa9 display-G / UART1_TX
+pa10 display-F / UART1_RX
+pa11 display-E / USB_DP
+pa12 display-D / USB_DM
 
-pb0 input1
-pb1 input2
-pb5 output1
-pb6 output2
+pa13 swd JTMS/SWDIO
+pa14 swd JTCK/SWCLK
+pa15 display-DP / swd JTDI
+
+pb0 wireless-irq
+pb1 wireless-ce
+
+pb3 display-C / swd JTDO/TRACESWO
+pb4 display-B /  swd JNTRST
+
+pb5 display-A
+pb6 display-char6
+pb7 display-char5
+pb8 display-char4
+pb9 display-char3
+pb10 display-char2
+pb11 display-char1
+pb12 output1
+pb13 output2
+pb14 output3
+pb15 output4
+
+pc13 板灯
+pc14 晶振y1
+pc15 晶振y1
 ```
 
 程序功能:
