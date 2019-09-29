@@ -123,16 +123,11 @@ void SysTick_Handler(void)
 /*  file (startup_stm32f1xx.s).                                               */
 /******************************************************************************/
 
-void EXTI15_10_IRQHandler(void)
+void EXTI15_0_IRQHandler(void)
 {
-    if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_12)) {
-        HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
-    } else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14)) {
-        HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
-    } else {
-        printf("EXTI15_10_IRQ Undefined Pin\n");
-        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_All);
-    }
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+    /* HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0); */
+    NRF24L01_Irq();
 }
 
 /**

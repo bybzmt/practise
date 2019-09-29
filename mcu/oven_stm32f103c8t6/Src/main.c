@@ -3,13 +3,14 @@
 
 void SystemClock_Config(void);
 void sensor_config();
-
+void hspi_init();
 void gpio_init();
 
 SPI_HandleTypeDef SpiHandle;
 
 MAX31865 top_sensor;
 MAX31865 bottom_sensor;
+NRF24L01 nrf;
 
 uint8_t display[6];
 uint8_t display_bits[10] = {
@@ -211,19 +212,53 @@ int main(void)
     gpio_init();
 
     UART_init();
+
     printf("boot\n");
+
+    hspi_init();
 
     ADC_init();
 
     sensor_config();
 
-    /* printf("book ok\n"); */
+    nrf.spi.CE_PIN = GPIO_PIN_10;
+    nrf.spi.CE_PORT = GPIOB;
+    nrf.spi.hspi = &SpiHandle;
+
+    SPI_Init(&nrf.spi);
+
+    NRF24L01_Init(&nrf);
+
+    bool ok = NRF24L01_Check(&nrf);
 
     while (1)
     {
+        if (ok) {
+            printf("nrf ok\n");
+        } else {
+            printf("nrf fail\n");
+        }
+        HAL_Delay(2000);
+
         //数码管挡描显示
-        nixie_tube_display();
+        /* nixie_tube_display(); */
     }
+}
+
+void hspi_init()
+{
+    SpiHandle.Instance = SPI1;
+    SpiHandle.Init.Mode = SPI_MODE_MASTER;
+    SpiHandle.Init.Direction = SPI_DIRECTION_2LINES;
+    SpiHandle.Init.DataSize = SPI_DATASIZE_8BIT;
+    SpiHandle.Init.CLKPolarity = SPI_POLARITY_HIGH;
+    SpiHandle.Init.CLKPhase = SPI_PHASE_2EDGE;
+    SpiHandle.Init.NSS = SPI_NSS_SOFT;
+    SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+    SpiHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    SpiHandle.Init.TIMode = SPI_TIMODE_DISABLE;
+    SpiHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    SpiHandle.Init.CRCPolynomial = 7;
 }
 
 void sensor_config()
@@ -251,19 +286,6 @@ void sensor_config()
     bottom_sensor->spi.MOSI_PIN = GPIO_PIN_7;
     bottom_sensor->spi.MOSI_PORT = GPIOA;
 #else
-    SpiHandle.Instance = SPI1;
-    SpiHandle.Init.Mode = SPI_MODE_MASTER;
-    SpiHandle.Init.Direction = SPI_DIRECTION_2LINES;
-    SpiHandle.Init.DataSize = SPI_DATASIZE_8BIT;
-    SpiHandle.Init.CLKPolarity = SPI_POLARITY_HIGH;
-    SpiHandle.Init.CLKPhase = SPI_PHASE_2EDGE;
-    SpiHandle.Init.NSS = SPI_NSS_SOFT;
-    SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-    SpiHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
-    SpiHandle.Init.TIMode = SPI_TIMODE_DISABLE;
-    SpiHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    SpiHandle.Init.CRCPolynomial = 7;
-
     top_sensor.spi.hspi = &SpiHandle;
     bottom_sensor.spi.hspi = &SpiHandle;
 #endif

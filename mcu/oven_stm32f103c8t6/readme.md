@@ -40,7 +40,7 @@ pa4 bottom_sensor-CS
 pa5 SPI CLK
 pa6 SPI MISO
 pa7 SPI MOSI
-pa8 wireless-CS
+pa8 display-A
 
 pa9 display-G / UART1_TX
 pa10 display-F / UART1_RX
@@ -57,12 +57,14 @@ pb1 wireless-ce
 pb3 display-C / swd JTDO/TRACESWO
 pb4 display-B /  swd JNTRST
 
-pb5 display-A
+pb5 display-char2
 pb6 display-char6
 pb7 display-char5
 pb8 display-char4
 pb9 display-char3
-pb10 display-char2
+
+pb10 wireless-CS
+
 pb11 display-char1
 pb12 output1
 pb13 output2

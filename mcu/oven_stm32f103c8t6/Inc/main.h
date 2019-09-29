@@ -9,6 +9,7 @@
 #include "adc.h"
 #include "spi.h"
 #include "MAX31865.h"
+#include "24l01.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
