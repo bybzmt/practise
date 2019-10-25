@@ -6,9 +6,9 @@
 #include <stdbool.h>
 
 //24L01发送接收数据宽度定义
-#define ADR_WIDTH    5
+#define NRF24L01_ADR_WIDTH    5
 //5字节的地址宽度
-#define PLOAD_WIDTH  32
+#define NRF24L01_PLOAD_WIDTH  32
 //32字节的用户数据宽度
 
 typedef void (*NRF24L01_OnRxMsg)(uint8_t *buf) ;
@@ -28,8 +28,8 @@ typedef struct {
     NRF24L01_OnTxOk onTxOk;
     NRF24L01_OnTxFail onTxFail;
 
-    uint8_t _rx_buf[PLOAD_WIDTH+1];
-    uint8_t _tx_buf[PLOAD_WIDTH+1];
+    uint8_t _rx_buf[NRF24L01_PLOAD_WIDTH+1];
+    uint8_t _tx_buf[NRF24L01_PLOAD_WIDTH+1];
 
     uint8_t *rxbuf;
     uint8_t *txbuf;

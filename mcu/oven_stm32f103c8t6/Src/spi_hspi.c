@@ -2,16 +2,6 @@
 
 HAL_StatusTypeDef SPI_Init(SPIx *spi)
 {
-    HAL_StatusTypeDef re = HAL_SPI_Init(spi->hspi);
-
-    if (re == HAL_OK) {
-        /* SPI block is enabled prior calling SPI transmit/receive functions,
-         * in order to get CLK signal properly pulled down. Otherwise,
-         * SPI CLK signal is not clean on this board and leads to errors during transfer */
-        __HAL_SPI_ENABLE(spi->hspi);
-        __HAL_SPI_DISABLE(spi->hspi);
-    }
-
     GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
@@ -22,7 +12,7 @@ HAL_StatusTypeDef SPI_Init(SPIx *spi)
 
     HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
-    return re;
+    return 0;
 }
 
 HAL_StatusTypeDef SPI_Transmit(SPIx *spi, uint8_t *tx, size_t len)

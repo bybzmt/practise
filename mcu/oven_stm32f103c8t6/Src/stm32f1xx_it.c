@@ -103,8 +103,6 @@ void PendSV_Handler(void)
 {
 }
 
-static uint16_t my_tick_inc = 0;
-
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None

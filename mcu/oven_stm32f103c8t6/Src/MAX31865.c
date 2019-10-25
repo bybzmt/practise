@@ -122,7 +122,7 @@ float MAX31865_Read(MAX31865 *xThis)
 {
     uint8_t tx[3]={MAX31856_REG_RTDMSB, 0,0}, buf[3];
 
-    SPI_TransmitReceive(&xThis->spi, tx, buf, 2);
+    SPI_TransmitReceive(&xThis->spi, tx, buf, sizeof(buf));
 
     return MAX31856_Calculate(buf+1);
 }

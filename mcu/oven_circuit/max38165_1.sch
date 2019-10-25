@@ -1,0 +1,551 @@
+EESchema Schematic File Version 4
+LIBS:test-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 2
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:R R5
+U 1 1 5DA16E32
+P 3200 1850
+F 0 "R5" H 3270 1896 50  0000 L CNN
+F 1 "430" H 3270 1805 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 3130 1850 50  0001 C CNN
+F 3 "~" H 3200 1850 50  0001 C CNN
+	1    3200 1850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 1600 3200 1600
+Wire Wire Line
+	3800 1950 3800 2050
+Wire Wire Line
+	3800 2050 3200 2050
+Wire Wire Line
+	3200 2050 3200 2000
+Wire Wire Line
+	3200 1700 3200 1600
+Connection ~ 3800 2050
+Wire Wire Line
+	3800 1850 3800 1750
+Wire Wire Line
+	3800 1750 3800 1600
+Connection ~ 3800 1750
+$Comp
+L test-rescue:MAX31865ATP+-test U4
+U 1 1 5DA16DB2
+P 3800 1750
+AR Path="/5DA16DB2" Ref="U4"  Part="1" 
+AR Path="/5DA16D7F/5DA16DB2" Ref="U4"  Part="1" 
+F 0 "U4" H 5200 2150 60  0000 C CNN
+F 1 "MAX31865ATP+" H 5200 2050 60  0000 C CNN
+F 2 "test:MAX31865ATP+" H 5200 1990 60  0001 C CNN
+F 3 "" H 3800 1750 60  0000 C CNN
+	1    3800 1750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 2550 3800 2450
+Wire Wire Line
+	3800 2250 3800 2150
+$Comp
+L Device:C C11
+U 1 1 5DA174A4
+P 3200 2400
+F 0 "C11" H 3315 2446 50  0000 L CNN
+F 1 "100nf" H 3315 2355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3238 2250 50  0001 C CNN
+F 3 "~" H 3200 2400 50  0001 C CNN
+	1    3200 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 2550 3200 2550
+Connection ~ 3800 2550
+Wire Wire Line
+	3550 2350 3800 2350
+Wire Wire Line
+	3200 2250 3550 2250
+Wire Wire Line
+	3550 2250 3550 2350
+$Comp
+L power:GND #PWR015
+U 1 1 5DA17A91
+P 3500 2800
+F 0 "#PWR015" H 3500 2550 50  0001 C CNN
+F 1 "GND" H 3505 2627 50  0000 C CNN
+F 2 "" H 3500 2800 50  0001 C CNN
+F 3 "" H 3500 2800 50  0001 C CNN
+	1    3500 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3500 2800 3500 2650
+Wire Wire Line
+	3500 2650 3800 2650
+NoConn ~ 6600 2050
+NoConn ~ 6600 2150
+$Comp
+L Device:C C13
+U 1 1 5DA17E1E
+P 7850 1650
+F 0 "C13" V 7598 1650 50  0000 C CNN
+F 1 "100nf" V 7689 1650 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 7888 1500 50  0001 C CNN
+F 3 "~" H 7850 1650 50  0001 C CNN
+	1    7850 1650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C C14
+U 1 1 5DA17F0B
+P 7850 2200
+F 0 "C14" V 7598 2200 50  0000 C CNN
+F 1 "100nf" V 7689 2200 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 7888 2050 50  0001 C CNN
+F 3 "~" H 7850 2200 50  0001 C CNN
+	1    7850 2200
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR026
+U 1 1 5DA18036
+P 8350 2400
+F 0 "#PWR026" H 8350 2150 50  0001 C CNN
+F 1 "GND" H 8355 2227 50  0000 C CNN
+F 2 "" H 8350 2400 50  0001 C CNN
+F 3 "" H 8350 2400 50  0001 C CNN
+	1    8350 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR025
+U 1 1 5DA18067
+P 8350 1750
+F 0 "#PWR025" H 8350 1500 50  0001 C CNN
+F 1 "GND" H 8355 1577 50  0000 C CNN
+F 2 "" H 8350 1750 50  0001 C CNN
+F 3 "" H 8350 1750 50  0001 C CNN
+	1    8350 1750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8350 1650 8350 1750
+Wire Wire Line
+	8000 1650 8350 1650
+Wire Wire Line
+	8350 2400 8350 2200
+Wire Wire Line
+	8350 2200 8000 2200
+Wire Wire Line
+	6600 1850 7200 1850
+Wire Wire Line
+	7200 1850 7200 1650
+Wire Wire Line
+	7200 1650 7450 1650
+Wire Wire Line
+	6600 1950 7200 1950
+Wire Wire Line
+	7200 1950 7200 2200
+Wire Wire Line
+	7450 1500 7450 1650
+Connection ~ 7450 1650
+Wire Wire Line
+	7450 1650 7700 1650
+$Comp
+L power:GND #PWR019
+U 1 1 5DA1913F
+P 7000 2150
+F 0 "#PWR019" H 7000 1900 50  0001 C CNN
+F 1 "GND" H 7005 1977 50  0000 C CNN
+F 2 "" H 7000 2150 50  0001 C CNN
+F 3 "" H 7000 2150 50  0001 C CNN
+	1    7000 2150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 2250 6750 2250
+Wire Wire Line
+	6750 2250 6750 2150
+Wire Wire Line
+	6750 2150 7000 2150
+Wire Wire Line
+	6600 2350 6750 2350
+Wire Wire Line
+	6750 2350 6750 2250
+Connection ~ 6750 2250
+$Comp
+L power:GND #PWR017
+U 1 1 5DA19B5D
+P 6800 1350
+F 0 "#PWR017" H 6800 1100 50  0001 C CNN
+F 1 "GND" H 6805 1177 50  0000 C CNN
+F 2 "" H 6800 1350 50  0001 C CNN
+F 3 "" H 6800 1350 50  0001 C CNN
+	1    6800 1350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 1750 6600 1200
+Wire Wire Line
+	6600 1200 6800 1200
+Wire Wire Line
+	6800 1200 6800 1350
+$Comp
+L power:VDD #PWR021
+U 1 1 5DA1A336
+P 7450 1500
+F 0 "#PWR021" H 7450 1350 50  0001 C CNN
+F 1 "VDD" H 7467 1673 50  0000 C CNN
+F 2 "" H 7450 1500 50  0001 C CNN
+F 3 "" H 7450 1500 50  0001 C CNN
+	1    7450 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VDD #PWR022
+U 1 1 5DA1A382
+P 7450 2050
+F 0 "#PWR022" H 7450 1900 50  0001 C CNN
+F 1 "VDD" H 7467 2223 50  0000 C CNN
+F 2 "" H 7450 2050 50  0001 C CNN
+F 3 "" H 7450 2050 50  0001 C CNN
+	1    7450 2050
+	1    0    0    -1  
+$EndComp
+Text HLabel 7900 3050 2    50   Input ~ 0
+sck
+Text HLabel 7900 2850 2    50   Input ~ 0
+miso
+Text HLabel 7900 3150 2    50   Input ~ 0
+mosi
+Text HLabel 7950 5950 2    50   Input ~ 0
+cs1
+Wire Wire Line
+	6600 2450 7200 2450
+Wire Wire Line
+	7200 2450 7200 2850
+Wire Wire Line
+	7200 2850 7900 2850
+Wire Wire Line
+	6600 2550 7100 2550
+Wire Wire Line
+	7100 2550 7100 2950
+Wire Wire Line
+	7100 2950 7900 2950
+Wire Wire Line
+	6600 2650 7000 2650
+Wire Wire Line
+	7000 2650 7000 3050
+Wire Wire Line
+	7000 3050 7900 3050
+Wire Wire Line
+	7900 3150 6850 3150
+Wire Wire Line
+	6850 3150 6850 2750
+Wire Wire Line
+	6850 2750 6600 2750
+Text HLabel 2400 2150 0    50   Input ~ 0
+force1
+Text HLabel 2400 2250 0    50   Input ~ 0
+rtdin1+
+Text HLabel 2400 2350 0    50   Input ~ 0
+rtdin1-
+Wire Wire Line
+	2400 2150 3800 2150
+Connection ~ 3800 2150
+Wire Wire Line
+	2400 2250 3200 2250
+Connection ~ 3200 2250
+Wire Wire Line
+	3200 2550 2750 2550
+Wire Wire Line
+	2750 2550 2750 2350
+Wire Wire Line
+	2750 2350 2400 2350
+Connection ~ 3200 2550
+Wire Wire Line
+	7200 2200 7450 2200
+Wire Wire Line
+	7450 2050 7450 2200
+Connection ~ 7450 2200
+Wire Wire Line
+	7450 2200 7700 2200
+$Comp
+L Device:R R6
+U 1 1 5DA328E2
+P 3250 4850
+F 0 "R6" H 3320 4896 50  0000 L CNN
+F 1 "430" H 3320 4805 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" V 3180 4850 50  0001 C CNN
+F 3 "~" H 3250 4850 50  0001 C CNN
+	1    3250 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 4600 3250 4600
+Wire Wire Line
+	3850 4950 3850 5050
+Wire Wire Line
+	3850 5050 3250 5050
+Wire Wire Line
+	3250 5050 3250 5000
+Wire Wire Line
+	3250 4700 3250 4600
+Connection ~ 3850 5050
+Wire Wire Line
+	3850 4850 3850 4750
+Wire Wire Line
+	3850 4750 3850 4600
+Connection ~ 3850 4750
+$Comp
+L test-rescue:MAX31865ATP+-test U5
+U 1 1 5DA328F2
+P 3850 4750
+AR Path="/5DA328F2" Ref="U5"  Part="1" 
+AR Path="/5DA16D7F/5DA328F2" Ref="U5"  Part="1" 
+F 0 "U5" H 5250 5150 60  0000 C CNN
+F 1 "MAX31865ATP+" H 5250 5050 60  0000 C CNN
+F 2 "test:MAX31865ATP+" H 5250 4990 60  0001 C CNN
+F 3 "" H 3850 4750 60  0000 C CNN
+	1    3850 4750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 5550 3850 5450
+Wire Wire Line
+	3850 5250 3850 5150
+$Comp
+L Device:C C12
+U 1 1 5DA328FB
+P 3250 5400
+F 0 "C12" H 3365 5446 50  0000 L CNN
+F 1 "100nf" H 3365 5355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3288 5250 50  0001 C CNN
+F 3 "~" H 3250 5400 50  0001 C CNN
+	1    3250 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 5550 3250 5550
+Connection ~ 3850 5550
+Wire Wire Line
+	3600 5350 3850 5350
+Wire Wire Line
+	3250 5250 3600 5250
+Wire Wire Line
+	3600 5250 3600 5350
+$Comp
+L power:GND #PWR016
+U 1 1 5DA32907
+P 3550 5800
+F 0 "#PWR016" H 3550 5550 50  0001 C CNN
+F 1 "GND" H 3555 5627 50  0000 C CNN
+F 2 "" H 3550 5800 50  0001 C CNN
+F 3 "" H 3550 5800 50  0001 C CNN
+	1    3550 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3550 5800 3550 5650
+Wire Wire Line
+	3550 5650 3850 5650
+NoConn ~ 6650 5050
+NoConn ~ 6650 5150
+$Comp
+L Device:C C15
+U 1 1 5DA32911
+P 7900 4650
+F 0 "C15" V 7648 4650 50  0000 C CNN
+F 1 "100nf" V 7739 4650 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 7938 4500 50  0001 C CNN
+F 3 "~" H 7900 4650 50  0001 C CNN
+	1    7900 4650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C C16
+U 1 1 5DA32918
+P 7900 5200
+F 0 "C16" V 7648 5200 50  0000 C CNN
+F 1 "100nf" V 7739 5200 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 7938 5050 50  0001 C CNN
+F 3 "~" H 7900 5200 50  0001 C CNN
+	1    7900 5200
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR028
+U 1 1 5DA3291F
+P 8400 5400
+F 0 "#PWR028" H 8400 5150 50  0001 C CNN
+F 1 "GND" H 8405 5227 50  0000 C CNN
+F 2 "" H 8400 5400 50  0001 C CNN
+F 3 "" H 8400 5400 50  0001 C CNN
+	1    8400 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR027
+U 1 1 5DA32925
+P 8400 4750
+F 0 "#PWR027" H 8400 4500 50  0001 C CNN
+F 1 "GND" H 8405 4577 50  0000 C CNN
+F 2 "" H 8400 4750 50  0001 C CNN
+F 3 "" H 8400 4750 50  0001 C CNN
+	1    8400 4750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8400 4650 8400 4750
+Wire Wire Line
+	8050 4650 8400 4650
+Wire Wire Line
+	8400 5400 8400 5200
+Wire Wire Line
+	8400 5200 8050 5200
+Wire Wire Line
+	6650 4850 7250 4850
+Wire Wire Line
+	7250 4850 7250 4650
+Wire Wire Line
+	7250 4650 7500 4650
+Wire Wire Line
+	6650 4950 7250 4950
+Wire Wire Line
+	7250 4950 7250 5200
+Wire Wire Line
+	7500 4500 7500 4650
+Connection ~ 7500 4650
+Wire Wire Line
+	7500 4650 7750 4650
+$Comp
+L power:GND #PWR020
+U 1 1 5DA32937
+P 7050 5150
+F 0 "#PWR020" H 7050 4900 50  0001 C CNN
+F 1 "GND" H 7055 4977 50  0000 C CNN
+F 2 "" H 7050 5150 50  0001 C CNN
+F 3 "" H 7050 5150 50  0001 C CNN
+	1    7050 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 5250 6800 5250
+Wire Wire Line
+	6800 5250 6800 5150
+Wire Wire Line
+	6800 5150 7050 5150
+Wire Wire Line
+	6650 5350 6800 5350
+Wire Wire Line
+	6800 5350 6800 5250
+Connection ~ 6800 5250
+$Comp
+L power:GND #PWR018
+U 1 1 5DA32943
+P 6850 4350
+F 0 "#PWR018" H 6850 4100 50  0001 C CNN
+F 1 "GND" H 6855 4177 50  0000 C CNN
+F 2 "" H 6850 4350 50  0001 C CNN
+F 3 "" H 6850 4350 50  0001 C CNN
+	1    6850 4350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 4750 6650 4200
+Wire Wire Line
+	6650 4200 6850 4200
+Wire Wire Line
+	6850 4200 6850 4350
+$Comp
+L power:VDD #PWR023
+U 1 1 5DA3294C
+P 7500 4500
+F 0 "#PWR023" H 7500 4350 50  0001 C CNN
+F 1 "VDD" H 7517 4673 50  0000 C CNN
+F 2 "" H 7500 4500 50  0001 C CNN
+F 3 "" H 7500 4500 50  0001 C CNN
+	1    7500 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VDD #PWR024
+U 1 1 5DA32952
+P 7500 5050
+F 0 "#PWR024" H 7500 4900 50  0001 C CNN
+F 1 "VDD" H 7517 5223 50  0000 C CNN
+F 2 "" H 7500 5050 50  0001 C CNN
+F 3 "" H 7500 5050 50  0001 C CNN
+	1    7500 5050
+	1    0    0    -1  
+$EndComp
+Text HLabel 7950 6050 2    50   Input ~ 0
+sck
+Text HLabel 7950 5850 2    50   Input ~ 0
+miso
+Text HLabel 7950 6150 2    50   Input ~ 0
+mosi
+Text HLabel 7900 2950 2    50   Input ~ 0
+cs2
+Wire Wire Line
+	6650 5450 7250 5450
+Wire Wire Line
+	7250 5450 7250 5850
+Wire Wire Line
+	7250 5850 7950 5850
+Wire Wire Line
+	6650 5550 7150 5550
+Wire Wire Line
+	7150 5550 7150 5950
+Wire Wire Line
+	7150 5950 7950 5950
+Wire Wire Line
+	6650 5650 7050 5650
+Wire Wire Line
+	7050 5650 7050 6050
+Wire Wire Line
+	7050 6050 7950 6050
+Wire Wire Line
+	7950 6150 6900 6150
+Wire Wire Line
+	6900 6150 6900 5750
+Wire Wire Line
+	6900 5750 6650 5750
+Text HLabel 2450 5150 0    50   Input ~ 0
+force2
+Text HLabel 2450 5250 0    50   Input ~ 0
+rtdin2+
+Text HLabel 2450 5350 0    50   Input ~ 0
+rtdin2-
+Wire Wire Line
+	2450 5150 3850 5150
+Connection ~ 3850 5150
+Wire Wire Line
+	2450 5250 3250 5250
+Connection ~ 3250 5250
+Wire Wire Line
+	3250 5550 2800 5550
+Wire Wire Line
+	2800 5550 2800 5350
+Wire Wire Line
+	2800 5350 2450 5350
+Connection ~ 3250 5550
+Wire Wire Line
+	7250 5200 7500 5200
+Wire Wire Line
+	7500 5050 7500 5200
+Connection ~ 7500 5200
+Wire Wire Line
+	7500 5200 7750 5200
+$EndSCHEMATC

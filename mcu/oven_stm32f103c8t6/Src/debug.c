@@ -1,29 +1,41 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "stm32f1xx_hal.h"
 #include "debug.h"
+#include "main.h"
 
 int _read(int fd, uint8_t *buf, size_t count);
 int _write(int fd, uint8_t *buf, size_t count);
 
 static UART_HandleTypeDef UartHandle;
 
-int _read (int fd, uint8_t *buf, size_t count)
-{
-    UNUSED(fd);
+/* int _read (int fd, uint8_t *buf, size_t count) */
+/* { */
+    /* UNUSED(fd); */
 
-    HAL_UART_Receive(&UartHandle, buf, count, 0xFFFF);
+    /* HAL_UART_Receive(&UartHandle, buf, count, 0xFFFF); */
 
-    return count;
-}
+    /* return count; */
+/* } */
 
 int _write (int fd, uint8_t *buf, size_t count)
 {
     UNUSED(fd);
 
-    HAL_UART_Transmit(&UartHandle, buf, count, 0xFFFF);
+    /* HAL_UART_Transmit(&UartHandle, buf, count, 0xFFFF); */
+    return;
+
+    if (count > NRF24L01_PLOAD_WIDTH -1) {
+        count = NRF24L01_PLOAD_WIDTH - 1;
+    }
+
+    //发送数据
+    nrf.txbuf[0] = 2;
+    memcpy(nrf.txbuf+1, buf, count);
+    NRF24L01_TxPacket(&nrf);
 
     return count;
 }

@@ -21,10 +21,13 @@
 #define MODE_ROTATE  8
 
 extern uint8_t mode;
-extern int16_t setting_top_temperature;
-extern int16_t setting_bottom_temperature;
+extern uint8_t setting_top_temperature;
+extern uint8_t setting_bottom_temperature;
 extern float top_temperature;
 extern float bottom_temperature;
+
+
+extern NRF24L01 nrf;
 
 void display_format(uint16_t number, bool top, bool dp);
 

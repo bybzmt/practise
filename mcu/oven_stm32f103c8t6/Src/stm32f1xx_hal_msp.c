@@ -19,35 +19,25 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 
     if (hspi->Instance == SPI1)
     {
-        printf("HAL_SPI_MspInit\n");
+        /* printf("HAL_SPI_MspInit\n"); */
 
         /*##-1- Enable peripherals and GPIO Clocks #################################*/
         /* Enable GPIO TX/RX clock */
-        /* SPIx_SCK_GPIO_CLK_ENABLE(); */
-        /* SPIx_MISO_GPIO_CLK_ENABLE(); */
-        /* SPIx_MOSI_GPIO_CLK_ENABLE(); */
+        /* __HAL_RCC_GPIOA_CLK_ENABLE(); */
 
         /* Enable SPI1 clock */
-        SPIx_CLK_ENABLE();
+        __HAL_RCC_SPI1_CLK_ENABLE();
         /* Enable DMA clock */
-        DMAx_CLK_ENABLE();
+        __HAL_RCC_DMA1_CLK_ENABLE();
 
         /*##-2- Configure peripheral GPIO ##########################################*/
-        /* GPIO_InitStruct.Pull      = GPIO_NOPULL; */
-        GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
-        /* GPIO_InitStruct.Mode      = GPIO_MODE_AF_INPUT; */
+        GPIO_InitStruct.Pull      = GPIO_NOPULL;
+        /* GPIO_InitStruct.Pull      = GPIO_PULLDOWN; */
         GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_LOW;
 
-        GPIO_InitStruct.Pin       = SPIx_MISO_PIN | GPIO_PIN_4;
-        HAL_GPIO_Init(SPIx_MISO_GPIO_PORT, &GPIO_InitStruct);
-
-        GPIO_InitStruct.Pin       = SPIx_SCK_PIN;
-        HAL_GPIO_Init(SPIx_SCK_GPIO_PORT, &GPIO_InitStruct);
-
-        GPIO_InitStruct.Pin       = SPIx_MOSI_PIN;
-        HAL_GPIO_Init(SPIx_MOSI_GPIO_PORT, &GPIO_InitStruct);
-
+        GPIO_InitStruct.Pin       = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         /*##-3- Configure the DMA ##################################################*/
         /* Configure the DMA handler for Transmission process */

@@ -25,7 +25,7 @@ static void ADC_Config(void)
 
     AdcHandle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
     AdcHandle.Init.ScanConvMode          = ADC_SCAN_ENABLE;               /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
-    AdcHandle.Init.ContinuousConvMode    = DISABLE;                       /* Continuous mode disabled to have only 1 rank converted at each conversion trig, and because discontinuous mode is enabled */
+    AdcHandle.Init.ContinuousConvMode    = ENABLE;                       /* Continuous mode disabled to have only 1 rank converted at each conversion trig, and because discontinuous mode is enabled */
     AdcHandle.Init.NbrOfConversion       = 3;                             /* Sequencer of regular group will convert the 3 first ranks: rank1, rank2, rank3 */
     AdcHandle.Init.DiscontinuousConvMode = ENABLE;                        /* Sequencer of regular group will convert the sequence in several sub-divided sequences */
     AdcHandle.Init.NbrOfDiscConversion   = 1;                             /* Sequencer of regular group will convert ranks one by one, at each conversion trig */
@@ -112,8 +112,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
     UNUSED(AdcHandle);
 
     //3700是调温时250度的adc值
-    uint16_t top = (uint32_t)(aADCxConvertedValues[0]) * 250 / 3700;
-    uint16_t bottom = (uint32_t)(aADCxConvertedValues[1]) * 250 / 3700;
+    uint16_t top = (uint32_t)(aADCxConvertedValues[1]) * 250 / 3700;
+    uint16_t bottom = (uint32_t)(aADCxConvertedValues[0]) * 250 / 3700;
     uint16_t x3 = aADCxConvertedValues[2];
 
     uint16_t max = 0;
@@ -133,14 +133,17 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
         mode = MODE_BAKE | MODE_ROTATE | MODE_FAN;
     }
 
-    printf("adc3 %d %d\n", x3, mode);
-
     if (mode & MODE_FERMENT) {
         //发酵模式30度
         max = 30;
     } else if (mode & MODE_BAKE) {
         //烘培模式最高250度
         max = 250;
+    }
+
+    //此模式不对adc值进行操作
+    if (mode == MODE_IDLE) {
+        return;
     }
 
     if (top > max) {

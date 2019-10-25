@@ -46,8 +46,8 @@
                               //bit4,TX FIFO空标志;bit5,TX FIFO满标志;bit6,1,循环发送上一数据包.0,不循环;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const uint8_t TX_ADDRESS[ADR_WIDTH]={0x34,0x43,0x10,0x10,0x01}; //发送地址
-const uint8_t RX_ADDRESS[ADR_WIDTH]={0x34,0x43,0x10,0x10,0x01}; //发送地址
+const uint8_t TX_ADDRESS[NRF24L01_ADR_WIDTH]={0x34,0x43,0x10,0x10,0x01}; //发送地址
+const uint8_t RX_ADDRESS[NRF24L01_ADR_WIDTH]={0x34,0x43,0x10,0x10,0x01}; //发送地址
 
 static NRF24L01 *gnrf = NULL;
 
@@ -98,15 +98,15 @@ void NRF24L01_Init(NRF24L01 *nrf)
     //设置地址长度
   	NRF24L01_Write_Reg(nrf, CMD_WRITE+SETUP_AW, 3);
     //选择通道0的有效数据宽度
-  	NRF24L01_Write_Reg(nrf, CMD_WRITE+RX_PW_P0, PLOAD_WIDTH);
+  	NRF24L01_Write_Reg(nrf, CMD_WRITE+RX_PW_P0, NRF24L01_PLOAD_WIDTH);
     //关闭自动应答
     NRF24L01_Write_Reg(nrf, CMD_WRITE+EN_AA,0x00);
     //使能通道0的接收地址
     NRF24L01_Write_Reg(nrf, CMD_WRITE+EN_RXADDR,0x01);
     //写TX节点地址
-  	NRF24L01_Write_Buf(nrf, CMD_WRITE+TX_ADDR,(uint8_t*)TX_ADDRESS, ADR_WIDTH);
+  	NRF24L01_Write_Buf(nrf, CMD_WRITE+TX_ADDR,(uint8_t*)TX_ADDRESS, NRF24L01_ADR_WIDTH);
     //设置RX节点地址,主要为了使能ACK
-    NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS, ADR_WIDTH);
+    NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS, NRF24L01_ADR_WIDTH);
 }
 
 //检测24L01是否存在
@@ -171,15 +171,15 @@ void NRF24L01_TxPacket(NRF24L01 *nrf)
     HAL_GPIO_WritePin(nrf->ce_port, nrf->ce_pin, 0);
 
     //写TX节点地址
-  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+TX_ADDR,(uint8_t*)TX_ADDRESS, ADR_WIDTH);
+  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+TX_ADDR,(uint8_t*)TX_ADDRESS, NRF24L01_ADR_WIDTH);
     //禁用自动应答
   	NRF24L01_Write_Reg(nrf, CMD_WRITE+EN_AA,0x00);
     //设置RX节点地址,主要为了使能ACK
-  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS, ADR_WIDTH);
+  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS, NRF24L01_ADR_WIDTH);
     //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式,开启所有中断
   	NRF24L01_Write_Reg(nrf, CMD_WRITE+CONFIG,0x0e);
     //写数据到TX BUF
-  	NRF24L01_Xfer(nrf, WR_TX_PLOAD, PLOAD_WIDTH);
+  	NRF24L01_Xfer(nrf, WR_TX_PLOAD, NRF24L01_PLOAD_WIDTH);
 
     //启动发送
     HAL_GPIO_WritePin(nrf->ce_port, nrf->ce_pin, 1);
@@ -195,7 +195,7 @@ void NRF24L01_RxPacket(NRF24L01 *nrf)
     //使能通道0的自动应答
   	NRF24L01_Write_Reg(nrf, CMD_WRITE+EN_AA,0x01);
     //设置RX节点地址,主要为了使能ACK
-  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS,ADR_WIDTH);
+  	//NRF24L01_Write_Buf(nrf, CMD_WRITE+RX_ADDR_P0,(uint8_t*)RX_ADDRESS,NRF24L01_ADR_WIDTH);
     //清除RX FIFO寄存器
     NRF24L01_Write_Reg(nrf, FLUSH_RX, 0xff);
     //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式
@@ -228,7 +228,7 @@ void NRF24L01_Irq() {
         if (nrf->onRxMsg == NULL) return;
 
         //读取数据
-        NRF24L01_Xfer(nrf, RD_RX_PLOAD, PLOAD_WIDTH);
+        NRF24L01_Xfer(nrf, RD_RX_PLOAD, NRF24L01_PLOAD_WIDTH);
 
         nrf->onRxMsg(nrf->rxbuf);
     }
