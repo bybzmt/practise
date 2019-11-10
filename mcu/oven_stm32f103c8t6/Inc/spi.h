@@ -29,7 +29,7 @@
 #define SPIx_DMA_TX_IRQHandler           DMA1_Channel3_IRQHandler
 #define SPIx_DMA_RX_IRQHandler           DMA1_Channel2_IRQHandler
 
-#ifdef SPIx_GPIO
+#ifdef SPI_GPIO
     typedef struct {
         GPIO_TypeDef *CE_PORT;
         uint16_t CE_PIN;

@@ -55,7 +55,7 @@ C_SRC= main.c stm32f1xx_it.c debug.c
 C_SRC+=adc.c
 C_SRC+=MAX31865.c
 C_SRC+=spi.c
-C_SRC+=24l01.c
+C_SRC+=max7219.c
 C_SRC+=stm32f1xx_hal_msp.c
 C_SRC+=system_stm32f1xx.c
 
@@ -73,10 +73,12 @@ CFLAGS= -mcpu=cortex-m3 -mthumb -std=gnu11
 CFLAGS+= -g3 -Os
 CFLAGS+= -W -Wall
 CFLAGS+= -ffunction-sections -fdata-sections
-CFLAGS+= -D STM32F103x6 $(INC_FLAGS)
+CFLAGS+= -D STM32F103xB $(INC_FLAGS)
+# CFLAGS+= -D SPI_DMA
+CFLAGS+= -D SPI_GPIO
 
-LDFILE = -T $(TOP)/Drivers/CMSIS/Device/ST/STM32F1xx/Source/STM32F103X6_FLASH.ld
-LDFILE+=$(TOP)/Drivers/CMSIS/Device/ST/STM32F1xx/Source/startup_stm32f103x6.s
+LDFILE = -T $(TOP)/Drivers/CMSIS/Device/ST/STM32F1xx/Source/STM32F103XB_FLASH.ld
+LDFILE+=$(TOP)/Drivers/CMSIS/Device/ST/STM32F1xx/Source/startup_stm32f103xb.s
 
 .PHONY: all clean update test dump debug
 
@@ -109,8 +111,9 @@ clean:
 	rm -f $(TARGET)
 
 update: $(TARGET)
-	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt \
-		-c "flash write_image erase $<" -c reset -c shutdown
+	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $< verify reset exit"
+#	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "flash write_image erase $<" -c reset -c shutdown
+#	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "verify_image_checksum $<" -c reset -c shutdown
 
 debug: $(TARGET)
 	$(GDB) -iex 'target extended | $(OOCD) $(OOCDFLAGS) -c "gdb_port pipe"' \

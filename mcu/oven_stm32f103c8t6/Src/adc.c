@@ -1,3 +1,4 @@
+#include <string.h>
 #include "adc.h"
 #include "debug.h"
 #include "main.h"
@@ -7,6 +8,7 @@ ADC_HandleTypeDef    AdcHandle;
 
 /* Variable containing ADC conversions results */
 __IO uint16_t   aADCxConvertedValues[ADCCONVERTEDVALUES_BUFFER_SIZE];
+uint8_t aAdc_i = 0;
 
 /* Variable to report ADC sequencer status */
 uint8_t         ubSequenceCompleted = RESET;
@@ -111,55 +113,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
 {
     UNUSED(AdcHandle);
 
-    //3700是调温时250度的adc值
-    uint16_t top = (uint32_t)(aADCxConvertedValues[1]) * 250 / 3700;
-    uint16_t bottom = (uint32_t)(aADCxConvertedValues[0]) * 250 / 3700;
-    uint16_t x3 = aADCxConvertedValues[2];
-
-    uint16_t max = 0;
-
-    if (x3 > 2800) {
-    } else if (x3 > 2700) {
-        mode = MODE_IDLE;
-    } else if (x3 > 2400) {
-        mode = MODE_BAKE;
-    } else if (x3 > 2300) {
-        mode = MODE_BAKE | MODE_ROTATE;
-    } else if (x3 > 2200) {
-        mode = MODE_FERMENT;
-    } else if (x3 > 2100) {
-        mode = MODE_BAKE | MODE_FAN;
-    } else if (x3 > 1900) {
-        mode = MODE_BAKE | MODE_ROTATE | MODE_FAN;
-    }
-
-    if (mode & MODE_FERMENT) {
-        //发酵模式30度
-        max = 30;
-    } else if (mode & MODE_BAKE) {
-        //烘培模式最高250度
-        max = 250;
-    }
-
-    //此模式不对adc值进行操作
-    if (mode == MODE_IDLE) {
-        return;
-    }
-
-    if (top > max) {
-        top = max;
-    }
-    if (bottom > max) {
-        bottom = max;
-    }
-    if (top != setting_top_temperature) {
-        setting_top_temperature = top;
-        display_format(top, true, true);
-    }
-    if (bottom != setting_bottom_temperature) {
-        setting_bottom_temperature = bottom;
-        display_format(bottom, false, true);
-    }
+    adc3shot[0] = aADCxConvertedValues[0];
+    adc3shot[1] = aADCxConvertedValues[1];
+    adc3shot[2] = aADCxConvertedValues[2];
 }
 
 

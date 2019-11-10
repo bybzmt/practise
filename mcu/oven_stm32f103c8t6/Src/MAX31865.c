@@ -9,6 +9,7 @@
 
 #define MAX31856_REG_CONFIG             0x00
 #define MAX31856_REG_RTDMSB             0x01
+#define MAX31856_REG_STATUS             0x07
 
 #define MAX31865_CONFIG_CLEARFAULT      (1<<1)
 #define MAX31856_CONFIG_3WIRE           (1<<4)
@@ -17,7 +18,9 @@
 #define MAX31856_CONFIG_BIAS            (1<<7)
 
 /********************* Constants *********************/
-#define MAX31856_RREF 430                        // Reference resistor
+/* #define MAX31856_RREF 430                        // Reference resistor */
+//430电阻实测为428
+#define MAX31856_RREF 428                        // Reference resistor
 #define MAX31856_FACTOR 32768                    // 2^15 used for data to resistance conversion
 #define MAX31856_ALPHA 0.003851                  // PT-100 temperature coefficient
 
@@ -91,12 +94,17 @@ float MAX31865_Read_1shot(MAX31865 *xThis)
     HAL_Delay(70);
 
     //读取数据
-    uint8_t tx[3]={MAX31856_REG_RTDMSB, 0,0}, buf[3];
+    uint8_t tx[8]={MAX31856_REG_RTDMSB, 0,0}, buf[8];
 
-    SPI_TransmitReceive(&xThis->spi, tx, buf, 2);
+    SPI_TransmitReceive(&xThis->spi, tx, buf, sizeof(tx));
 
     //关闭电源
     MAX31856_Off(xThis);
+
+    //查看有无错误
+    if (buf[7] != 0) {
+        return 0.0/0.0;
+    }
 
     return MAX31856_Calculate(buf+1);
 }
@@ -120,9 +128,14 @@ void MAX31856_AutoConvert(MAX31865 *xThis)
  */
 float MAX31865_Read(MAX31865 *xThis)
 {
-    uint8_t tx[3]={MAX31856_REG_RTDMSB, 0,0}, buf[3];
+    uint8_t tx[8]={MAX31856_REG_RTDMSB, 0,0}, buf[8];
 
     SPI_TransmitReceive(&xThis->spi, tx, buf, sizeof(buf));
+
+    if (buf[7] != 0) {
+        MAX31856_AutoConvert(xThis);
+        return 0.0/0.0;
+    }
 
     return MAX31856_Calculate(buf+1);
 }

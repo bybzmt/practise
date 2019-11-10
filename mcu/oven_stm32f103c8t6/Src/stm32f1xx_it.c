@@ -121,12 +121,11 @@ void SysTick_Handler(void)
 /*  file (startup_stm32f1xx.s).                                               */
 /******************************************************************************/
 
-void EXTI15_0_IRQHandler(void)
-{
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+/* void EXTI15_0_IRQHandler(void) */
+/* { */
+    /* __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0); */
     /* HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0); */
-    NRF24L01_Irq();
-}
+/* } */
 
 /**
   * @brief  This function handles ADC interrupt request.

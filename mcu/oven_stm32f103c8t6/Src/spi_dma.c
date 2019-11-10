@@ -2,7 +2,7 @@
 #include "debug.h"
 
 /* transfer state */
-__IO uint32_t wTransferState;
+static __IO uint32_t wTransferState;
 
 /* SPI */
 enum {
@@ -57,16 +57,6 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 
 HAL_StatusTypeDef SPI_Init(SPIx *spi)
 {
-    HAL_StatusTypeDef re = HAL_SPI_Init(spi->hspi);
-
-    if (re == HAL_OK) {
-        /* SPI block is enabled prior calling SPI transmit/receive functions,
-         * in order to get CLK signal properly pulled down. Otherwise,
-         * SPI CLK signal is not clean on this board and leads to errors during transfer */
-        __HAL_SPI_ENABLE(spi->hspi);
-        __HAL_SPI_DISABLE(spi->hspi);
-    }
-
     GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
@@ -77,55 +67,55 @@ HAL_StatusTypeDef SPI_Init(SPIx *spi)
 
     HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
-    return re;
+    return HAL_OK;
 }
 
 
 HAL_StatusTypeDef SPI_Transmit(SPIx *spi, uint8_t *tx, size_t len)
 {
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_RESET);
 
     wTransferState = TRANSFER_WAIT;
 
-    HAL_StatusTypeDef re = HAL_SPI_Receive_DMA(spi->hspi, tx, len);
+    HAL_StatusTypeDef re = HAL_SPI_Transmit_DMA(spi->hspi, tx, len);
 
     if (re == HAL_OK) {
         while(wTransferState != TRANSFER_WAIT);
     }
 
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
     return re != HAL_OK ? re : wTransferState == TRANSFER_COMPLETE ? HAL_OK : HAL_ERROR;
 }
 
 HAL_StatusTypeDef SPI_Receive(SPIx *spi, uint8_t *rx, size_t len)
 {
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_RESET);
 
     wTransferState = TRANSFER_WAIT;
-    HAL_StatusTypeDef re = HAL_SPI_Receive(spi->hspi, rx, len);
+    HAL_StatusTypeDef re = HAL_SPI_Receive_DMA(spi->hspi, rx, len);
 
     if (re == HAL_OK) {
         while(wTransferState != TRANSFER_WAIT);
     }
 
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
     return re != HAL_OK ? re : wTransferState == TRANSFER_COMPLETE ? HAL_OK : HAL_ERROR;
 }
 
 HAL_StatusTypeDef SPI_TransmitReceive(SPIx *spi, uint8_t *tx, uint8_t *rx, size_t len)
 {
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_RESET);
 
     wTransferState = TRANSFER_WAIT;
-    HAL_StatusTypeDef re = HAL_SPI_TransmitReceive(spi->hspi, tx, rx, len);
+    HAL_StatusTypeDef re = HAL_SPI_TransmitReceive_DMA(spi->hspi, tx, rx, len);
 
     if (re == HAL_OK) {
         while(wTransferState != TRANSFER_WAIT);
     }
 
-    HAL_GPIO_WritePin(gpio->CE_PORT, gpio->CE_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
     return re != HAL_OK ? re : wTransferState == TRANSFER_COMPLETE ? HAL_OK : HAL_ERROR;
 }

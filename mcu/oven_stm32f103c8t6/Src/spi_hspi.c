@@ -12,7 +12,7 @@ HAL_StatusTypeDef SPI_Init(SPIx *spi)
 
     HAL_GPIO_WritePin(spi->CE_PORT, spi->CE_PIN, GPIO_PIN_SET);
 
-    return 0;
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef SPI_Transmit(SPIx *spi, uint8_t *tx, size_t len)

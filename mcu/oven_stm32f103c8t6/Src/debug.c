@@ -12,40 +12,30 @@ int _write(int fd, uint8_t *buf, size_t count);
 
 static UART_HandleTypeDef UartHandle;
 
-/* int _read (int fd, uint8_t *buf, size_t count) */
-/* { */
-    /* UNUSED(fd); */
+int _read (int fd, uint8_t *buf, size_t count)
+{
+    UNUSED(fd);
 
-    /* HAL_UART_Receive(&UartHandle, buf, count, 0xFFFF); */
+    HAL_UART_Receive(&UartHandle, buf, count, 0xFFFF);
 
-    /* return count; */
-/* } */
+    return count;
+}
 
 int _write (int fd, uint8_t *buf, size_t count)
 {
     UNUSED(fd);
 
-    /* HAL_UART_Transmit(&UartHandle, buf, count, 0xFFFF); */
-    return;
-
-    if (count > NRF24L01_PLOAD_WIDTH -1) {
-        count = NRF24L01_PLOAD_WIDTH - 1;
-    }
-
-    //发送数据
-    nrf.txbuf[0] = 2;
-    memcpy(nrf.txbuf+1, buf, count);
-    NRF24L01_TxPacket(&nrf);
+    HAL_UART_Transmit(&UartHandle, buf, count, 0xFFFF);
 
     return count;
 }
 
 void UART_init()
 {
-    UartHandle.Instance        = USART1;
+    UartHandle.Instance        = USART3;
 
-    /* UartHandle.Init.BaudRate   = 9600; */
-    UartHandle.Init.BaudRate   = 115200;
+    UartHandle.Init.BaudRate   = 19200;
+    /* UartHandle.Init.BaudRate   = 115200; */
     UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
     UartHandle.Init.StopBits   = UART_STOPBITS_1;
     UartHandle.Init.Parity     = UART_PARITY_ODD;
@@ -67,10 +57,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
     /*##-1- Enable peripherals and GPIO Clocks #################################*/
     /* Enable GPIO TX/RX clock */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
 
     /* Enable USARTx clock */
-    __HAL_RCC_USART1_CLK_ENABLE();
+    __HAL_RCC_USART3_CLK_ENABLE();
 
     /*##-2- Configure peripheral GPIO ##########################################*/
     GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
@@ -78,12 +68,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
     /* UART TX GPIO pin configuration  */
-    GPIO_InitStruct.Pin = GPIO_PIN_9;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = GPIO_PIN_10;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* UART RX GPIO pin configuration  */
-    GPIO_InitStruct.Pin = GPIO_PIN_10;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /* GPIO_InitStruct.Pin = GPIO_PIN_11; */
+    /* HAL_GPIO_Init(GPIOB, &GPIO_InitStruct); */
 }
 
 void Error_Handler(char *msg)
