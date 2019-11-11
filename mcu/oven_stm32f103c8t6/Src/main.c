@@ -250,17 +250,21 @@ int main(void)
                     (int16_t)bottom_temperature, setting_bottom_temperature
                   );
 
-            //发酵模式下管加热，上测温为准
+            //发酵模式下管加热，测温以高的那个为准
             if (setting_mode == MODE_FERMENT) {
                 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, 0);
 
+                if (bottom > top) {
+                    top = bottom;
+                }
+
                 if (switch_status & 2) {
-                    if (top_temperature > setting_top_temperature) {
+                    if (top > setting_top_temperature) {
                         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, 0);
                         switch_status &= ~2;
                     }
                 } else {
-                    if (top_temperature > 10 && top_temperature < setting_top_temperature-2) {
+                    if (top > 10 && top_temperature < setting_top_temperature-2) {
                         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, 1);
                         switch_status |= 2;
                     }
