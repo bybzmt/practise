@@ -1,0 +1,278 @@
+EESchema Schematic File Version 4
+LIBS:oven2-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 4
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:VDD #PWR011
+U 1 1 5DB539E8
+P 8700 2900
+F 0 "#PWR011" H 8700 2750 50  0001 C CNN
+F 1 "VDD" H 8717 3073 50  0000 C CNN
+F 2 "" H 8700 2900 50  0001 C CNN
+F 3 "" H 8700 2900 50  0001 C CNN
+	1    8700 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R7
+U 1 1 5DDFABE7
+P 8700 3250
+F 0 "R7" H 8770 3296 50  0000 L CNN
+F 1 "68r" H 8770 3205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 8630 3250 50  0001 C CNN
+F 3 "~" H 8700 3250 50  0001 C CNN
+	1    8700 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D1
+U 1 1 5DDFABE8
+P 8700 3700
+F 0 "D1" V 8645 3778 50  0000 L CNN
+F 1 "LED" V 8736 3778 50  0000 L CNN
+F 2 "LED_THT:LED_D5.0mm" H 8700 3700 50  0001 C CNN
+F 3 "~" H 8700 3700 50  0001 C CNN
+	1    8700 3700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR012
+U 1 1 5DB53EC3
+P 8700 4150
+F 0 "#PWR012" H 8700 3900 50  0001 C CNN
+F 1 "GND" H 8705 3977 50  0000 C CNN
+F 2 "" H 8700 4150 50  0001 C CNN
+F 3 "" H 8700 4150 50  0001 C CNN
+	1    8700 4150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8700 2900 8700 3100
+Wire Wire Line
+	8700 3400 8700 3550
+Wire Wire Line
+	8700 3850 8700 4150
+$Comp
+L power:GND #PWR09
+U 1 1 5DDF4CB1
+P 3750 4050
+F 0 "#PWR09" H 3750 3800 50  0001 C CNN
+F 1 "GND" H 3755 3877 50  0000 C CNN
+F 2 "" H 3750 4050 50  0001 C CNN
+F 3 "" H 3750 4050 50  0001 C CNN
+	1    3750 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1450 3750 1450 3450
+$Comp
+L Regulator_Linear:AMS1117-3.3 U2
+U 1 1 5DDF4CB9
+P 4350 3250
+F 0 "U2" H 4350 3492 50  0000 C CNN
+F 1 "AMS1117-3.3" H 4350 3401 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 4350 3450 50  0001 C CNN
+F 3 "http://www.advanced-monolithic.com/pdf/ds1117.pdf" H 4450 3000 50  0001 C CNN
+	1    4350 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG01
+U 1 1 5DDF4CC0
+P 1450 3100
+F 0 "#FLG01" H 1450 3175 50  0001 C CNN
+F 1 "PWR_FLAG" H 1450 3274 50  0000 C CNN
+F 2 "" H 1450 3100 50  0001 C CNN
+F 3 "~" H 1450 3100 50  0001 C CNN
+	1    1450 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR08
+U 1 1 5DDF4CC6
+P 3750 3100
+F 0 "#PWR08" H 3750 2950 50  0001 C CNN
+F 1 "VCC" H 3767 3273 50  0000 C CNN
+F 2 "" H 3750 3100 50  0001 C CNN
+F 3 "" H 3750 3100 50  0001 C CNN
+	1    3750 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG02
+U 1 1 5DDF4CE8
+P 1450 3750
+F 0 "#FLG02" H 1450 3825 50  0001 C CNN
+F 1 "PWR_FLAG" H 1450 3924 50  0000 C CNN
+F 2 "" H 1450 3750 50  0001 C CNN
+F 3 "~" H 1450 3750 50  0001 C CNN
+	1    1450 3750
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4050 3250 3750 3250
+Wire Wire Line
+	3750 3250 3750 3100
+Wire Wire Line
+	3750 3750 3750 4050
+$Comp
+L power:VDD #PWR010
+U 1 1 5DDF4D05
+P 5150 3100
+F 0 "#PWR010" H 5150 2950 50  0001 C CNN
+F 1 "VDD" H 5167 3273 50  0000 C CNN
+F 2 "" H 5150 3100 50  0001 C CNN
+F 3 "" H 5150 3100 50  0001 C CNN
+	1    5150 3100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 3250 5150 3100
+$Comp
+L Device:C C5
+U 1 1 5DE0A837
+P 3750 3500
+F 0 "C5" H 3865 3546 50  0000 L CNN
+F 1 "10uf" H 3865 3455 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3788 3350 50  0001 C CNN
+F 3 "~" H 3750 3500 50  0001 C CNN
+	1    3750 3500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 3250 4800 3250
+$Comp
+L Device:C C4
+U 1 1 5DE0B275
+P 3350 3500
+F 0 "C4" H 3465 3546 50  0000 L CNN
+F 1 "10uf" H 3465 3455 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3388 3350 50  0001 C CNN
+F 3 "~" H 3350 3500 50  0001 C CNN
+	1    3350 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C6
+U 1 1 5DE0B446
+P 4800 3500
+F 0 "C6" H 4915 3546 50  0000 L CNN
+F 1 "10uf" H 4915 3455 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4838 3350 50  0001 C CNN
+F 3 "~" H 4800 3500 50  0001 C CNN
+	1    4800 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C7
+U 1 1 5DE0B60F
+P 5150 3500
+F 0 "C7" H 5265 3546 50  0000 L CNN
+F 1 "10uf" H 5265 3455 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 5188 3350 50  0001 C CNN
+F 3 "~" H 5150 3500 50  0001 C CNN
+	1    5150 3500
+	1    0    0    -1  
+$EndComp
+Connection ~ 3750 3250
+Connection ~ 3750 3750
+Wire Wire Line
+	3350 3250 3750 3250
+Wire Wire Line
+	3350 3750 3750 3750
+Wire Wire Line
+	3750 3750 4350 3750
+Connection ~ 3350 3250
+Wire Wire Line
+	3750 3650 3750 3750
+Wire Wire Line
+	3750 3350 3750 3250
+Wire Wire Line
+	4800 3350 4800 3250
+Connection ~ 4800 3250
+Wire Wire Line
+	4800 3250 5150 3250
+Wire Wire Line
+	4800 3650 4800 3750
+Connection ~ 4800 3750
+Wire Wire Line
+	4800 3750 5150 3750
+Wire Wire Line
+	5150 3750 5150 3650
+Wire Wire Line
+	5150 3350 5150 3250
+Connection ~ 5150 3250
+Wire Wire Line
+	4350 3550 4350 3750
+Connection ~ 4350 3750
+Wire Wire Line
+	4350 3750 4800 3750
+Wire Wire Line
+	3350 3250 3350 3350
+Wire Wire Line
+	3350 3650 3350 3750
+Connection ~ 3350 3750
+$Comp
+L Converter_ACDC:TMLM05105 PS1
+U 1 1 5DDFAE05
+P 2200 3350
+F 0 "PS1" H 2200 3717 50  0000 C CNN
+F 1 "TMLM05105" H 2200 3626 50  0000 C CNN
+F 2 "oven2:HLK-5M05" H 2200 3000 50  0001 C CNN
+F 3 "https://www.tracopower.com/products/tmlm.pdf" H 2200 3350 50  0001 C CNN
+	1    2200 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2600 3250 3350 3250
+Wire Wire Line
+	1450 3250 1450 3100
+Wire Wire Line
+	2600 3450 2600 3750
+Wire Wire Line
+	2600 3750 3350 3750
+Wire Wire Line
+	1450 3250 1800 3250
+Wire Wire Line
+	1450 3450 1800 3450
+$Comp
+L Connector_Generic:Conn_01x01 J10
+U 1 1 5DDFD12B
+P 1250 3250
+F 0 "J10" H 1250 3150 50  0000 C CNN
+F 1 "ac_in1" H 1450 3250 50  0000 C CNN
+F 2 "oven2:6.3mm" H 1250 3250 50  0001 C CNN
+F 3 "~" H 1250 3250 50  0001 C CNN
+	1    1250 3250
+	-1   0    0    1   
+$EndComp
+Connection ~ 1450 3250
+$Comp
+L Connector_Generic:Conn_01x01 J11
+U 1 1 5DDFD1AA
+P 1250 3450
+F 0 "J11" H 1250 3550 50  0000 C CNN
+F 1 "ac_in2" H 1450 3450 50  0000 C CNN
+F 2 "oven2:6.3mm" H 1250 3450 50  0001 C CNN
+F 3 "~" H 1250 3450 50  0001 C CNN
+	1    1250 3450
+	-1   0    0    1   
+$EndComp
+Connection ~ 1450 3450
+Text Label 1600 3250 0    50   ~ 0
+ac1
+Text Label 1600 3450 0    50   ~ 0
+ac2
+$EndSCHEMATC

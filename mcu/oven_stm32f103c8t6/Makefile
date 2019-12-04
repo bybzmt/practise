@@ -47,6 +47,7 @@ vpath
 vpath %.h $(C_H_DIR)
 vpath %.c $(C_DIR)
 vpath %.o $(BUILD)
+vpath %.d $(BUILD)
 
 INC_FLAGS= $(addprefix -I, $(C_H_DIR))
 
@@ -59,7 +60,14 @@ C_SRC+=max7219.c
 C_SRC+=stm32f1xx_hal_msp.c
 C_SRC+=system_stm32f1xx.c
 
-C_SRC+=stm32f1xx_hal.c stm32f1xx_hal_cortex.c stm32f1xx_hal_flash.c stm32f1xx_hal_flash_ex.c stm32f1xx_hal_gpio.c stm32f1xx_hal_gpio_ex.c stm32f1xx_hal_rcc.c stm32f1xx_hal_rcc_ex.c
+C_SRC+=stm32f1xx_hal.c
+C_SRC+=stm32f1xx_hal_cortex.c
+C_SRC+=stm32f1xx_hal_flash.c
+C_SRC+=stm32f1xx_hal_flash_ex.c
+C_SRC+=stm32f1xx_hal_gpio.c
+C_SRC+=stm32f1xx_hal_gpio_ex.c
+C_SRC+=stm32f1xx_hal_rcc.c
+C_SRC+=stm32f1xx_hal_rcc_ex.c
 C_SRC+=stm32f1xx_hal_dma.c
 C_SRC+=stm32f1xx_hal_adc.c
 C_SRC+=stm32f1xx_hal_spi.c
@@ -95,7 +103,7 @@ $(TARGET): $(C_OBJ)
 		$(addprefix $(BUILD)/, $(C_OBJ)) \
 		-o $(TARGET)
 
-%.o:%.c
+%.o:%.c %.d
 	$(CC) -c $(CFLAGS) -o $(BUILD)/$@ $<
 
 dump: $(TARGET)
@@ -112,12 +120,16 @@ clean:
 
 update: $(TARGET)
 	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $< verify reset exit"
-#	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "flash write_image erase $<" -c reset -c shutdown
-#	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "verify_image_checksum $<" -c reset -c shutdown
 
-debug: $(TARGET)
-	$(GDB) -iex 'target extended | $(OOCD) $(OOCDFLAGS) -c "gdb_port pipe"' \
-		-iex 'mon halt' $<
+openocd: $(TARGET)
+	$(OOCD) $(OOCDFLAGS) -c gdb_port 3333 -c init -c targets
+
+gdb: $(TARGET)
+	$(GDB) -iex 'target remote localhost:3333' \
+		-iex 'mon reset halt' \
+		-iex 'monitor arm semihosting enable' \
+		-iex 'set mem inaccessible-by-default off' \
+		$<
 
 %.d:%.c
 	@set -e; \
