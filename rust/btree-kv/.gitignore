@@ -1,0 +1,10 @@
+!.empty
+
+#vim temp file
+*.swp
+*~
+*.swo
+
+/Cargo.lock
+/target
+
