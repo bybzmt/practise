@@ -1,0 +1,42 @@
+
+.nav {
+    margin:10px;
+}
+.nav a{
+    margin:10px;
+}
+
+.table {
+    border-collapse:collapse;
+}
+.table td, .table th{
+    border: 1px solid #777;
+    padding:3px 5px 2px;
+}
+
+.state{
+    text-align:right;
+}
+
+.rules{
+}
+.rulesNav {
+    margin:10px;
+}
+.rulesNav span{
+    margin:10px;
+    cursor:pointer;
+}
+
+.dTable{
+    display:table;
+}
+.tr{
+    display:table-row;
+}
+.td{
+    display:table-cell;
+}
+
+:global {
+}

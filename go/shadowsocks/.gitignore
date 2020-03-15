@@ -1,0 +1,14 @@
+!.empty
+
+#vim temp file
+*.swp
+*~
+*.swo
+
+shadowsocks-go
+
+/gopath/pkg
+/gopath/bin
+
+/webUI/dist
+/webUI/node_modules
