@@ -97,6 +97,10 @@ impl TxReader {
     pub fn get(&self, key:&[u8]) -> Option<Rc<Vec<u8>>> {
         self.root.get(key)
     }
+
+    pub fn has(&self, key:&[u8]) -> bool {
+        self.root.has(key)
+    }
 }
 
 pub struct TxWriter {
@@ -113,6 +117,10 @@ impl TxWriter {
 
     pub fn get(&self, key:&[u8]) -> Option<Rc<Vec<u8>>> {
         self.root.get(key)
+    }
+
+    pub fn has(&self, key:&[u8]) -> bool {
+        self.root.has(key)
     }
 
     pub fn set(&self, key:&[u8], val:&[u8]) {
@@ -370,14 +378,15 @@ impl Node {
         let key2 = subkey(key, self.key_depth);
 
         let f = |i:usize| {
-            let key3 = &self.childs[i].key();
-            (&key3[..]).cmp(&key2[..])
+            let key3 = self.childs[i].key();
+            let key3 = subkey(&key3, self.key_depth);
+            str_cmp(&key3, &key2)
         };
 
         let (has, i) = sorted_search_by(self.childs.len(), f);
         if has {
             i
-        } else if i-1 > 0 {
+        } else if i > 1 {
             i-1
         } else {
             0
@@ -409,11 +418,12 @@ impl Node {
         self.childs[i].clone()
     }
 
-    fn childs_balance(&self) {
+    fn childs_balance(&mut self) {
         let mut childs = Vec::new();
 
         for child in self.childs.iter() {
             if let Typ::NodeItem = child.typ() {
+                childs.push(child.clone());
                 continue;
             }
 
@@ -424,7 +434,7 @@ impl Node {
             }
         }
 
-        self.as_mut().childs = childs;
+        self.childs = childs;
     }
 }
 
@@ -460,7 +470,7 @@ impl Inode for Node {
             return false;
         }
 
-        let ok = self.childs[i].del(key);
+        let ok = self.child(i).del(key);
         if ok {
             let this = self.as_mut();
             this.balanced = false;
@@ -507,7 +517,7 @@ impl Inode for Node {
             }
 
             this.dirty = false;
-            return vec![];
+            this.balanced = true;
         }
 
         if this.balanced {
@@ -515,7 +525,7 @@ impl Inode for Node {
         }
         this.balanced = true;
 
-        self.childs_balance();
+        this.childs_balance();
 
         let s1 = self.capacity();
         let s2 = self.size();
@@ -606,7 +616,7 @@ impl Leaf {
     fn seek(&self, key:&[u8]) -> (bool,usize) {
         let f = |i:usize| {
             let key2 = &self.items[i].key;
-            (&key2[..]).cmp(&key[..])
+            str_cmp(&key2, &key)
         };
 
         sorted_search_by(self.items.len(), f)
@@ -625,15 +635,16 @@ impl Inode for Leaf {
     fn empty(&self) -> bool { self.items.len() == 0 }
 
     fn set(&self, key:&[u8], val:&[u8]) {
-        let tmp = LeafItem{
-            key:Rc::new(key.to_vec()),
-            val:Rc::new(val.to_vec()),
-        };
         let (has,i) = self.seek(key);
 
         let this = self.as_mut();
         this.dirty = true;
         this.balanced = false;
+
+        let tmp = LeafItem{
+            key:Rc::new(key.to_vec()),
+            val:Rc::new(val.to_vec()),
+        };
 
         if has {
             this.items[i] = tmp;
@@ -653,7 +664,7 @@ impl Inode for Leaf {
     }
 
     fn has(&self, key:&[u8]) -> bool {
-        let (has,_) = self.seek(key);
+        let (has, _) = self.seek(key);
         has
     }
 
@@ -792,7 +803,9 @@ fn balance(node:Rc<dyn Inode>) -> Vec<Rc<dyn Inode>> {
 
     if !node.empty() {
         out.push(node);
-        out.append(&mut items);
+        if items.len() > 0 {
+            out.append(&mut items);
+        }
     }
 
     out
@@ -1292,6 +1305,26 @@ fn sorted_search_by<F>(num:usize, f:F) -> (bool,usize)
         (true, base)
     } else {
         (false, (base + (cmp == Ordering::Less) as usize))
+    }
+}
+
+fn str_cmp(a:&[u8], b:&[u8]) -> Ordering {
+    let s1 = &a[0] as *const _ as *const libc::c_void;
+    let s2 = &b[0] as *const _ as *const libc::c_void;
+
+    let cmp = a.len().cmp(&b.len());
+    let len = if Ordering::Less == cmp { a.len() } else { b.len() };
+
+    let rs = unsafe {
+        libc::memcmp(s1, s2, len)
+    };
+
+    if rs < 0 {
+        Ordering::Less
+    } else if rs == 0 {
+        cmp
+    } else {
+        Ordering::Greater
     }
 }
 
