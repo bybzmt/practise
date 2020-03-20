@@ -2,7 +2,7 @@ extern crate libc;
 
 use std::default::Default;
 use std::mem;
-use std::ptr;
+use std::sync::{Arc, Mutex, RwLock};
 use std::u32::MAX as U32_MAX;
 use std::cmp::Ordering;
 use std::hash::Hash;
@@ -19,10 +19,11 @@ const MAGIC_NUM : u32 = 12349872;
 
 pub struct Db {
     meta:Rc<Meta>,
+    locker: Mutex<Vec<Arc<RwLock<u8>>>>,
 }
 
 impl Db {
-    pub fn open<P: AsRef<Path>>(path: P) -> io::Result<Db> {
+    pub fn open<P: AsRef<Path>>(path: P) -> io::Result<Arc<Db>> {
         let need_init = match fs::metadata(&path) {
             Ok(_) => false,
             Err(_) => true,
@@ -34,7 +35,7 @@ impl Db {
         Db::load(file, need_init)
     }
 
-    fn load(file: File, need_init:bool) -> io::Result<Db> {
+    fn load(file: File, need_init:bool) -> io::Result<Arc<Db>> {
         let mmap = Rc::new(Mmap::load(&file, need_init)?);
 
         let meta_id = mmap.get_meta_id();
@@ -51,30 +52,63 @@ impl Db {
             mmap: mmap.clone(),
         };
 
+        let mut locker = vec![];
+        for _ in 0..mmap.meta_num {
+            locker.push(Arc::new(RwLock::new(0)));
+        }
+
         let db = Db {
             meta: Rc::new(meta),
+            locker: Mutex::new(locker),
         };
 
-        Ok(db)
+        Ok(Arc::new(db))
     }
 
+    //##################################
+    //操作模型
+    //有N个可操作位置, 是同一个文件上的不同区域
+    //多个读，1个写，读写互不影响
+    //
+    //每次写操作都不会改原数据而在下一个位置写改动
+    //如果写操作过快追上正进行的读则等待读解锁
+    //##################################
+
     pub fn get_reader(&self) -> TxReader {
+        //1.上元信息锁
+        //2.得到元信息clone
         let meta = self.meta.as_ref().clone();
         let meta = Rc::new(meta);
-
         let node = load_inode(meta.clone(), meta.low.root_page);
+        //3.解元信息锁
 
+        //4.对元信息上读锁
+        //5.直到read被释放自动解锁
         TxReader {
             root: node,
         }
     }
 
     pub fn get_writer(&self) -> TxWriter {
+        //1 上写动作锁
+
+        //2.1.上元信息锁
+        //2.2.得到元信息clone
         let meta = self.meta.as_ref().clone();
         let meta = Rc::new(meta);
+        //2.3.解元信息锁
 
         let node = load_inode(meta.clone(), meta.low.root_page);
 
+        //commit动作
+        //3.1.对被覆盖元信息上写锁
+        //3.2.写元信息
+        //3.3.对被覆盖元信息上写锁
+        //3.4.上元信息锁
+        //3.4.替换原元信息
+        //3.5.解元信息锁
+
+        //4.writer被释放解写动作锁
         TxWriter {
             dirty: false,
             meta: meta,
@@ -82,10 +116,15 @@ impl Db {
         }
     }
 
-    pub fn commit(&mut self, tx:TxWriter) {
+    pub fn commit(&self, tx:TxWriter) {
         tx.as_mut().sync();
         tx.meta.sync();
-        self.meta = tx.meta.clone();
+        self.as_mut().meta = tx.meta.clone();
+    }
+
+    fn as_mut(&self) -> &mut Db{
+        let t = self as *const _ as *mut _;
+        unsafe{ &mut (*t) }
     }
 
     pub fn info(&self) {
@@ -263,29 +302,10 @@ impl Mmap {
         unsafe { &mut (*node) }
     }
 
-    fn load_data(&self, page_id:u32, len:u32) -> &mut [u8] {
-        let raw = self.load_page(page_id);
-        let data = raw as *mut [u8; U32_MAX as usize];
-        unsafe { &mut (*data)[..len as usize] }
-    }
-
     fn node_type(&self, page_id: u32) -> NodeType {
         let raw = self.load_page(page_id);
         unsafe {
             mem::transmute::<_, NodeType>(*raw)
-        }
-    }
-
-    fn set_data(&self, page_id: u32, data:&[u8]) {
-        let raw = self.load_page(page_id);
-
-        let src = &data[0] as *const _ as *const [u8; U32_MAX as usize];
-
-        let dst = raw as *mut [u8; U32_MAX as usize];
-        let len = data.len();
-
-        unsafe {
-            ptr::copy(src, dst, len);
         }
     }
 }
@@ -1257,7 +1277,7 @@ impl LowNode {
 
         let mut oft = 0;
         for i in 0..items.len() {
-            let mut tmp = self.pid(i as u16);
+            let tmp = self.pid(i as u16);
             *tmp = items[i].pid();
 
             let key = &items[i].key()[..];
@@ -1270,20 +1290,6 @@ impl LowNode {
             oft += len;
         }
     }
-}
-
-fn subkey<'a>(key:&'a [u8], depth:u8) -> [u8; 8] {
-    let oft = depth as usize * 8;
-
-    let mut t = [0u8; 8];
-
-    let mut i = 0;
-    while i < t.len() && i+oft < key.len() {
-        t[i] = key[i+oft];
-        i+=1;
-    }
-
-    t
 }
 
 fn sorted_search_by<F>(num:usize, f:F) -> (bool,usize)
@@ -1320,23 +1326,25 @@ fn sorted_search_by<F>(num:usize, f:F) -> (bool,usize)
 }
 
 fn str_cmp(a:&[u8], b:&[u8]) -> Ordering {
-    let s1 = &a[0] as *const _ as *const libc::c_void;
-    let s2 = &b[0] as *const _ as *const libc::c_void;
+    return a.cmp(b);
 
-    let cmp = a.len().cmp(&b.len());
-    let len = if Ordering::Less == cmp { a.len() } else { b.len() };
+    // let s1 = &a[0] as *const _ as *const libc::c_void;
+    // let s2 = &b[0] as *const _ as *const libc::c_void;
 
-    let rs = unsafe {
-        libc::memcmp(s1, s2, len)
-    };
+    // let cmp = a.len().cmp(&b.len());
+    // let len = if Ordering::Less == cmp { a.len() } else { b.len() };
 
-    if rs < 0 {
-        Ordering::Less
-    } else if rs == 0 {
-        cmp
-    } else {
-        Ordering::Greater
-    }
+    // let rs = unsafe {
+        // libc::memcmp(s1, s2, len)
+    // };
+
+    // if rs < 0 {
+        // Ordering::Less
+    // } else if rs == 0 {
+        // cmp
+    // } else {
+        // Ordering::Greater
+    // }
 }
 
 #[cfg(test)]
