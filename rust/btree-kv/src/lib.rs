@@ -87,6 +87,17 @@ impl Db {
         tx.meta.sync();
         self.meta = tx.meta.clone();
     }
+
+    pub fn info(&self) {
+        println!("db version:{}", 1);
+        println!("pagesize:{}", self.meta.mmap.page_size);
+        println!("meta num:{}", self.meta.mmap.meta_num);
+        println!("tx id:{}", self.meta.low.tx_id);
+        println!("data num:{}", self.meta.low.data_num);
+        println!("node use:{}", self.meta.low.node_num);
+        println!("node hold:{}", self.meta.low.hold_num);
+        println!("node free:{}", self.meta.low.free_num);
+    }
 }
 
 pub struct TxReader {
@@ -123,9 +134,18 @@ impl TxWriter {
         self.root.has(key)
     }
 
-    pub fn set(&self, key:&[u8], val:&[u8]) {
+    pub fn set(&self, key:&[u8], val:&[u8]) -> Result<(), &str> {
+        if key.len() > 255 {
+            return Err("key too long");
+        }
+        if val.len() > 1024 {
+            return Err("val too long");
+        }
+
         self.as_mut().dirty = true;
-        self.root.set(key, val)
+        self.root.set(key, val);
+
+        Ok(())
     }
 
     pub fn del(&self, key:&[u8]) -> bool {
@@ -317,7 +337,6 @@ struct Node {
     pid:u32,
     balanced: bool,
     origin: bool,
-    key_depth: u8,
     childs: Vec<Rc<dyn Inode>>,
 }
 
@@ -336,12 +355,6 @@ struct LeafItem{
     val:Rc<Vec<u8>>,
 }
 
-impl LeafItem {
-    fn size(&self) -> usize {
-        self.key.len() + self.val.len() + 2
-    }
-}
-
 impl Node {
     fn as_mut(&self) -> &mut Node{
         let t = self as *const _ as *mut _;
@@ -353,7 +366,6 @@ impl Node {
             tx:tx,
             dirty: true,
             pid: 0,
-            key_depth: 0,
             balanced: true,
             origin: false,
             childs: childs,
@@ -367,7 +379,6 @@ impl Node {
             tx:tx.clone(),
             dirty: false,
             pid: pid,
-            key_depth: low.key_depth,
             balanced: true,
             origin: true,
             childs: low.load(),
@@ -375,12 +386,9 @@ impl Node {
     }
 
     fn seek(&self, key:&[u8]) -> usize {
-        let key2 = subkey(key, self.key_depth);
-
         let f = |i:usize| {
             let key3 = self.childs[i].key();
-            let key3 = subkey(&key3, self.key_depth);
-            str_cmp(&key3, &key2)
+            str_cmp(&key3, &key)
         };
 
         let (has, i) = sorted_search_by(self.childs.len(), f);
@@ -394,17 +402,18 @@ impl Node {
     }
 
     fn capacity(&self) -> usize {
-        let s1 = mem::size_of::<LowItem>();
-        let s2 = mem::size_of::<LowNode>();
+        let s1 = mem::size_of::<LowNode>() - 1;
         let page_size = self.tx.mmap.page_size as usize;
-        page_size - (s2 - s1)
+        page_size - s1
     }
 
     fn size(&self) -> usize {
-        let s1 = mem::size_of::<LowItem>();
-        let s2 = mem::size_of::<LowNode>();
-        let s3 = s1 * self.childs.len();
-        s2 - s1 + s3
+        let s1 = mem::size_of::<LowNode>() - 1;
+        let mut size = 0;
+        for x in self.childs.iter() {
+            size += 4 + 1 + x.key().len();
+        }
+        size + s1
     }
 
     fn child(&self, i:usize) -> Rc<dyn Inode> {
@@ -532,26 +541,27 @@ impl Inode for Node {
 
         //页数, 每页个数
         let page = (s2 / s1) + (s2 % s1 > 0) as usize;
-        let num = self.childs.len() / page;
+        let size = s2 / page;
 
-        let mut out:Vec<Rc<dyn Inode>> = vec![];
+        let mut pages:Vec<Vec<Rc<dyn Inode>>> = vec![vec![]];
 
-        if self.childs.len() > num {
-            let mut items = this.childs.split_off(num);
+        let mut now = 0;
+        for item in self.childs.iter() {
+            now += LowNode::item_size(item.clone());
+            pages.last_mut().unwrap().push(item.clone());
 
-            while items.len() > num {
-                let tmp = items.split_off(num);
-
-                let node = Node::new(self.tx.clone(), items.clone());
-                out.push(Rc::new(node));
-
-                items = tmp;
+            if now > size {
+                pages.push(vec![]);
             }
-
-            let node = Node::new(self.tx.clone(), items.clone());
-            out.push(Rc::new(node));
         }
 
+        this.childs = pages[0].clone();
+
+        let mut out:Vec<Rc<dyn Inode>> = vec![];
+        for i in 1..pages.len() {
+            let node = Node::new(self.tx.clone(), pages[i].clone());
+            out.push(Rc::new(node));
+        }
         out
     }
 
@@ -578,7 +588,6 @@ impl Inode for Node {
         }
 
         let low = self.tx.mmap.load_node(self.pid);
-        low.init(self.key_depth);
         low.write(&self.childs);
     }
 }
@@ -650,6 +659,7 @@ impl Inode for Leaf {
             this.items[i] = tmp;
         } else {
             this.items.insert(i, tmp);
+            self.tx.as_mut().low.data_num += 1;
         }
     }
 
@@ -676,6 +686,8 @@ impl Inode for Leaf {
             this.dirty = true;
             this.balanced = false;
             this.items.remove(i);
+
+            self.tx.as_mut().low.data_num -= 1;
 
             true
         } else {
@@ -714,7 +726,7 @@ impl Inode for Leaf {
 
         let mut size = 0;
         for item in self.items.iter() {
-            size += item.size();
+            size += LowLeaf::item_size(item);
         }
 
         let s1 = self.capacity();
@@ -729,7 +741,7 @@ impl Inode for Leaf {
                 pages.push(Vec::new());
             }
 
-            size += item.size();
+            size += LowLeaf::item_size(item);
             pages.last_mut().unwrap().push(item.clone());
         }
 
@@ -910,6 +922,9 @@ impl Meta {
         };
 
         let tx = self.as_mut();
+
+        tx.low.node_num -= len;
+
         for i in 0..self.free_pages.len() {
             if page.from_id == self.free_pages[i].end_id {
                 tx.free_pages[i].end_id = page.end_id;
@@ -951,6 +966,8 @@ impl Meta {
 
     fn page_alloc(&self, num:u32) -> u32 {
         let tx = self.as_mut();
+
+        tx.low.node_num += num;
 
         let mut i = 0;
         while i < self.free_pages.len() {
@@ -1063,6 +1080,10 @@ struct LowLeaf{
 }
 
 impl LowLeaf {
+    fn item_size(i: &LeafItem) -> usize {
+        3 + i.key.len() + i.val.len()
+    }
+
     fn raw(&self) -> &mut [u8] {
         let out = &self.items[0] as *const _ as *mut [u8; U32_MAX as usize];
         unsafe { &mut (*out) }
@@ -1083,8 +1104,9 @@ impl LowLeaf {
             let key = raw[i..i+len].to_vec();
             i+=len;
 
-            let len = raw[i] as usize;
-            i+=1;
+            let len = ((raw[i] as usize) << 8) | (raw[i+1] as usize);
+            i+=2;
+
             let val = raw[i..i+len].to_vec();
             i+=len;
 
@@ -1107,12 +1129,15 @@ impl LowLeaf {
             let len = item.key.len();
             raw[i] = len as u8;
             i+=1;
+
             raw[i..i+len].copy_from_slice(&item.key);
             i+=len;
 
             let len = item.val.len();
-            raw[i] = len as u8;
-            i+=1;
+            raw[i] = ((len >> 8)&255) as u8;
+            raw[i+1] = (len&255) as u8;
+            i+=2;
+
             raw[i..i+len].copy_from_slice(&item.val);
             i+=len;
         }
@@ -1130,6 +1155,8 @@ struct LowMeta {
     free_num: u32,
     hold_page: u32,
     hold_num:u32,
+    node_num: u32,
+    data_num: u64,
     auto_id: u64,
     sum: u64,
 }
@@ -1162,22 +1189,12 @@ struct LowRange{
     end_id: u32,
 }
 
-type Subkey = [u8; 8];
-
-#[repr(C)]
-#[derive(Default, Clone, Debug)]
-struct LowItem {
-    child_id: u32,
-    key: Subkey,
-}
-
 #[repr(C)]
 #[derive(Default, Clone, Debug)]
 struct LowNode{
     node_type: NodeType,
-    key_depth: u8,
     num: u16,
-    items: [LowItem; 1],
+    data: [u32; 1],
 }
 
 #[derive(Clone, Debug)]
@@ -1191,29 +1208,41 @@ impl Default for NodeType {
 }
 
 impl LowNode {
-    fn init(&mut self, depth:u8) {
-        self.node_type = NodeType::Node;
-        self.key_depth = depth;
+    fn item_size(i: Rc<dyn Inode>) -> usize {
+        5 + i.key().len()
     }
 
-    fn item(&self, i: usize) -> &mut LowItem {
-        let item = &self.items[0] as *const _ as *mut LowItem;
-
+    fn pid(&self, i: u16) -> &mut u32 {
+        let item = &self.data[0] as *const _ as *mut u32;
         unsafe {
             let item = item.offset(i as isize);
             &mut (*item)
         }
     }
 
+    fn raw(&self) -> &mut[u8] {
+        let raw = self.pid(self.num) as *const _ as *mut [u8; U32_MAX as usize];
+        unsafe{ &mut (*raw) }
+    }
+
     fn load(&self) -> Vec<Rc<dyn Inode>> {
         let mut out:Vec<Rc<dyn Inode>> = vec![];
+        let raw = self.raw();
 
-        for i in 0..self.num as usize {
-            let tmp = self.item(i);
+        let mut oft = 0;
+        for i in 0..self.num {
+            let len = raw[oft] as usize;
+            oft += 1;
+
+            let pid = self.pid(i);
+            let key = &raw[oft..oft+len];
+            oft += len;
+
             let r = Rc::new(NodeItem{
-                pid: tmp.child_id,
-                key: Rc::new(tmp.key.to_vec()),
+                pid: *pid,
+                key: Rc::new(key.to_vec()),
             });
+
             out.push(r);
         }
 
@@ -1221,50 +1250,32 @@ impl LowNode {
     }
 
     fn write(&mut self, items:&[Rc<dyn Inode>]) {
+        self.node_type = NodeType::Node;
         self.num = items.len() as u16;
 
+        let raw = self.raw();
+
+        let mut oft = 0;
         for i in 0..items.len() {
-            let mut tmp = self.item(i);
+            let mut tmp = self.pid(i as u16);
+            *tmp = items[i].pid();
 
-            tmp.child_id = items[i].pid();
-            let key = items[i].key();
+            let key = &items[i].key()[..];
+            let len = key.len();
 
-            let len = if tmp.key.len() < key.len() {
-                tmp.key.len()
-            } else {
-                key.len()
-            };
+            raw[oft] = len as u8;
+            oft += 1;
 
-            tmp.key = Default::default();
-            tmp.key[..len].copy_from_slice(&key[..len]);
+            raw[oft..oft+len].copy_from_slice(key);
+            oft += len;
         }
     }
 }
 
-// fn minkey(tx:Rc<Meta>, pid:u32, depth:u8) -> Subkey {
-    // let out = if let NodeType::Node = tx.mmap.node_type(pid) {
-        // let node = tx.mmap.load_node(pid);
-        // let item = node.item(0);
+fn subkey<'a>(key:&'a [u8], depth:u8) -> [u8; 8] {
+    let oft = depth as usize * 8;
 
-        // if depth == node.key_depth {
-            // item.key
-        // } else {
-            // minkey(tx.clone(), item.child_id, depth)
-        // }
-    // } else {
-        // let key = tx.mmap.load_leaf(pid).item_key(0);
-        // subkey(key, depth)
-    // };
-
-    // out
-// }
-
-fn subkey<'a>(key:&'a [u8], depth:u8) -> Subkey {
-    let size = mem::size_of::<Subkey>();
-    let oft = depth as usize * size;
-
-    // let mut t:Subkey = Default::default();
-    let mut t:Subkey = [0u8; 8];
+    let mut t = [0u8; 8];
 
     let mut i = 0;
     while i < t.len() && i+oft < key.len() {

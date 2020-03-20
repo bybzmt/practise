@@ -94,7 +94,7 @@ fn btree_test() {
     let tx = db.get_writer();
     for i in 0..max {
         if i % 3 == 0 {
-            let key = format!("{:->5}", i);
+            let key = format!("{:->10}", i);
             let key = key.as_bytes();
             tx.set(key, key);
         }
@@ -107,7 +107,7 @@ fn btree_test() {
         if i % 3 == 0 {
             continue;
         }
-        let key = format!("{:->5}", i);
+        let key = format!("{:->10}", i);
         let key = key.as_bytes();
         tx.set(key, key);
     }
@@ -117,7 +117,7 @@ fn btree_test() {
     let tx = db.get_writer();
     for i in 0..max {
         if i % 3 == 0 {
-            let key = format!("{:->5}", i);
+            let key = format!("{:->10}", i);
             let key = key.as_bytes();
             tx.del(key);
         }
@@ -127,7 +127,7 @@ fn btree_test() {
     let db = Db::open(&file).unwrap();
     let tx = db.get_reader();
     for i in 0..max {
-        let key = format!("{:->5}", i);
+        let key = format!("{:->10}", i);
         let key = key.as_bytes();
 
         if i % 3 == 0 {
