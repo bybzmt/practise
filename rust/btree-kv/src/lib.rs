@@ -2,12 +2,13 @@ extern crate libc;
 
 use std::default::Default;
 use std::mem;
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, Mutex, MutexGuard, RwLock, RwLockReadGuard};
 use std::u32::MAX as U32_MAX;
 use std::cmp::Ordering;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::rc::Rc;
+use std::cell::RefCell;
 use std::path::Path;
 use std::fs::{self, File, OpenOptions};
 use std::io;
@@ -18,8 +19,9 @@ use memmap::{MmapMut, MmapOptions};
 const MAGIC_NUM : u32 = 12349872;
 
 pub struct Db {
-    meta:Rc<Meta>,
-    locker: Mutex<Vec<Arc<RwLock<u8>>>>,
+    meta: Mutex<RefCell<Rc<Meta>>>,
+    locker: Vec<Rc<RwLock<()>>>,
+    writer: Mutex<()>,
 }
 
 impl Db {
@@ -54,12 +56,13 @@ impl Db {
 
         let mut locker = vec![];
         for _ in 0..mmap.meta_num {
-            locker.push(Arc::new(RwLock::new(0)));
+            locker.push(Rc::new(RwLock::new(())));
         }
 
         let db = Db {
-            meta: Rc::new(meta),
-            locker: Mutex::new(locker),
+            meta: Mutex::new(RefCell::new(Rc::new(meta))),
+            locker: locker,
+            writer: Mutex::new(()),
         };
 
         Ok(Arc::new(db))
@@ -75,75 +78,108 @@ impl Db {
     //##################################
 
     pub fn get_reader(&self) -> TxReader {
-        //1.上元信息锁
-        //2.得到元信息clone
-        let meta = self.meta.as_ref().clone();
-        let meta = Rc::new(meta);
+        let (meta, locker) = loop {
+            let meta = {
+                //1.上元信息锁
+                let meta = self.meta.lock().unwrap();
+                let meta = meta.borrow().as_ref().clone();
+                Rc::new(meta)
+                //2.解元信息锁
+            };
+
+            //3.得到元信息读锁
+            let meta_id = meta.meta_id as usize;
+            let locker = self.locker[meta_id].read().unwrap();
+
+            //防止得到的元信息在加锁前被写覆盖
+            let low = meta.mmap.load_meta(meta.meta_id);
+            if meta.low.tx_id == low.tx_id {
+                break (meta, locker);
+            }
+        };
+
         let node = load_inode(meta.clone(), meta.low.root_page);
-        //3.解元信息锁
 
         //4.对元信息上读锁
         //5.直到read被释放自动解锁
         TxReader {
             root: node,
+            _locker: locker,
         }
     }
 
     pub fn get_writer(&self) -> TxWriter {
         //1 上写动作锁
+        let writer = self.writer.lock().unwrap();
 
-        //2.1.上元信息锁
-        //2.2.得到元信息clone
-        let meta = self.meta.as_ref().clone();
-        let meta = Rc::new(meta);
-        //2.3.解元信息锁
+        let meta = {
+            //1.上元信息锁
+            let meta = self.meta.lock().unwrap();
+            let meta = meta.borrow().as_ref().clone();
+            Rc::new(meta)
+            //2.解元信息锁
+        };
 
         let node = load_inode(meta.clone(), meta.low.root_page);
-
-        //commit动作
-        //3.1.对被覆盖元信息上写锁
-        //3.2.写元信息
-        //3.3.对被覆盖元信息上写锁
-        //3.4.上元信息锁
-        //3.4.替换原元信息
-        //3.5.解元信息锁
 
         //4.writer被释放解写动作锁
         TxWriter {
             dirty: false,
             meta: meta,
             root: node,
+            _locker: writer,
         }
     }
 
     pub fn commit(&self, tx:TxWriter) {
         tx.as_mut().sync();
-        tx.meta.sync();
-        self.as_mut().meta = tx.meta.clone();
-    }
 
-    fn as_mut(&self) -> &mut Db{
-        let t = self as *const _ as *mut _;
-        unsafe{ &mut (*t) }
+        let meta_id = (tx.meta.meta_id + 1) % tx.meta.mmap.meta_num;
+        let meta_id = meta_id as usize;
+
+        {
+            //1.对被覆盖元信息上写锁
+            let _ = self.locker[meta_id].write().unwrap();
+            //写动作
+            tx.meta.sync();
+            //2.写解锁
+        }
+
+        {
+            //1.上元信息锁
+            let meta = self.meta.lock().unwrap();
+            //替换原元信息
+            *meta.borrow_mut() = tx.meta.clone();
+            //2.解元信息锁
+        }
     }
 
     pub fn info(&self) {
+        let meta = {
+            //1.上元信息锁
+            let meta = self.meta.lock().unwrap();
+            let meta = meta.borrow().clone();
+            meta
+            //2.解元信息锁
+        };
+
         println!("db version:{}", 1);
-        println!("pagesize:{}", self.meta.mmap.page_size);
-        println!("meta num:{}", self.meta.mmap.meta_num);
-        println!("tx id:{}", self.meta.low.tx_id);
-        println!("data num:{}", self.meta.low.data_num);
-        println!("node use:{}", self.meta.low.node_num);
-        println!("node hold:{}", self.meta.low.hold_num);
-        println!("node free:{}", self.meta.low.free_num);
+        println!("pagesize:{}", meta.mmap.page_size);
+        println!("meta num:{}", meta.mmap.meta_num);
+        println!("tx id:{}", meta.low.tx_id);
+        println!("data num:{}", meta.low.data_num);
+        println!("node use:{}", meta.low.node_num);
+        println!("node hold:{}", meta.low.hold_num);
+        println!("node free:{}", meta.low.free_num);
     }
 }
 
-pub struct TxReader {
+pub struct TxReader<'a> {
     root: Rc<dyn Inode>,
+    _locker: RwLockReadGuard<'a, ()>,
 }
 
-impl TxReader {
+impl <'a>TxReader<'a> {
     pub fn get(&self, key:&[u8]) -> Option<Rc<Vec<u8>>> {
         self.root.get(key)
     }
@@ -153,13 +189,14 @@ impl TxReader {
     }
 }
 
-pub struct TxWriter {
+pub struct TxWriter<'a> {
     dirty: bool,
     meta:Rc<Meta>,
     root: Rc<dyn Inode>,
+    _locker: MutexGuard<'a, ()>,
 }
 
-impl TxWriter {
+impl <'a>TxWriter<'a> {
     fn as_mut(&self) -> &mut TxWriter{
         let t = self as *const _ as *mut _;
         unsafe{ &mut (*t) }
