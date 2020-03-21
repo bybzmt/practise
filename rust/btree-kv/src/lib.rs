@@ -197,7 +197,7 @@ pub struct TxWriter<'a> {
 }
 
 impl <'a>TxWriter<'a> {
-    fn as_mut(&self) -> &mut TxWriter{
+    fn as_mut(&self) -> &mut Self{
         let t = self as *const _ as *mut _;
         unsafe{ &mut (*t) }
     }
@@ -251,7 +251,7 @@ struct Mmap {
 }
 
 impl Mmap {
-    fn load(fh:&File, init:bool) -> io::Result<Mmap> {
+    fn load(fh:&File, init:bool) -> io::Result<Self> {
         let meta_num = 3;
         let mut page_size:u32 = 4096;
 
@@ -281,7 +281,7 @@ impl Mmap {
 
         let page_num = ((len / header.page_size as u64) + (len % header.page_size as u64 > 0) as u64) as u32;
 
-        let mmap = Mmap {
+        let mmap = Self {
             page_num: page_num,
             page_size: header.page_size,
             meta_num: header.meta_num,
@@ -413,13 +413,13 @@ struct LeafItem{
 }
 
 impl Node {
-    fn as_mut(&self) -> &mut Node{
+    fn as_mut(&self) -> &mut Self {
         let t = self as *const _ as *mut _;
         unsafe{ &mut (*t) }
     }
 
-    fn new(tx: Rc<Meta>, childs: Vec<Rc<dyn Inode>>) -> Node {
-        Node {
+    fn new(tx: Rc<Meta>, childs: Vec<Rc<dyn Inode>>) -> Self {
+        Self {
             tx:tx,
             dirty: true,
             pid: 0,
@@ -429,10 +429,10 @@ impl Node {
         }
     }
 
-    fn load(tx: Rc<Meta>, pid:u32) -> Node {
+    fn load(tx: Rc<Meta>, pid:u32) -> Self {
         let low = tx.mmap.load_node(pid);
 
-        Node {
+        Self {
             tx:tx.clone(),
             dirty: false,
             pid: pid,
@@ -493,7 +493,7 @@ impl Node {
                 continue;
             }
 
-            let items = balance(child.clone());
+            let items = balance_split(child.clone());
 
             for tmp in items.iter() {
                 childs.push(tmp.clone());
@@ -650,13 +650,13 @@ impl Inode for Node {
 }
 
 impl Leaf {
-    fn as_mut(&self) -> &mut Leaf{
+    fn as_mut(&self) -> &mut Self {
         let t = self as *const _ as *mut _;
         unsafe{ &mut(*t) }
     }
 
-    fn new(tx: Rc<Meta>, childs: Vec<LeafItem>) -> Leaf {
-        Leaf {
+    fn new(tx: Rc<Meta>, childs: Vec<LeafItem>) -> Self {
+        Self {
             tx:tx,
             dirty: true,
             balanced: true,
@@ -666,10 +666,10 @@ impl Leaf {
         }
     }
 
-    fn load(tx: Rc<Meta>, pid:u32) -> Leaf {
+    fn load(tx: Rc<Meta>, pid:u32) -> Self {
         let low = tx.mmap.load_leaf(pid);
 
-        Leaf {
+        Self {
             tx: tx.clone(),
             dirty: false,
             balanced: true,
@@ -853,7 +853,7 @@ fn load_inode(tx:Rc<Meta>, pid:u32) -> Rc<dyn Inode> {
 }
 
 fn balance_root(tx:Rc<Meta>, node:Rc<dyn Inode>) -> Rc<dyn Inode> {
-    let nodes = balance(node);
+    let nodes = balance_split(node);
 
     if nodes.len() == 0 {
         Rc::new(Leaf::new(tx.clone(), vec![]))
@@ -865,7 +865,7 @@ fn balance_root(tx:Rc<Meta>, node:Rc<dyn Inode>) -> Rc<dyn Inode> {
     }
 }
 
-fn balance(node:Rc<dyn Inode>) -> Vec<Rc<dyn Inode>> {
+fn balance_split(node:Rc<dyn Inode>) -> Vec<Rc<dyn Inode>> {
     let mut out: Vec<Rc<dyn Inode>> = vec![];
 
     let mut items = node.balance();
