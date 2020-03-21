@@ -252,20 +252,20 @@ struct Mmap {
 
 impl Mmap {
     fn load(fh:&File, init:bool) -> io::Result<Mmap> {
-        let mut len = 0;
-
         let meta_num = 3;
         let mut page_size:u32 = 4096;
 
-        if init {
+        let len = if init {
             page_size = unsafe { libc::sysconf(libc::_SC_PAGESIZE) } as u32;
-            len = page_size as u64 * (meta_num+1) as u64;
+            let len = page_size as u64 * (meta_num+1) as u64;
 
             fh.set_len(len)?;
             fh.sync_all()?;
+            len
         } else {
-            len = fh.metadata()?.len();
-        }
+            let len = fh.metadata()?.len();
+            len
+        };
 
         let data = unsafe {
             MmapOptions::new().map_mut(fh)?
@@ -274,7 +274,7 @@ impl Mmap {
         let header = LowHeader::load(&data);
 
         if init {
-            header.init(page_size as u32, meta_num);
+            header.init(page_size, meta_num);
         } else if !header.vaild() {
             return Err(io::Error::new(io::ErrorKind::Other, "Invalid file type"));
         }
