@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name my)(type Legacy)(uri ${KIPRJMOD}/my.lib)(options "")(descr ""))
+  (lib (name tas5805m-rescue)(type Legacy)(uri ${KIPRJMOD}/tas5805m-rescue.lib)(options "")(descr ""))
+)

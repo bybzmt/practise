@@ -1,0 +1,540 @@
+EESchema Schematic File Version 4
+LIBS:tas5805m-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 8
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:L_Core_Iron L1
+U 1 1 5EB162C3
+P 7600 1200
+F 0 "L1" V 7422 1200 50  0000 C CNN
+F 1 "10uh" V 7513 1200 50  0000 C CNN
+F 2 "Inductor_SMD:L_7.3x7.3_H4.5" H 7600 1200 50  0001 C CNN
+F 3 "~" H 7600 1200 50  0001 C CNN
+	1    7600 1200
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:L_Core_Iron L2
+U 1 1 5EB16386
+P 7600 1650
+F 0 "L2" V 7422 1650 50  0000 C CNN
+F 1 "10uh" V 7513 1650 50  0000 C CNN
+F 2 "Inductor_SMD:L_7.3x7.3_H4.5" H 7600 1650 50  0001 C CNN
+F 3 "~" H 7600 1650 50  0001 C CNN
+	1    7600 1650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:L_Core_Iron L3
+U 1 1 5EB16407
+P 7600 2700
+F 0 "L3" V 7422 2700 50  0000 C CNN
+F 1 "10uh" V 7513 2700 50  0000 C CNN
+F 2 "Inductor_SMD:L_7.3x7.3_H4.5" H 7600 2700 50  0001 C CNN
+F 3 "~" H 7600 2700 50  0001 C CNN
+	1    7600 2700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:L_Core_Iron L4
+U 1 1 5EB164C1
+P 7600 3150
+F 0 "L4" V 7422 3150 50  0000 C CNN
+F 1 "10uh" V 7513 3150 50  0000 C CNN
+F 2 "Inductor_SMD:L_7.3x7.3_H4.5" H 7600 3150 50  0001 C CNN
+F 3 "~" H 7600 3150 50  0001 C CNN
+	1    7600 3150
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C_Small C1
+U 1 1 5EB28A07
+P 8450 1700
+F 0 "C1" V 8350 1600 50  0000 C CNN
+F 1 "680nf/25v" V 8350 1850 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8450 1700 50  0001 C CNN
+F 3 "~" H 8450 1700 50  0001 C CNN
+	1    8450 1700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C_Small C3
+U 1 1 5EB29D13
+P 8850 1700
+F 0 "C3" V 8750 1600 50  0000 C CNN
+F 1 "680nf/25v" V 8750 1850 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8850 1700 50  0001 C CNN
+F 3 "~" H 8850 1700 50  0001 C CNN
+	1    8850 1700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C_Small C2
+U 1 1 5EB2AE3F
+P 8450 3200
+F 0 "C2" V 8350 3100 50  0000 C CNN
+F 1 "680uf/25v" V 8350 3350 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8450 3200 50  0001 C CNN
+F 3 "~" H 8450 3200 50  0001 C CNN
+	1    8450 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C_Small C4
+U 1 1 5EB2BFA3
+P 8900 3200
+F 0 "C4" V 8800 3100 50  0000 C CNN
+F 1 "680nf/25v" V 8800 3350 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8900 3200 50  0001 C CNN
+F 3 "~" H 8900 3200 50  0001 C CNN
+	1    8900 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR05
+U 1 1 5EB2D1A5
+P 8900 3550
+F 0 "#PWR05" H 8900 3300 50  0001 C CNN
+F 1 "GND" H 8905 3377 50  0000 C CNN
+F 2 "" H 8900 3550 50  0001 C CNN
+F 3 "" H 8900 3550 50  0001 C CNN
+	1    8900 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J3
+U 1 1 5EB37EE0
+P 9350 1200
+F 0 "J3" H 9430 1192 50  0000 L CNN
+F 1 "speaker L" H 9430 1101 50  0000 L CNN
+F 2 "mymod:kf7.62" H 9350 1200 50  0001 C CNN
+F 3 "~" H 9350 1200 50  0001 C CNN
+	1    9350 1200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J4
+U 1 1 5EB37F94
+P 9350 2700
+F 0 "J4" H 9429 2692 50  0000 L CNN
+F 1 "speaker R" H 9429 2601 50  0000 L CNN
+F 2 "mymod:kf7.62" H 9350 2700 50  0001 C CNN
+F 3 "~" H 9350 2700 50  0001 C CNN
+	1    9350 2700
+	1    0    0    -1  
+$EndComp
+$Sheet
+S 950  850  1000 750 
+U 5EB304E2
+F0 "power" 50
+F1 "power.sch" 50
+$EndSheet
+$Sheet
+S 5350 4500 1100 800 
+U 5EB80E2E
+F0 "c8t6" 50
+F1 "c8t6.sch" 50
+F2 "SCL" I L 5350 4800 50 
+F3 "SDA" I L 5350 4650 50 
+F4 "PDN1" I R 6450 4650 50 
+F5 "ADR1" I L 5350 4900 50 
+F6 "ADR2" I L 5350 5000 50 
+F7 "PDN2" I R 6450 4750 50 
+F8 "EN_bt" I R 6450 4850 50 
+F9 "EN_dir9001" I R 6450 4950 50 
+F10 "EN_pcm2707" I R 6450 5050 50 
+F11 "err9001" I L 5350 5100 50 
+F12 "EN_usb" I R 6450 5150 50 
+$EndSheet
+Wire Wire Line
+	5350 4900 4900 4900
+Wire Wire Line
+	4900 4650 5350 4650
+Wire Wire Line
+	4900 4800 5350 4800
+Text Label 5000 4650 0    50   ~ 0
+SDA
+Text Label 5000 4800 0    50   ~ 0
+SCL
+Text Label 6650 4650 0    50   ~ 0
+PDN1
+Text Label 5000 4900 0    50   ~ 0
+ADR1
+$Sheet
+S 5800 1050 1200 1050
+U 5EB2DBEF
+F0 "tas5805m_a" 50
+F1 "tas5805m_a.sch" 50
+F2 "LRCLK" I L 5800 1200 50 
+F3 "SCLK" I L 5800 1300 50 
+F4 "SDIN" I L 5800 1400 50 
+F5 "SDA" I L 5800 1650 50 
+F6 "SCL" I L 5800 1750 50 
+F7 "PDN" I L 5800 1850 50 
+F8 "ADR" O L 5800 1950 50 
+F9 "OUT_A+" O R 7000 1200 50 
+F10 "OUT_A-" O R 7000 1350 50 
+F11 "OUT_B+" O R 7000 1650 50 
+F12 "OUT_B-" O R 7000 1800 50 
+$EndSheet
+$Sheet
+S 5800 2550 1200 1050
+U 5EB27D00
+F0 "tas5805m_b" 50
+F1 "tas5805m_b.sch" 50
+F2 "LRCLK" I L 5800 2700 50 
+F3 "SCLK" I L 5800 2800 50 
+F4 "SDIN" I L 5800 2900 50 
+F5 "SDA" I L 5800 3150 50 
+F6 "SCL" I L 5800 3250 50 
+F7 "PDN" I L 5800 3350 50 
+F8 "ADR" O L 5800 3450 50 
+F9 "OUT_A+" O R 7000 2700 50 
+F10 "OUT_A-" O R 7000 2850 50 
+F11 "OUT_B+" O R 7000 3150 50 
+F12 "OUT_B-" O R 7000 3300 50 
+$EndSheet
+Wire Wire Line
+	5250 2700 5800 2700
+Wire Wire Line
+	5250 2800 5800 2800
+Wire Wire Line
+	5250 2900 5800 2900
+Text Label 5350 2700 0    50   ~ 0
+LRCLK
+Text Label 5350 2800 0    50   ~ 0
+SCLK
+Text Label 5350 2900 0    50   ~ 0
+SDIN
+Wire Wire Line
+	5250 3150 5800 3150
+Wire Wire Line
+	5250 3250 5800 3250
+Text Label 5350 3150 0    50   ~ 0
+SDA
+Text Label 5350 3250 0    50   ~ 0
+SCL
+Text Label 5350 3350 0    50   ~ 0
+PDN2
+Wire Wire Line
+	5250 1200 5800 1200
+Wire Wire Line
+	5250 1300 5800 1300
+Wire Wire Line
+	5250 1400 5800 1400
+Text Label 5350 1200 0    50   ~ 0
+LRCLK
+Text Label 5350 1300 0    50   ~ 0
+SCLK
+Text Label 5350 1400 0    50   ~ 0
+SDIN
+Wire Wire Line
+	5250 1650 5800 1650
+Wire Wire Line
+	5250 1750 5800 1750
+Text Label 5350 1650 0    50   ~ 0
+SDA
+Text Label 5350 1750 0    50   ~ 0
+SCL
+Text Label 5350 1850 0    50   ~ 0
+PDN1
+Wire Wire Line
+	5250 1850 5800 1850
+Wire Wire Line
+	5250 3350 5800 3350
+Wire Wire Line
+	5250 1950 5800 1950
+Wire Wire Line
+	5250 3450 5800 3450
+Text Label 5350 1950 0    50   ~ 0
+ADR1
+Text Label 5350 3450 0    50   ~ 0
+ADR2
+Wire Wire Line
+	5350 5000 4900 5000
+Text Label 5000 5000 0    50   ~ 0
+ADR2
+Wire Wire Line
+	8900 3300 8900 3550
+$Comp
+L power:GND #PWR03
+U 1 1 5EC940E7
+P 8450 3550
+F 0 "#PWR03" H 8450 3300 50  0001 C CNN
+F 1 "GND" H 8455 3377 50  0000 C CNN
+F 2 "" H 8450 3550 50  0001 C CNN
+F 3 "" H 8450 3550 50  0001 C CNN
+	1    8450 3550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8450 3300 8450 3550
+Wire Wire Line
+	8450 1800 8450 2000
+Wire Wire Line
+	8850 1800 8850 2000
+$Comp
+L power:GND #PWR02
+U 1 1 5ECA5E4F
+P 8450 2000
+F 0 "#PWR02" H 8450 1750 50  0001 C CNN
+F 1 "GND" H 8455 1827 50  0000 C CNN
+F 2 "" H 8450 2000 50  0001 C CNN
+F 3 "" H 8450 2000 50  0001 C CNN
+	1    8450 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR04
+U 1 1 5ECA5E9E
+P 8850 2000
+F 0 "#PWR04" H 8850 1750 50  0001 C CNN
+F 1 "GND" H 8855 1827 50  0000 C CNN
+F 2 "" H 8850 2000 50  0001 C CNN
+F 3 "" H 8850 2000 50  0001 C CNN
+	1    8850 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 2700 7150 2700
+Wire Wire Line
+	7150 2850 7150 2700
+Wire Wire Line
+	7000 2850 7150 2850
+Wire Wire Line
+	7000 3150 7150 3150
+Wire Wire Line
+	7150 3150 7150 3300
+Wire Wire Line
+	7150 3300 7000 3300
+Wire Wire Line
+	7750 1650 7950 1650
+Wire Wire Line
+	7950 1650 7950 1300
+Wire Wire Line
+	7950 3150 7950 2800
+Wire Wire Line
+	7950 2800 8900 2800
+Wire Wire Line
+	7750 3150 7950 3150
+Wire Wire Line
+	8450 3100 8450 2700
+Wire Wire Line
+	7750 2700 8450 2700
+Connection ~ 8450 2700
+Wire Wire Line
+	8450 2700 9150 2700
+Wire Wire Line
+	8900 2800 8900 3100
+Connection ~ 8900 2800
+Wire Wire Line
+	8900 2800 9150 2800
+Wire Wire Line
+	7750 1200 8450 1200
+Wire Wire Line
+	7950 1300 8850 1300
+Wire Wire Line
+	8450 1600 8450 1200
+Connection ~ 8450 1200
+Wire Wire Line
+	8450 1200 9150 1200
+Wire Wire Line
+	8850 1600 8850 1300
+Connection ~ 8850 1300
+Wire Wire Line
+	8850 1300 9150 1300
+Wire Wire Line
+	6450 4650 6900 4650
+Wire Wire Line
+	6900 4750 6450 4750
+Text Label 6650 4750 0    50   ~ 0
+PDN2
+Wire Wire Line
+	7000 1650 7250 1650
+Wire Wire Line
+	7000 1200 7250 1200
+Wire Wire Line
+	7000 1800 7250 1800
+Wire Wire Line
+	7250 1800 7250 1650
+Wire Wire Line
+	7000 1350 7250 1350
+Wire Wire Line
+	7250 1350 7250 1200
+Wire Wire Line
+	7250 1200 7450 1200
+Connection ~ 7250 1200
+Wire Wire Line
+	7250 1650 7450 1650
+Connection ~ 7250 1650
+Wire Wire Line
+	7150 2700 7450 2700
+Connection ~ 7150 2700
+Wire Wire Line
+	7150 3150 7450 3150
+Connection ~ 7150 3150
+Wire Wire Line
+	1900 2600 2450 2600
+Wire Wire Line
+	1900 2700 2450 2700
+Wire Wire Line
+	1900 2800 2450 2800
+Text Label 2100 2600 0    50   ~ 0
+LRCLK
+Text Label 2100 2700 0    50   ~ 0
+SCLK
+Text Label 2100 2800 0    50   ~ 0
+SDIN
+Wire Wire Line
+	2450 2950 1900 2950
+Text Label 2100 3100 0    50   ~ 0
+en9001
+Text Label 2100 2950 0    50   ~ 0
+err9001
+Wire Wire Line
+	6900 4850 6450 4850
+Wire Wire Line
+	6900 5050 6450 5050
+Text Label 6650 4850 0    50   ~ 0
+en_bt
+Text Label 6550 4950 0    50   ~ 0
+en9001
+Wire Wire Line
+	4900 5100 5350 5100
+Text Label 5000 5100 0    50   ~ 0
+err9001
+$Sheet
+S 800  3850 1100 700 
+U 5EC4DC55
+F0 "pcm2707c" 50
+F1 "pcm2707c.sch" 50
+F2 "LRCLK" I R 1900 4000 50 
+F3 "SCLK" I R 1900 4100 50 
+F4 "SDOUT" I R 1900 4200 50 
+F5 "EN" I R 1900 4300 50 
+$EndSheet
+$Sheet
+S 800  4950 1100 650 
+U 5EC576F2
+F0 "bt" 50
+F1 "bt.sch" 50
+F2 "LRCLK" I R 1900 5050 50 
+F3 "SCLK" I R 1900 5150 50 
+F4 "SDOUT" I R 1900 5250 50 
+F5 "EN_bt" I R 1900 5350 50 
+F6 "EN_usb" I R 1900 5450 50 
+$EndSheet
+Wire Wire Line
+	1900 4000 2450 4000
+Wire Wire Line
+	1900 4100 2450 4100
+Wire Wire Line
+	1900 4200 2450 4200
+Text Label 2100 4000 0    50   ~ 0
+LRCLK
+Text Label 2100 4100 0    50   ~ 0
+SCLK
+Text Label 2100 4200 0    50   ~ 0
+SDIN
+Wire Wire Line
+	1900 5050 2450 5050
+Wire Wire Line
+	1900 5150 2450 5150
+Wire Wire Line
+	1900 5250 2450 5250
+Text Label 2100 5050 0    50   ~ 0
+LRCLK
+Text Label 2100 5150 0    50   ~ 0
+SCLK
+Text Label 2100 5250 0    50   ~ 0
+SDIN
+Wire Wire Line
+	6900 4950 6450 4950
+Wire Wire Line
+	6450 5150 6900 5150
+Text Label 6600 5150 0    50   ~ 0
+en_usb
+Text Label 6500 5050 0    50   ~ 0
+pcm2707
+Wire Wire Line
+	1900 4300 2700 4300
+Text Label 2000 4300 0    50   ~ 0
+pcm2707
+Wire Wire Line
+	1900 5350 2700 5350
+Text Label 2000 5350 0    50   ~ 0
+en_bt
+Wire Wire Line
+	1900 5450 2700 5450
+Text Label 2000 5450 0    50   ~ 0
+en_usb
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 5ECBEFCA
+P 800 6700
+F 0 "H1" H 900 6746 50  0000 L CNN
+F 1 "MountingHole" H 900 6655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_ISO7380" H 800 6700 50  0001 C CNN
+F 3 "~" H 800 6700 50  0001 C CNN
+	1    800  6700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 5ECBF059
+P 800 6950
+F 0 "H2" H 900 6996 50  0000 L CNN
+F 1 "MountingHole" H 900 6905 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_ISO7380" H 800 6950 50  0001 C CNN
+F 3 "~" H 800 6950 50  0001 C CNN
+	1    800  6950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 5ECBF197
+P 800 7200
+F 0 "H3" H 900 7246 50  0000 L CNN
+F 1 "MountingHole" H 900 7155 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_ISO7380" H 800 7200 50  0001 C CNN
+F 3 "~" H 800 7200 50  0001 C CNN
+	1    800  7200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 5ECBF210
+P 800 7450
+F 0 "H4" H 900 7496 50  0000 L CNN
+F 1 "MountingHole" H 900 7405 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_ISO7380" H 800 7450 50  0001 C CNN
+F 3 "~" H 800 7450 50  0001 C CNN
+	1    800  7450
+	1    0    0    -1  
+$EndComp
+$Sheet
+S 800  2450 1100 850 
+U 5EC2A7FE
+F0 "dir9001" 50
+F1 "dir9001.sch" 50
+F2 "LRCLK" I R 1900 2600 50 
+F3 "SCLK" I R 1900 2700 50 
+F4 "SDOUT" I R 1900 2800 50 
+F5 "error" I R 1900 2950 50 
+F6 "EN" I R 1900 3100 50 
+$EndSheet
+Wire Wire Line
+	1900 3100 2450 3100
+$EndSCHEMATC
