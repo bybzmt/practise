@@ -1,178 +1,215 @@
 
 #工程的名称及最后生成文件的名字
-TARGET = ./build/target.elf
+TARGET = digital_amplifier
 
-#设定临时性环境变量
-export CC             = arm-none-eabi-gcc
-export AS             = arm-none-eabi-as
-export LD             = arm-none-eabi-ld
-export OBJCOPY        = arm-none-eabi-objcopy
+# debug build?
+DEBUG = 1
+# optimization
+OPT = -Og
 
-OBJDUMP=arm-none-eabi-objdump
-GDB = arm-none-eabi-gdb
+# Build path
+BUILD_DIR = build
+
+# C sources
+C_SOURCES = src/main.c
+C_SOURCES+=src/userMain.c
+C_SOURCES+=src/stm32f1xx_it.c
+C_SOURCES+=src/stm32f1xx_hal_msp.c
+C_SOURCES+=src/i2c.c
+
+C_SOURCES+=lib/CMSIS/Device/system_stm32f1xx.c
+
+C_SOURCES+=lib/ssd1306/ssd1306.c
+C_SOURCES+=lib/ssd1306/ssd1306_fonts.c
+C_SOURCES+=lib/ssd1306/ssd1306_tests.c
+C_SOURCES+=lib/ssd1306/ssd1306_lowLevel.c
+
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c
+
+#freeRTOS
+C_SOURCES+=lib/FreeRTOS/queue.c
+C_SOURCES+=lib/FreeRTOS/croutine.c
+C_SOURCES+=lib/FreeRTOS/tasks.c
+C_SOURCES+=lib/FreeRTOS/timers.c
+C_SOURCES+=lib/FreeRTOS/list.c
+C_SOURCES+=lib/FreeRTOS/event_groups.c
+C_SOURCES+=lib/FreeRTOS/portable/GCC/ARM_CM3/port.c
+C_SOURCES+=lib/FreeRTOS/portable/MemMang/heap_4.c
+C_SOURCES+=lib/FreeRTOS/CMSIS_RTOS/cmsis_os.c
+
+ASM_SOURCES = lib/CMSIS/Device/startup_stm32f103xb.s
+
+#######################################
+# binaries
+#######################################
+PREFIX = arm-none-eabi-
+# The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
+# either it can be added to the PATH environment variable.
+ifdef GCC_PATH
+CC = $(GCC_PATH)/$(PREFIX)gcc
+AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
+CP = $(GCC_PATH)/$(PREFIX)objcopy
+SZ = $(GCC_PATH)/$(PREFIX)size
+else
+CC = $(PREFIX)gcc
+AS = $(PREFIX)gcc -x assembler-with-cpp
+CP = $(PREFIX)objcopy
+SZ = $(PREFIX)size
+endif
+HEX = $(CP) -O ihex
+BIN = $(CP) -O binary -S
 
 #openocd
 OOCD = openocd
 OOCDFLAGS = -f interface/cmsis-dap.cfg
 OOCDFLAGS+= -f target/stm32f1x.cfg
 
-#读取当前工作目录
-TOP=$(shell pwd)
+#######################################
+# CFLAGS
+#######################################
+# cpu
+CPU = -mcpu=cortex-m3
 
-LIB_DIRS= $(TOP)/src
-LIB_DIRS+= $(TOP)/lib
-LIB_DIRS+= $(TOP)/lib/CMSIS
-LIB_DIRS+= $(TOP)/lib/CMSIS/inc
-LIB_DIRS+= $(TOP)/lib/CMSIS/Device
-LIB_DIRS+= $(TOP)/lib/CMSIS/Device/inc
-LIB_DIRS+= $(TOP)/lib/STM32F1xx_HAL_Driver/Inc
-LIB_DIRS+= $(TOP)/lib/STM32F1xx_HAL_Driver/Src
+# fpu
+FPU = -mfpu=fpv4-sp-d16
 
-LIB_DIRS+= $(TOP)/lib/FreeRTOS
-LIB_DIRS+= $(TOP)/lib/FreeRTOS/CMSIS_RTOS
-LIB_DIRS+= $(TOP)/lib/FreeRTOS/include
-LIB_DIRS+= $(TOP)/lib/FreeRTOS/portable/MemMang
-LIB_DIRS+= $(TOP)/lib/FreeRTOS/portable/GCC/ARM_CM3
+# float-abi
+FLOAT-ABI = -mfloat-abi=soft
 
-LIB_DIRS+= $(TOP)/lib/ssd1306
+# mcu
+MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
-#查找所有有*.h文件的目录
-C_H_DIR= $(LIB_DIRS)
+# macros for gcc
+# AS defines
+AS_DEFS =
 
-#查找所有*.c文件
-C_DIR =$(LIB_DIRS)
+# C defines
+C_DEFS = -DSTM32F103xB
+C_DEFS+= -DSSD1306_USE_I2C
+C_DEFS+= -DSTM32F1
 
-BUILD= ./build
+# AS includes
+AS_INCLUDES =
 
-#makefile查找目录
-vpath
-vpath %.h $(C_H_DIR)
-vpath %.c $(C_DIR)
-vpath %.o $(BUILD)
-vpath %.d $(BUILD)
+# C includes
+C_INCLUDES = $(sort $(dir $(C_SOURCES)))
 
-INC_FLAGS= $(addprefix -I, $(C_H_DIR))
+C_INCLUDES+= lib/CMSIS/inc
+C_INCLUDES+= lib/CMSIS/Device/inc
+C_INCLUDES+= lib/STM32F1xx_HAL_Driver/Inc
+C_INCLUDES+= lib/FreeRTOS/include
 
-#所有的需编译文件
-C_SRC= main.c
-C_SRC+=userMain.c
-C_SRC+=stm32f1xx_it.c
-C_SRC+=stm32f1xx_hal_msp.c
-C_SRC+=system_stm32f1xx.c
+# $(info $(sort $(dir $(C_SOURCES))) )
 
-C_SRC+=i2c.c
+C_INCLUDES_I= $(addprefix -I, $(C_INCLUDES))
 
-C_SRC+=ssd1306.c
-C_SRC+=ssd1306_fonts.c
-C_SRC+=ssd1306_tests.c
-C_SRC+=ssd1306_lowLevel.c
 
-C_SRC+=stm32f1xx_hal.c
-C_SRC+=stm32f1xx_hal_cortex.c
-C_SRC+=stm32f1xx_hal_flash.c
-C_SRC+=stm32f1xx_hal_flash_ex.c
-C_SRC+=stm32f1xx_hal_gpio.c
-C_SRC+=stm32f1xx_hal_gpio_ex.c
-C_SRC+=stm32f1xx_hal_rcc.c
-C_SRC+=stm32f1xx_hal_rcc_ex.c
-C_SRC+=stm32f1xx_hal_dma.c
-C_SRC+=stm32f1xx_hal_i2c.c
-# C_SRC+=stm32f1xx_hal_adc.c
-# C_SRC+=stm32f1xx_hal_spi.c
-# C_SRC+=stm32f1xx_hal_spi_ex.c
-# C_SRC+=stm32f1xx_hal_adc_ex.c
-# C_SRC+=stm32f1xx_hal_uart.c
+# compile gcc flags
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
-#freeRTOS
-C_SRC+=queue.c
-C_SRC+=croutine.c
-C_SRC+=tasks.c
-C_SRC+=timers.c
-C_SRC+=list.c
-C_SRC+=event_groups.c
-C_SRC+=port.c
-C_SRC+=heap_4.c
-C_SRC+=cmsis_os.c
+CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES_I) $(OPT) -Wall -fdata-sections -ffunction-sections
 
-C_OBJ=$(C_SRC:%.c=%.o)
+CFLAGS += -std=gnu11
 
-CFLAGS= -mcpu=cortex-m3 -mthumb -std=gnu11
-CFLAGS+= -g3 -Os
-CFLAGS+= -W -Wall
-CFLAGS+= -ffunction-sections -fdata-sections
-CFLAGS+= -D STM32F103xB $(INC_FLAGS)
-CFLAGS+= -DSSD1306_USE_I2C
-CFLAGS+= -DSTM32F1
-CFLAGS+= -Wl,--gc-sections
+# Generate dependency information
+CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
-.PHONY: all clean update test dump debug release
+#######################################
+# LDFLAGS
+#######################################
+# link script
+# LDSCRIPT = lib/CMSIS/Device/STM32F103XE_FLASH.ld
+LDSCRIPT = lib/CMSIS/Device/STM32F103XB_FLASH.ld
+# LDSCRIPT = lib/CMSIS/Device/STM32F103C8Tx_FLASH.ld
 
-all:$(TARGET)
+# libraries
+LIBS = -lc -lm
+LIBDIR =
+LDFLAGS = $(MCU) -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
-LDFLAGS= -lc -lm -static
+ifeq ($(DEBUG), 1)
+CFLAGS += -g -gdwarf-2
+endif
 
 #Semihosting(半主机)
-#LDFLAGS += --specs=rdimon.specs -lc -lrdimon
-#Note: librdimon 替换 libnosys
-#确保initialise_monitor_handles() 在printf之前调用
-#extern void initialise_monitor_handles(void);
+ifeq ($(DEBUG), 1)
+LDFLAGS += -specs=rdimon.specs
+LIBS += -lrdimon
+C_DEFS += -DSEMIHOSTING
+else
+LIBS += -lnosys
+LDFLAGS += -specs=nano.specs
+endif
 
-# CFLAGS+= -DSEMIHOSTING
-# LDFLAGS+= --specs=rdimon.specs -lrdimon
+.PHONY: all clean flash gdb openocd
 
-LDFLAGS+= --specs=nosys.specs
-# LDFLAGS+= --specs=nano.specs
+# default action: build all
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
-LDFLAGS+= -L $(TOP)/lib/CMSIS/libarm_cortexM3l_math.a
-# LDFLAGS+= -T $(TOP)/lib/CMSIS/Device/STM32F103XE_FLASH.ld
-LDFLAGS+= -T $(TOP)/lib/CMSIS/Device/STM32F103XB_FLASH.ld
-# LDFLAGS+= -T $(TOP)/lib/CMSIS/Device/STM32F103C8Tx_FLASH.ld
-LDFLAGS+= $(TOP)/lib/CMSIS/Device/startup_stm32f103xb.s
+#######################################
+# build the application
+#######################################
+# list of objects
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+# list of ASM program objects
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-$(TARGET): $(C_OBJ)
-	$(CC) $(LDFLAGS)\
-		-Wl,-Map=$(BUILD)/Project.map,--cref \
-		-Wl,--defsym=malloc_getpagesize_P=0x80\
-		$(CFLAGS) \
-		$(addprefix $(BUILD)/, $(C_OBJ)) \
-		-o $(TARGET)
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
-release: $(C_OBJ)
+$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+	$(AS) -c $(CFLAGS) $< -o $@
 
-%.o:%.c %.d
-	$(CC) -c $(CFLAGS) -o $(BUILD)/$@ $<
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(SZ) $@
 
-dump: $(TARGET)
-	arm-none-eabi-size $(TARGET)
-	$(OBJCOPY) $(<) $(<:%.elf=%.bin) -Obinary
-	$(OBJCOPY) $(<) $(<:%.elf=%.hex) -Oihex
-	$(OBJDUMP) -S $< > $(<:%.elf=%.dump)
-	ls -hl $(<:%.elf=%.bin)
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	$(HEX) $< $@
 
-test:
-	echo test
+$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	$(BIN) $< $@
 
+$(BUILD_DIR):
+	mkdir $@
+
+#######################################
+# clean up
+#######################################
 clean:
-	rm -f $(BUILD)/*
-	rm -f $(TARGET)
+	-rm -fR $(BUILD_DIR)
 
-update: $(TARGET)
-	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(TARGET) verify reset exit"
+#######################################
+# Flash binary
+#######################################
+flash: all
+	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).bin verify reset exit"
+	# -st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
 openocd:
 	$(OOCD) $(OOCDFLAGS) -c gdb_port 3333 -c init -c targets
 
-gdb: $(TARGET)
+gdb:
 	$(GDB) -iex 'target remote localhost:3333' \
 		-iex 'mon reset halt' \
 		-iex 'monitor arm semihosting enable' \
 		-iex 'set mem inaccessible-by-default off' \
-		$<
+		$(BUILD_DIR)/$(TARGET).elf
 
-%.d:%.c
-	@set -e; \
-	$(CC) -MM $(CFLAGS) $< > $(BUILD)/$@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $(BUILD)/$@.$$$$ > $(BUILD)/$@; \
-	rm -f $(BUILD)/$@.$$$$;
+#######################################
+# dependencies
+#######################################
+-include $(wildcard $(BUILD_DIR)/*.d)
 
--include $(C_SRC:%.c=$(BUILD)/%.d)
+# *** EOF ***

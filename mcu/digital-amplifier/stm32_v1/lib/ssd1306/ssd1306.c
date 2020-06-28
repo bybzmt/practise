@@ -5,7 +5,7 @@
 
 
 // Screenbuffer
-static uint8_t SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
+static uint8_t SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8] = {0};
 
 // Screen object
 static SSD1306_t SSD1306;
@@ -101,7 +101,7 @@ void ssd1306_Init(void) {
     ssd1306_WriteCommand(0xAF); //--turn on SSD1306 panel
 
     // Clear screen
-    ssd1306_Fill(Black);
+    //ssd1306_Fill(Black);
 
     // Flush buffer to screen
     ssd1306_UpdateScreen();

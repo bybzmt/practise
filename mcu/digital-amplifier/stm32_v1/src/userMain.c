@@ -23,7 +23,7 @@ static QueueHandle_t vol_queue;
 #define I2C_ADDR_5805_1 0x58
 #define I2C_ADDR_5805_2 0x5a
 
-static uint8_t volume = 0b00110000;
+static uint8_t volume = 0b00110000 + 40;
 static volatile bool volume_seting = false;
 static bool volume_mute = false;
 
@@ -49,17 +49,7 @@ static uint8_t tas5805_read(uint8_t addr)
 
 static void tas5805_init()
 {
-    //pcm2707 SSPND
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
-
-    //usb启用(飞线)
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, 0);
-    vTaskDelay(1000);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, 1);
-
     //pdn
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1, 0);
-    vTaskDelay(10);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1, 1);
     vTaskDelay(10);
 
@@ -73,13 +63,10 @@ static void tas5805_init()
     tas5805_cmd(0x03, 0x03); //Play Mode
 }
 
-static void tas5805_volume(int8_t vol)
+static void tas5805_volume()
 {
     if (!volume_seting) {
         volume_seting = true;
-
-        oled_show_vol();
-
         uint8_t flag = 1;
         xQueueSend(vol_queue, &flag, 100);
     }
@@ -93,10 +80,6 @@ static void tas5805_show_sampling_rate()
         case 0:
             oled_show_fs(NULL);
             printf("FS_Error\n");
-
-            //强制重启
-            vTaskDelay(2000);
-            tas5805_init();
         break;
         case 0b0010:
             oled_show_fs("8");
@@ -127,6 +110,8 @@ static void vTask_i2c(void *pvParams)
 {
     UNUSED(pvParams);
 
+    uint8_t num=0;
+
     uint8_t flag;
     for (;;) {
         if (xQueueReceive(vol_queue, &flag, 2000) == pdTRUE) {
@@ -134,6 +119,8 @@ static void vTask_i2c(void *pvParams)
                 case 1:
                     volume_seting = false;
                     tas5805_cmd(0x4c, volume_mute ? 0xFF : volume);
+
+                    oled_show_vol();
                 break;
 
                 default:
@@ -143,6 +130,13 @@ static void vTask_i2c(void *pvParams)
             //空闲时检测当前采样率
             tas5805_show_sampling_rate();
 
+            if (num++ > 10) {
+                num = 0;
+
+                //定时重置
+                ssd1306_Init();
+                tas5805_init();
+            }
         }
     }
 }
@@ -160,7 +154,8 @@ static void vTask_button(void *pvParams)
 
     uint8_t flag;
     for (;;) {
-        if (xQueueReceive(button_queue, &flag, 20) == pdTRUE) {
+        uint16_t tick = sw == 0 ? 2000 : 10;
+        if (xQueueReceive(button_queue, &flag, tick) == pdTRUE) {
             switch (flag) {
                 case 1:
                 case 2:
@@ -173,13 +168,13 @@ static void vTask_button(void *pvParams)
                             volume-=2;
                         }
 
-                        tas5805_volume(volume);
+                        tas5805_volume();
                     }
                     break;
                 case 3:
                 case 4:
                     volume_mute = !volume_mute;
-                    tas5805_volume(volume);
+                    tas5805_volume();
                     break;
                 default:
                     printf("button_unknow:%d\n", flag);
@@ -296,7 +291,7 @@ void UserMain()
     //i2s外部接口 0:启用 1:停用
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, 1);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
-
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, 0);
 
     my_i2c_init(&hi2c1);
     tas5805_init();
