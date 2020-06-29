@@ -10,5 +10,6 @@ shadowsocks-go
 /gopath/pkg
 /gopath/bin
 
+/webUI/package-lock.json
 /webUI/dist
 /webUI/node_modules
