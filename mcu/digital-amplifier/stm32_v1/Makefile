@@ -3,7 +3,7 @@
 TARGET = digital_amplifier
 
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 OPT = -Og
 
@@ -16,6 +16,8 @@ C_SOURCES+=src/userMain.c
 C_SOURCES+=src/stm32f1xx_it.c
 C_SOURCES+=src/stm32f1xx_hal_msp.c
 C_SOURCES+=src/i2c.c
+C_SOURCES+=src/oled.c
+C_SOURCES+=src/tas5805.c
 
 C_SOURCES+=lib/CMSIS/Device/system_stm32f1xx.c
 
@@ -34,6 +36,9 @@ C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
 C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
 C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
 C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc_ex.c
+C_SOURCES+=lib/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
 
 #freeRTOS
 C_SOURCES+=lib/FreeRTOS/queue.c
@@ -59,11 +64,13 @@ CC = $(GCC_PATH)/$(PREFIX)gcc
 AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
 CP = $(GCC_PATH)/$(PREFIX)objcopy
 SZ = $(GCC_PATH)/$(PREFIX)size
+GDB = $(GCC_PATH)/$(PREFIX)gdb
 else
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
+GDB = $(PREFIX)gdb
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
@@ -194,8 +201,9 @@ clean:
 # Flash binary
 #######################################
 flash: all
-	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).bin verify reset exit"
-	# -st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
+	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+
+#-st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
 openocd:
 	$(OOCD) $(OOCDFLAGS) -c gdb_port 3333 -c init -c targets

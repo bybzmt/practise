@@ -29,7 +29,7 @@ int main(void)
 
     SystemClock_Config();
 
-    xTaskCreate(TaskInit, "init", 512, NULL, 1, NULL);
+    xTaskCreate(TaskInit, "init", 1024, NULL, 1, NULL);
 
     vTaskStartScheduler();
 

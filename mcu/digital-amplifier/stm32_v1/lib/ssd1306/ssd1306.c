@@ -101,7 +101,7 @@ void ssd1306_Init(void) {
     ssd1306_WriteCommand(0xAF); //--turn on SSD1306 panel
 
     // Clear screen
-    //ssd1306_Fill(Black);
+    ssd1306_Fill(Black);
 
     // Flush buffer to screen
     ssd1306_UpdateScreen();
@@ -132,10 +132,14 @@ void ssd1306_UpdateScreen(void) {
     //  * 64px   ==  8 pages
     //  * 128px  ==  16 pages
     for(uint8_t i = 0; i < SSD1306_HEIGHT/8; i++) {
-        ssd1306_WriteCommand(0xB0 + i); // Set the current RAM page address.
-        ssd1306_WriteCommand(0x00);
-        ssd1306_WriteCommand(0x10);
-        ssd1306_WriteData(&SSD1306_Buffer[SSD1306_WIDTH*i],SSD1306_WIDTH);
+        if (!(
+            ssd1306_WriteCommand(0xB0 + i) &&
+            ssd1306_WriteCommand(0x00) &&
+            ssd1306_WriteCommand(0x10) &&
+            ssd1306_WriteData(&SSD1306_Buffer[SSD1306_WIDTH*i],SSD1306_WIDTH)
+            )) {
+            return;
+        }
     }
 }
 

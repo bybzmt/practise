@@ -9,6 +9,7 @@
 #define __SSD1306_LOWLEVEL_H__
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <_ansi.h>
 
 _BEGIN_STD_C
@@ -91,8 +92,8 @@ extern SPI_HandleTypeDef SSD1306_SPI_PORT;
 
 // Low-level procedures
 void ssd1306_Reset(void);
-void ssd1306_WriteCommand(uint8_t byte);
-void ssd1306_WriteData(uint8_t* buffer, size_t buff_size);
+bool ssd1306_WriteCommand(uint8_t byte);
+bool ssd1306_WriteData(uint8_t* buffer, size_t buff_size);
 
 
 _END_STD_C

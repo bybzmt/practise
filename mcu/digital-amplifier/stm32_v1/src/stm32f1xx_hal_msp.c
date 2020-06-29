@@ -66,7 +66,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
     GPIO_InitTypeDef  gpio;
     gpio.Pin       = GPIO_PIN_6|GPIO_PIN_7;
     gpio.Mode      = GPIO_MODE_AF_OD;
-    gpio.Pull      = GPIO_PULLUP;
+    gpio.Pull      = GPIO_NOPULL;
     gpio.Speed     = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOB, &gpio);
 
