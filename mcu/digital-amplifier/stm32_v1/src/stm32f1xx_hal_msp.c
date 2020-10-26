@@ -17,10 +17,11 @@ void HAL_MspInit(void)
     HAL_GPIO_Init(GPIOA, &gpio);
 
     //错误信号
-    /* gpio.Mode = GPIO_MODE_IT_RISING_FALLING; */
-    /* gpio.Pull = GPIO_NOPULL; */
+    gpio.Mode = GPIO_MODE_IT_RISING_FALLING;
+    gpio.Pull = GPIO_NOPULL;
     /* gpio.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6; */
-    /* HAL_GPIO_Init(GPIOA, &gpio); */
+    gpio.Pin = GPIO_PIN_4|GPIO_PIN_5;
+    HAL_GPIO_Init(GPIOA, &gpio);
 
     //对外控制
     gpio.Mode = GPIO_MODE_OUTPUT_PP;
@@ -114,6 +115,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
     __HAL_RCC_I2C1_FORCE_RESET();
     __HAL_RCC_I2C1_RELEASE_RESET();
+    __HAL_RCC_I2C1_CLK_DISABLE();
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6|GPIO_PIN_7);
 

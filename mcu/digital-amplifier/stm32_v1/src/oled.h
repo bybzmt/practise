@@ -7,9 +7,9 @@
 
 #include "base.h"
 
-void oled_show_vol();
+void oled_show_vol(void);
 void oled_show_fs(char *str);
-void oled_init();
-void oled_show_input();
+void oled_init(void);
+void oled_show_input(void);
 
 #endif

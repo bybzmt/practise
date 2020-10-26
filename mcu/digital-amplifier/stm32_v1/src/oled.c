@@ -9,11 +9,6 @@
 #include "ssd1306.h"
 #include "ssd1306_tests.h"
 
-void oled_show_vol();
-void oled_show_fs(char *str);
-void oled_init();
-void oled_show_input();
-
 void oled_show_fs(char *str)
 {
     ssd1306_FillRectangle(0, 0, 7*5, 10, Black);

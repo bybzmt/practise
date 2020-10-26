@@ -4,12 +4,13 @@
 
 #include "base.h"
 #include "i2c.h"
+#include "oled.h"
 #include "tas5805.h"
 
 
 static bool tas5805_cmd(uint8_t addr, uint8_t data);
-static bool tas5805_cmd_to2(uint8_t addr, uint8_t data);
-static bool tas5805_read(uint8_t addr, uint8_t *data);
+static bool tas5805_cmd_dev(uint8_t devAddr, uint8_t addr, uint8_t data);
+static bool tas5805_read_dev(uint8_t devAddr, uint8_t addr, uint8_t *data);
 static bool tas5805_check_cmd(uint8_t addr, uint8_t data);
 
 
@@ -22,15 +23,15 @@ static bool tas5805_cmd(uint8_t addr, uint8_t data)
         my_i2c_write(I2C_ADDR_5805_2, &buf[0], 2);
 }
 
-static bool tas5805_cmd_to2(uint8_t addr, uint8_t data)
+static bool tas5805_cmd_dev(uint8_t devAddr, uint8_t addr, uint8_t data)
 {
     uint8_t buf[2] = {addr, data};
-    return my_i2c_write(I2C_ADDR_5805_2, &buf[0], 2);
+    return my_i2c_write(devAddr, &buf[0], 2);
 }
 
-static bool tas5805_read(uint8_t addr, uint8_t *data)
+static bool tas5805_read_dev(uint8_t devAddr, uint8_t addr, uint8_t *data)
 {
-    return my_i2c_mem_read(I2C_ADDR_5805_1, addr, 1, data, 1);
+    return my_i2c_mem_read(devAddr, addr, 1, data, 1);
 }
 
 void tas5805_init()
@@ -51,7 +52,9 @@ void tas5805_init()
 
     tas5805_cmd(0x02, 1<<2); //768kHz/PBTL/BD Modulation
     tas5805_cmd(0x53, 0x60); //Class D Loop Bandwidth to 175kHz
-    tas5805_cmd_to2(0x35, 2<<4); //5805_02 Left DAC From:Right
+    tas5805_cmd_dev(I2C_ADDR_5805_2, 0x35, 2<<4); //5805_02 Left DAC From:Right
+    tas5805_cmd(0x61, 0b01011); //adr config
+    tas5805_cmd(0x60, 1); //adr config
     tas5805_cmd(0x4c, volume); //Volume default
     tas5805_cmd(0x03, 0x03); //Play Mode
 }
@@ -65,7 +68,15 @@ static bool tas5805_check_cmd(uint8_t addr, uint8_t data)
 {
     uint8_t ret;
 
-    if (!tas5805_read(addr, &ret)) {
+    if (!tas5805_read_dev(I2C_ADDR_5805_1, addr, &ret)) {
+        return false;
+    }
+
+    if (ret != data) {
+        return false;
+    }
+
+    if (!tas5805_read_dev(I2C_ADDR_5805_2, addr, &ret)) {
         return false;
     }
 
@@ -90,7 +101,7 @@ void tas5805_check()
 void tas5805_show_sampling_rate()
 {
     uint8_t data, ok;
-    ok = tas5805_read(0x37, &data);
+    ok = tas5805_read_dev(I2C_ADDR_5805_1, 0x37, &data);
     if (!ok) {
         oled_show_fs(NULL);
         return;

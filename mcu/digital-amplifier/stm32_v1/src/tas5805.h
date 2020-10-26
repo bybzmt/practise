@@ -9,9 +9,9 @@
 #define I2C_ADDR_5805_2 0x5a
 
 
-void tas5805_init();
-void tas5805_volume();
-void tas5805_check();
-void tas5805_show_sampling_rate();
+void tas5805_init(void);
+void tas5805_volume(void);
+void tas5805_check(void);
+void tas5805_show_sampling_rate(void);
 
 

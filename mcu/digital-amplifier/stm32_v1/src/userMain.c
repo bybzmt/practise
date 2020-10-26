@@ -46,6 +46,8 @@ static void event_service()
     HAL_NVIC_EnableIRQ(EXTI1_IRQn);
     HAL_NVIC_EnableIRQ(EXTI2_IRQn);
     HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
     EVENT_ID flag;
 
@@ -69,8 +71,10 @@ static void event_service()
                     printf("button_unknow:%d\n", flag);
             }
         } else {
-            sw_state = 0;
-            volume_set(0);
+            if (sw_state) {
+                sw_state = 0;
+                volume_set(0);
+            }
 
             //空闲时检
             if (tick == 2000) {
@@ -106,6 +110,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     } else if (GPIO_Pin == GPIO_PIN_3) {
         flag = EVENT_INPUT;
         xQueueSendFromISR(event_queue, &flag, NULL);
+    } else if (GPIO_Pin == GPIO_PIN_4) {
+        NVIC_SystemReset();
+        while (1);
+    } else if (GPIO_Pin == GPIO_PIN_5) {
+        NVIC_SystemReset();
+        while (1);
     }
 }
 
@@ -137,7 +147,7 @@ void UserMain()
 
     tas5805_init();
 
-    event_queue = xQueueCreate(20, 1);
+    event_queue = xQueueCreate(20, sizeof(EVENT_ID));
 
     vTaskDelay( 10 );
 
