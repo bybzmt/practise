@@ -24,7 +24,7 @@ int main(void)
     /* Configure the system clock to 180 MHz */
     SystemClock_Config();
 
-    xTaskCreate(TaskInit, "init", 1024, NULL, 1, NULL);
+    xTaskCreate(TaskInit, "init", 2048, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
@@ -88,11 +88,11 @@ static void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLQ = 7;
     RCC_OscInitStruct.PLL.PLLR = 2;
     ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
     if(ret != HAL_OK)
     {
         Error_Handler();
     }
+
     /* activate the OverDrive to reach the 180 Mhz Frequency */
     ret = HAL_PWREx_EnableOverDrive();
     if(ret != HAL_OK)
@@ -107,7 +107,7 @@ static void SystemClock_Config(void)
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48;
     PeriphClkInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
     ret = HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
-    if(ret != HAL_OK)
+    if (ret != HAL_OK)
     {
         Error_Handler();
     }
@@ -120,57 +120,9 @@ static void SystemClock_Config(void)
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
     ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-    if(ret != HAL_OK)
+    if (ret != HAL_OK)
     {
         Error_Handler();
-    }
-}
-
-/**
-  * @brief  Clock Config.
-  * @param  hsai: might be required to set audio peripheral predivider if any.
-  * @param  AudioFreq: Audio frequency used to play the audio stream.
-  * @note   This API is called by BSP_AUDIO_OUT_Init() and BSP_AUDIO_OUT_SetFrequency()
-  *         Being __weak it can be overwritten by the application
-  * @retval None
-  */
-void BSP_AUDIO_OUT_ClockConfig(SAI_HandleTypeDef *hsai, uint32_t AudioFreq, void *Params)
-{
-    RCC_PeriphCLKInitTypeDef RCC_ExCLKInitStruct;
-
-    HAL_RCCEx_GetPeriphCLKConfig(&RCC_ExCLKInitStruct);
-
-    /* Set the PLL configuration according to the audio frequency */
-    if((AudioFreq == AUDIO_FREQUENCY_11K) || (AudioFreq == AUDIO_FREQUENCY_22K) || (AudioFreq == AUDIO_FREQUENCY_44K))
-    {
-        /* Configure PLLSAI prescalers */
-        /* PLLSAI_VCO: VCO_429M
-           SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 429/2 = 214.5 Mhz
-           SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
-        RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI2;
-        RCC_ExCLKInitStruct.Sai2ClockSelection = RCC_SAI2CLKSOURCE_PLLI2S;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 429;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 2;
-        RCC_ExCLKInitStruct.PLLI2SDivQ = 19;
-
-        HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
-
-    }
-    else /* AUDIO_FREQUENCY_8K, AUDIO_FREQUENCY_16K, AUDIO_FREQUENCY_48K), AUDIO_FREQUENCY_96K */
-    {
-        /* SAI clock config
-PLLSAI_VCO: VCO_344M
-SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
-SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
-        RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI2;
-        RCC_ExCLKInitStruct.Sai2ClockSelection = RCC_SAI2CLKSOURCE_PLLI2S;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;
-        RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 7;
-        RCC_ExCLKInitStruct.PLLI2SDivQ = 1;
-
-        HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
     }
 }
 
@@ -178,3 +130,4 @@ static void Error_Handler(void)
 {
   while(1);
 }
+

@@ -5,12 +5,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_audio.h"
 
-/* Exported types ------------------------------------------------------------*/
-typedef struct {
-  uint32_t playing;
-  uint32_t frequency;
-} AUDIO_STATUS_TypeDef;
-
 /* Exported constants --------------------------------------------------------*/
 extern USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops;
 

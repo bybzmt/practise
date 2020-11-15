@@ -1,8 +1,8 @@
 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32469I_DISCOVERY_AUDIO_H
-#define __STM32469I_DISCOVERY_AUDIO_H
+#ifndef __BSP_AUDIO_H
+#define __BSP_AUDIO_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -16,20 +16,6 @@
 #endif
 
 #include "stm32f4xx_hal.h"
-
-/* Include audio component Driver */
-#include "pdm2pcm_glo.h"
-
-/* AUDIO FREQUENCY */
-#define AUDIO_FREQUENCY_192K          ((uint32_t)192000)
-#define AUDIO_FREQUENCY_96K           ((uint32_t)96000)
-#define AUDIO_FREQUENCY_48K           ((uint32_t)48000)
-#define AUDIO_FREQUENCY_44K           ((uint32_t)44100)
-#define AUDIO_FREQUENCY_32K           ((uint32_t)32000)
-#define AUDIO_FREQUENCY_22K           ((uint32_t)22050)
-#define AUDIO_FREQUENCY_16K           ((uint32_t)16000)
-#define AUDIO_FREQUENCY_11K           ((uint32_t)11025)
-#define AUDIO_FREQUENCY_8K            ((uint32_t)8000)
 
 /** @defgroup BSP_Audio_Out_Option BSP AUDIO OUT Option
   * @{
@@ -65,39 +51,20 @@
   */
 
 /* SAI peripheral configuration defines */
-#define AUDIO_SAIx                           SAI1_Block_A
+#define AUDIO_SAIx                           SAI1_Block_B
 
 /* SAI DMA Stream definitions */
-#define AUDIO_SAIx_DMAx_CLK_ENABLE()         __HAL_RCC_DMA2_CLK_ENABLE()
-#define AUDIO_SAIx_DMAx_CLK_DISABLE()        __HAL_RCC_DMA2_CLK_DISABLE()
-#define AUDIO_SAIx_DMAx_STREAM               DMA2_Stream3
+#define AUDIO_SAIx_DMAx_STREAM               DMA2_Stream5
 #define AUDIO_SAIx_DMAx_CHANNEL              DMA_CHANNEL_0
-#define AUDIO_SAIx_DMAx_IRQ                  DMA2_Stream3_IRQn
+#define AUDIO_SAIx_DMAx_IRQ                  DMA2_Stream5_IRQn
 #define AUDIO_SAIx_DMAx_PERIPH_DATA_SIZE     DMA_PDATAALIGN_WORD
 #define AUDIO_SAIx_DMAx_MEM_DATA_SIZE        DMA_MDATAALIGN_WORD
 #define DMA_MAX_SZE                          0xFFFF
 
-#define AUDIO_SAIx_DMAx_IRQHandler           DMA2_Stream3_IRQHandler
+#define AUDIO_SAIx_DMAx_IRQHandler           DMA2_Stream5_IRQHandler
 
 /* Select the interrupt preemption priority for the DMA interrupt */
 #define AUDIO_OUT_IRQ_PREPRIO           6   /* Select the preemption priority level(0 is the highest) */
-
-/* Disable SAIx PLL */
-#define AUDIO_SAIx_PLL_DISABLE()             HAL_RCCEx_DisablePLLSAI1()
-
-/* I2S DMA Stream Rx definitions */
-#define AUDIO_I2Sx_DMAx_CLK_ENABLE()        __HAL_RCC_DMA1_CLK_ENABLE()
-#define AUDIO_I2Sx_DMAx_CLK_DISABLE()       __HAL_RCC_DMA1_CLK_DISABLE()
-#define AUDIO_I2Sx_DMAx_STREAM              DMA1_Stream2
-#define AUDIO_I2Sx_DMAx_CHANNEL             DMA_CHANNEL_0
-#define AUDIO_I2Sx_DMAx_IRQ                 DMA1_Stream2_IRQn
-#define AUDIO_I2Sx_DMAx_PERIPH_DATA_SIZE    DMA_PDATAALIGN_HALFWORD
-#define AUDIO_I2Sx_DMAx_MEM_DATA_SIZE       DMA_MDATAALIGN_HALFWORD
-
-#define AUDIO_I2Sx_DMAx_IRQHandler          DMA1_Stream2_IRQHandler
-
-/* Select the interrupt preemption priority and subpriority for the IT/DMA interrupt */
-#define AUDIO_IN_IRQ_PREPRIO                ((uint32_t)6)   /* Select the preemption priority level(0 is the highest) */
 
 
 
@@ -128,13 +95,8 @@ uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume);
 void    BSP_AUDIO_OUT_SetFrequency(uint32_t AudioFreq);
 void    BSP_AUDIO_OUT_SetAudioFrameSlot(uint32_t AudioFrameSlot);
 uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd);
-uint8_t BSP_AUDIO_OUT_SetOutputMode(uint8_t Output);
 void    BSP_AUDIO_OUT_DeInit(void);
 uint32_t BSP_AUDIO_OUT_GetRemainingDataSize(void);
-
-/* Monitor remaining writable buffer size with LED */
-void BSP_AUDIO_OUT_LED_ON(void);
-void BSP_AUDIO_OUT_LED_OFF(void);
 
 /* User Callbacks: user has to implement these functions in his code if they are needed. */
 /* This function is called when the requested data has been completely transferred.*/

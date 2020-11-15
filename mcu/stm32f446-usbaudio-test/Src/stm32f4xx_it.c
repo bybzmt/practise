@@ -59,10 +59,7 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+    while (1) {}
 }
 
 /**
@@ -72,10 +69,7 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-  /* Go to infinite loop when Memory Manage exception occurs */
-  while (1)
-  {
-  }
+    while (1) {}
 }
 
 /**
@@ -85,10 +79,7 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-  /* Go to infinite loop when Bus Fault exception occurs */
-  while (1)
-  {
-  }
+    while (1) {}
 }
 
 /**
@@ -98,10 +89,7 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-  /* Go to infinite loop when Usage Fault exception occurs */
-  while (1)
-  {
-  }
+    while (1) {}
 }
 
 /**
@@ -139,17 +127,11 @@ void SysTick_Handler(void)
   */
 void OTG_FS_IRQHandler(void)
 {
-  HAL_PCD_IRQHandler(&hpcd);
+    HAL_PCD_IRQHandler(&hpcd);
 }
 
-/**
-  * @brief This function handles DMA2 Stream 4 interrupt request.
-  * @param None
-  * @retval None
-  */
-void DMA2_Stream3_IRQHandler(void)
-{
-  HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
+void AUDIO_SAIx_DMAx_IRQHandler(void) {
+    HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

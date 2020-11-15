@@ -1,7 +1,6 @@
 #include "base.h"
 
 USBD_HandleTypeDef USBD_Device;
-AUDIO_STATUS_TypeDef audio_status;
 
 static void gpio_init()
 {
@@ -40,9 +39,11 @@ void UserMain()
     //usb上拉电阻
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
 
-    int num = 0;
+    printf("run!\n");
+
+    /* int num = 0; */
     while (1) {
-        printf("run:%d\n", num++);
+        /* printf("run:%d\n", num++); */
         vTaskDelay(1000);
     }
 }

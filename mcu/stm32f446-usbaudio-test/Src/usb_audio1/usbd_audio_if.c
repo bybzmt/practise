@@ -1,7 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_audio_if.h"
-#include "stm32469i_discovery_audio.h"
+#include "bsp_audio.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -16,7 +16,6 @@ static int8_t Audio_PeriodicTC(uint8_t cmd);
 static int8_t Audio_GetState(void);
 
 /* Private variables ---------------------------------------------------------*/
-extern AUDIO_STATUS_TypeDef audio_status;
 extern USBD_HandleTypeDef USBD_Device;
 USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
     Audio_Init,
@@ -40,8 +39,6 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
  */
 static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
 {
-  audio_status.frequency = AudioFreq;
-
   BSP_AUDIO_OUT_Init(0, Volume, AudioFreq);
 
   /* Update the Audio frame slot configuration to match the PCM standard
@@ -59,8 +56,6 @@ static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
  */
 static int8_t Audio_DeInit(uint32_t options)
 {
-  audio_status.playing = 0U;
-
   BSP_AUDIO_OUT_Stop(0);
 
   return USBD_OK;
@@ -76,17 +71,7 @@ static int8_t Audio_DeInit(uint32_t options)
  */
 static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd)
 {
-  switch (cmd) {
-    case AUDIO_CMD_START:
-      BSP_AUDIO_OUT_Play(pbuf, size);
-      audio_status.playing = 1U;
-      break;
-
-    case AUDIO_CMD_PLAY:
-      BSP_AUDIO_OUT_ChangeBuffer(pbuf, size);
-      audio_status.playing = 1U;
-      break;
-  }
+  BSP_AUDIO_OUT_Play(pbuf, size);
   return USBD_OK;
 }
 
@@ -136,24 +121,5 @@ static int8_t Audio_GetState(void)
   return USBD_OK;
 }
 
-/**
- * @brief  Manages the DMA full Transfer complete event.
- * @param  None
- * @retval None
- */
-void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
-{
-  USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_FULL);
-}
 
-/**
- * @brief  Manages the DMA Half Transfer complete event.
- * @param  None
- * @retval None
- */
-void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-{
-  USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_HALF);
-}
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

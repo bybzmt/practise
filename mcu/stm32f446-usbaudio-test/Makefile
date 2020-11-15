@@ -8,9 +8,11 @@ TARGET = f446-usbaudio
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
 OPT = -Og
+#usb audio lib select 1 or 2
+AUDIO_LIB = 2
 
 #######################################
 # paths
@@ -23,19 +25,12 @@ STM32Cube_DIR = lib/STM32Cube_FW_F4_V1.25.0
 # source
 ######################################
 # C sources
-C_SOURCES =  \
-Src/main.c \
-Src/userMain.c \
-Src/stm32f4xx_it.c \
-Src/stm32469i_discovery_audio.c \
-Src/system_stm32f4xx.c \
-Src/usb_audio/usbd_audio.c\
-Src/usb_audio/usbd_conf.c \
-Src/usb_audio/usbd_desc.c \
-Src/usb_audio/usbd_audio_if.c \
-Src/usb_audio/usbd_core.c \
-Src/usb_audio/usbd_ctlreq.c \
-Src/usb_audio/usbd_ioreq.c
+C_SOURCES =Src/main.c
+C_SOURCES+=Src/userMain.c
+C_SOURCES+=Src/stm32f4xx_it.c
+C_SOURCES+=Src/bsp_audio.c
+C_SOURCES+=Src/hal_pcd_msp.c
+C_SOURCES+=Src/system_stm32f4xx.c
 
 C_HAL_FILE = stm32f4xx_hal_pcd.c
 C_HAL_FILE+=stm32f4xx_hal_pcd_ex.c
@@ -62,10 +57,6 @@ C_HAL_FILE+=stm32f4xx_hal_exti.c
 
 C_SOURCES+= $(addprefix $(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Src/, $(C_HAL_FILE))
 
-# C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
-# $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-# $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
-
 C_SOURCES+=$(RTOS_DIR)/queue.c
 C_SOURCES+=$(RTOS_DIR)/croutine.c
 C_SOURCES+=$(RTOS_DIR)/tasks.c
@@ -76,10 +67,51 @@ C_SOURCES+=$(RTOS_DIR)/portable/GCC/ARM_CM4F/port.c
 C_SOURCES+=$(RTOS_DIR)/portable/MemMang/heap_4.c
 C_SOURCES+=$(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
 
-# ASM sources
-ASM_SOURCES =  \
-startup_stm32f446xx.s
+# C includes
+C_INCLUDES = Src
+C_INCLUDES+= Src/usb_audio
+C_INCLUDES+= $(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc
+C_INCLUDES+= $(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
 
+#CMSIS
+C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Core/Include
+C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Include
+
+#FreeRTOS
+C_INCLUDES+= $(RTOS_DIR)/include
+C_INCLUDES+= $(RTOS_DIR)/portable/GCC/ARM_CM4F
+C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+
+#usb audio lib
+ifeq ($(AUDIO_LIB), 1)
+C_INCLUDES+= Src/usb_audio1
+C_INCLUDES+= Src/usb_audio1/lib
+
+C_SOURCES+=Src/usb_audio1/lib/usbd_audio.c
+C_SOURCES+=Src/usb_audio1/lib/usbd_core.c
+C_SOURCES+=Src/usb_audio1/lib/usbd_ctlreq.c
+C_SOURCES+=Src/usb_audio1/lib/usbd_ioreq.c
+C_SOURCES+=Src/usb_audio1/usbd_conf.c
+C_SOURCES+=Src/usb_audio1/usbd_desc.c
+C_SOURCES+=Src/usb_audio1/usbd_audio_if.c
+else
+# C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_Audio/Addons/PDM/Inc
+C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc
+C_INCLUDES+= Src/usb_audio2
+
+C_SOURCES+=Src/usb_audio2/usbd_conf.c
+C_SOURCES+=Src/usb_audio2/usbd_desc.c
+C_SOURCES+=Src/usb_audio2/usbd_audio_if.c
+C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Src/usbd_audio.c
+C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
+C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
+C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+endif
+
+# ASM sources
+ASM_SOURCES = startup_stm32f446xx.s
 
 #######################################
 # binaries
@@ -125,31 +157,12 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F446xx
-
+-DSTM32F446xx \
+-DUSE_USB_FS
 
 # AS includes
 AS_INCLUDES =
 
-# C includes
-C_INCLUDES =  \
-Src \
-Src/usb_audio \
-$(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy \
-$(STM32Cube_DIR)/Middlewares/ST/STM32_Audio/Addons/PDM/Inc
-
-# $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
-
-#CMSIS
-C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Device/ST/STM32F4xx/Include
-C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Core/Include
-C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Include
-
-#FreeRTOS
-C_INCLUDES+= $(RTOS_DIR)/include
-C_INCLUDES+= $(RTOS_DIR)/portable/GCC/ARM_CM4F
-C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
 
 C_INCLUDES_I= $(addprefix -I, $(C_INCLUDES))
 
@@ -163,10 +176,8 @@ CFLAGS += -g -gdwarf-2
 endif
 
 
-
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-
 
 #######################################
 # LDFLAGS
