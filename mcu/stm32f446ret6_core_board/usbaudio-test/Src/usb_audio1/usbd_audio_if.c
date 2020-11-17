@@ -39,13 +39,8 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
  */
 static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
 {
-  BSP_AUDIO_OUT_Init(0, Volume, AudioFreq);
-
-  /* Update the Audio frame slot configuration to match the PCM standard
-   * instead of TDM */
-  BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02);
-
-  return USBD_OK;
+    BSP_AUDIO_Init(1, Volume, AudioFreq);
+    return USBD_OK;
 }
 
 /**
@@ -56,8 +51,7 @@ static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
  */
 static int8_t Audio_DeInit(uint32_t options)
 {
-  BSP_AUDIO_OUT_Stop(0);
-
+  BSP_AUDIO_DeInit();
   return USBD_OK;
 }
 
@@ -71,8 +65,8 @@ static int8_t Audio_DeInit(uint32_t options)
  */
 static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd)
 {
-  BSP_AUDIO_OUT_Play(pbuf, size);
-  return USBD_OK;
+    BSP_AUDIO_Play((uint8_t*)pbuf, size);
+    return USBD_OK;
 }
 
 /**
@@ -121,5 +115,11 @@ static int8_t Audio_GetState(void)
   return USBD_OK;
 }
 
+void BSP_AUDIO_OUT_TransferComplete_CallBack(void) {
+    USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_FULL);
+}
 
+void BSP_AUDIO_OUT_HalfTransfer_CallBack(void) {
+    USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_HALF);
+}
 

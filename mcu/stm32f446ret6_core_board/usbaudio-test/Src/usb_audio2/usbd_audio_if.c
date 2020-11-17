@@ -38,11 +38,7 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
  */
 static int8_t Audio_Init(uint32_t  AudioFreq, uint32_t Volume, uint32_t options)
 {
-    BSP_AUDIO_OUT_Init(0, Volume, AudioFreq);
-
-    /* Update the Audio frame slot configuration to match the PCM standard instead of TDM */
-    BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02);
-
+    BSP_AUDIO_Init(1, Volume, AudioFreq);
     return 0;
 }
 
@@ -53,7 +49,7 @@ static int8_t Audio_Init(uint32_t  AudioFreq, uint32_t Volume, uint32_t options)
  */
 static int8_t Audio_DeInit(uint32_t options)
 {
-    BSP_AUDIO_OUT_Stop(0);
+    BSP_AUDIO_DeInit();
     return 0;
 }
 
@@ -69,12 +65,11 @@ static int8_t Audio_PlaybackCmd(uint8_t *pbuf, uint32_t size, uint8_t cmd)
     switch(cmd)
     {
         case AUDIO_CMD_START:
-            BSP_AUDIO_OUT_Play((uint16_t *)pbuf, 2*size);
+            BSP_AUDIO_Play((uint8_t *)pbuf, size);
             break;
 
         case AUDIO_CMD_PLAY:
-            BSP_AUDIO_OUT_Play((uint16_t *)pbuf, 2*size);
-            /* BSP_AUDIO_OUT_ChangeBuffer((uint16_t *)pbuf, 2*size); */
+            BSP_AUDIO_Play((uint8_t *)pbuf, size);
             break;
     }
     return 0;
@@ -113,7 +108,7 @@ static int8_t Audio_PeriodicTC(uint8_t *pbuf, uint32_t size, uint8_t cmd)
 }
 
 /**
- * @brief  Gets AUDIO State.              
+ * @brief  Gets AUDIO State.
  * @param  None
  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
  */
@@ -122,23 +117,11 @@ static int8_t Audio_GetState(void)
     return 0;
 }
 
-/**
- * @brief  Manages the DMA full Transfer complete event.
- * @param  None
- * @retval None
- */
-void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
-{
+void BSP_AUDIO_OUT_TransferComplete_CallBack(void) {
     USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_FULL);
 }
 
-/**
- * @brief  Manages the DMA Half Transfer complete event.
- * @param  None
- * @retval None
- */
-void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-{
+void BSP_AUDIO_OUT_HalfTransfer_CallBack(void) {
     USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_HALF);
 }
 

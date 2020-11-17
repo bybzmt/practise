@@ -4,7 +4,7 @@ USBD_HandleTypeDef USBD_Device;
 
 static void gpio_init()
 {
-    __HAL_RCC_GPIOD_CLK_ENABLE();
+
 
     GPIO_InitTypeDef  gpio_init_structure;
     gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -20,24 +20,31 @@ static void gpio_init()
     HAL_Delay(100);
 }
 
-void UserMain()
+void usb_to_sai_init(void)
 {
     gpio_init();
 
-    /* Init Device Library */
     USBD_Init(&USBD_Device, &AUDIO_Desc, 0);
 
-    /* Add Supported Class */
     USBD_RegisterClass(&USBD_Device, USBD_AUDIO_CLASS);
 
-    /* Add Interface callbacks for AUDIO Class */
     USBD_AUDIO_RegisterInterface(&USBD_Device, &USBD_AUDIO_fops);
 
-    /* Start Device Process */
     USBD_Start(&USBD_Device);
 
     //usb上拉电阻
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+}
+
+void UserMain()
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+
+    usb_to_sai_init();
+    /* BSP_AUDIO_Record(); */
 
     printf("run!\n");
 
