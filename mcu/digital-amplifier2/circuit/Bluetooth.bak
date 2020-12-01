@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 10 10
+Sheet 9 9
 Title ""
 Date ""
 Rev ""
@@ -145,10 +145,7 @@ $EndComp
 Wire Wire Line
 	5875 2425 5875 2175
 Wire Wire Line
-	4900 2175 4900 2375
-Wire Wire Line
 	4600 2375 4600 2175
-Connection ~ 4900 2175
 Wire Wire Line
 	5600 5075 6175 5075
 Wire Wire Line
@@ -253,8 +250,6 @@ $EndComp
 Wire Wire Line
 	6250 3300 6250 3125
 Wire Wire Line
-	4900 2175 5875 2175
-Wire Wire Line
 	5600 3125 6250 3125
 $Comp
 L Connector:TestPoint TP9
@@ -262,7 +257,7 @@ U 1 1 5FB8F87D
 P 2300 2950
 F 0 "TP9" H 2358 3070 50  0000 L CNN
 F 1 "TestPoint" H 2358 2979 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 2500 2950 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 2500 2950 50  0001 C CNN
 F 3 "~" H 2500 2950 50  0001 C CNN
 	1    2300 2950
 	1    0    0    -1  
@@ -360,56 +355,30 @@ Wire Wire Line
 	9425 1100 9425 1425
 Text Label 2650 6825 0    50   ~ 0
 vdd
-$Comp
-L Device:Antenna AE1
-U 1 1 602C4742
-P 4125 1350
-F 0 "AE1" H 4205 1341 50  0000 L CNN
-F 1 "Antenna" H 4205 1250 50  0000 L CNN
-F 2 "RF_Antenna:Texas_SWRA117D_2.4GHz_Left" H 4125 1350 50  0001 C CNN
-F 3 "~" H 4125 1350 50  0001 C CNN
-	1    4125 1350
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Small R72
-U 1 1 602C52B7
-P 4450 1825
-F 0 "R72" V 4646 1825 50  0000 C CNN
-F 1 "0Ω" V 4555 1825 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 4450 1825 50  0001 C CNN
-F 3 "~" H 4450 1825 50  0001 C CNN
-	1    4450 1825
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	4125 1550 4125 1825
-Wire Wire Line
-	4125 1825 4350 1825
-Wire Wire Line
-	4550 1825 4750 1825
-Wire Wire Line
-	4750 1825 4750 2375
-Connection ~ 4750 1825
 Wire Wire Line
 	4600 2175 4900 2175
+Wire Wire Line
+	4900 2175 5875 2175
+Connection ~ 4900 2175
+Wire Wire Line
+	4750 1550 4750 2375
 $Comp
-L Connector:Conn_Coaxial J14
-U 1 1 5FBEBEC6
-P 4950 1425
-F 0 "J14" H 5049 1401 50  0000 L CNN
-F 1 "Conn_Coaxial" H 5049 1310 50  0000 L CNN
-F 2 "Connector_Coaxial:U.FL_Molex_MCRF_73412-0110_Vertical" H 4950 1425 50  0001 C CNN
-F 3 " ~" H 4950 1425 50  0001 C CNN
-	1    4950 1425
+L Device:Antenna_Shield AE1
+U 1 1 5FC2ABFA
+P 4750 1350
+F 0 "AE1" H 4890 1391 50  0000 L CNN
+F 1 "Antenna_Shield" H 4890 1300 50  0000 L CNN
+F 2 "RF_Antenna:Texas_SWRA117D_2.4GHz_Left" H 4750 1450 50  0001 C CNN
+F 3 "~" H 4750 1450 50  0001 C CNN
+	1    4750 1350
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4750 1425 4750 1825
+	4850 1550 4850 1800
 Wire Wire Line
-	4950 1625 4950 1900
+	4850 1800 4900 1800
 Wire Wire Line
-	4950 1900 4900 1900
+	4900 1800 4900 2175
 Wire Wire Line
-	4900 1900 4900 2175
+	4900 2175 4900 2375
 $EndSCHEMATC

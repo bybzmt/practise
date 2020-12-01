@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 10
+Sheet 1 9
 Title ""
 Date ""
 Rev ""
@@ -37,34 +37,18 @@ F16 "tas6424_en" I R 2125 4975 50
 F17 "tas6424_mute" I R 2125 5075 50 
 F18 "tas6424_warn" I R 2125 5175 50 
 F19 "tas6424_fault" I R 2125 5275 50 
-F20 "mic_in" I R 2125 5425 50 
-F21 "headphone_in" I R 2125 4725 50 
-F22 "headphone_en" I R 2125 4625 50 
-F23 "pcm1863_gp3" I R 2125 5525 50 
-F24 "BT_spdif" I R 2125 5775 50 
-F25 "BT_state" I R 2125 5875 50 
-F26 "BT_en" I R 2125 5975 50 
-F27 "BT_bn" I R 2125 5675 50 
+F20 "headphone_in" I R 2125 4725 50 
+F21 "headphone_en" I R 2125 4625 50 
+F22 "BT_spdif" I R 2125 5775 50 
+F23 "BT_state" I R 2125 5875 50 
+F24 "BT_en" I R 2125 5975 50 
+F25 "BT_bn" I R 2125 5675 50 
 $EndSheet
 $Sheet
 S 900  875  1250 1000
 U 5F16021E
 F0 "power" 50
 F1 "power.sch" 50
-$EndSheet
-$Sheet
-S 8900 4675 1175 1150
-U 5F9D81B4
-F0 "pcm1863" 50
-F1 "pcm1863.sch" 50
-F2 "mic_in" I L 8900 4775 50 
-F3 "MCLK" I L 8900 4900 50 
-F4 "BCK" I L 8900 5000 50 
-F5 "LRCK" I L 8900 5100 50 
-F6 "DOUT" I L 8900 5200 50 
-F7 "SCL" I L 8900 5325 50 
-F8 "SDA" I L 8900 5425 50 
-F9 "GP3" I L 8900 5725 50 
 $EndSheet
 $Sheet
 S 9000 750  1100 1375
@@ -122,26 +106,6 @@ SAI1_FS
 Text Label 8300 1400 0    50   ~ 0
 SAI1_SD
 Wire Wire Line
-	8900 4775 8275 4775
-Wire Wire Line
-	8900 4900 8275 4900
-Wire Wire Line
-	8900 5000 8275 5000
-Wire Wire Line
-	8900 5100 8275 5100
-Wire Wire Line
-	8900 5200 8275 5200
-Wire Wire Line
-	8900 5325 8275 5325
-Wire Wire Line
-	8900 5425 8275 5425
-Wire Wire Line
-	8900 5725 8275 5725
-Text Label 8350 5325 0    50   ~ 0
-SCL
-Text Label 8350 5425 0    50   ~ 0
-SDA
-Wire Wire Line
 	2125 3025 2900 3025
 Wire Wire Line
 	2125 3125 2900 3125
@@ -185,12 +149,6 @@ Text Label 2400 3900 0    50   ~ 0
 SAI2_FS
 Text Label 2400 4000 0    50   ~ 0
 SAI2_SD
-Text Label 8350 5000 0    50   ~ 0
-SAI2_CLK
-Text Label 8350 5100 0    50   ~ 0
-SAI2_FS
-Text Label 8350 5200 0    50   ~ 0
-SAI2_SD
 Wire Wire Line
 	2125 4625 2900 4625
 Wire Wire Line
@@ -205,14 +163,6 @@ Wire Wire Line
 	2125 5175 2900 5175
 Wire Wire Line
 	2125 5275 2900 5275
-Wire Wire Line
-	2125 5425 2900 5425
-Wire Wire Line
-	2125 5525 2900 5525
-Text Label 2275 5525 0    50   ~ 0
-pcm1863_gp3
-Text Label 2275 5425 0    50   ~ 0
-mic_in
 Text Label 2275 5275 0    50   ~ 0
 tas6424_fault
 Text Label 2275 5175 0    50   ~ 0
@@ -275,10 +225,6 @@ Wire Wire Line
 	8250 3000 8950 3000
 Wire Wire Line
 	8250 2900 8950 2900
-Text Label 8350 4775 0    50   ~ 0
-mic_in
-Text Label 8325 5725 0    50   ~ 0
-pcm1863_gp3
 Text Label 5125 6775 0    50   ~ 0
 SAI1_CLK
 Text Label 5125 7075 0    50   ~ 0
@@ -324,54 +270,52 @@ Wire Notes Line
 Text Label 2400 4175 0    50   ~ 0
 I2S1_MCK
 $Sheet
-S 5475 3125 950  1325
+S 5575 950  950  1325
 U 5FD6457F
 F0 "Bluetooth" 50
 F1 "Bluetooth.sch" 50
-F2 "CLK" I L 5475 3450 50 
-F3 "FS" I L 5475 3550 50 
-F4 "SD" I L 5475 3650 50 
-F5 "EN" I L 5475 3775 50 
-F6 "button" I L 5475 3875 50 
-F7 "state" I L 5475 3975 50 
-F8 "SPDIF" I L 5475 3200 50 
+F2 "CLK" I L 5575 1275 50 
+F3 "FS" I L 5575 1375 50 
+F4 "SD" I L 5575 1475 50 
+F5 "EN" I L 5575 1600 50 
+F6 "button" I L 5575 1700 50 
+F7 "state" I L 5575 1800 50 
+F8 "SPDIF" I L 5575 1025 50 
 $EndSheet
 Wire Wire Line
-	5475 3450 5000 3450
+	5575 1275 5100 1275
 Wire Wire Line
-	5475 3550 5000 3550
+	5575 1375 5100 1375
 Wire Wire Line
-	5475 3650 5000 3650
+	5575 1475 5100 1475
 Wire Wire Line
-	5475 3775 5000 3775
+	5575 1600 5100 1600
 Wire Wire Line
-	5475 3875 5000 3875
+	5575 1700 5100 1700
 Wire Wire Line
-	5475 3975 5000 3975
+	5575 1800 5100 1800
 Wire Wire Line
-	5475 3200 5000 3200
+	5575 1025 5100 1025
 Text Label 2400 4275 0    50   ~ 0
 I2S1_SCK
 Text Label 2400 4375 0    50   ~ 0
 I2S1_FS
 Text Label 2400 4475 0    50   ~ 0
 I2S1_SD
-Text Label 5025 3450 0    50   ~ 0
+Text Label 5125 1275 0    50   ~ 0
 I2S1_SCK
-Text Label 5025 3550 0    50   ~ 0
+Text Label 5125 1375 0    50   ~ 0
 I2S1_FS
-Text Label 5025 3650 0    50   ~ 0
+Text Label 5125 1475 0    50   ~ 0
 I2S1_SD
-Text Label 5025 3775 0    50   ~ 0
+Text Label 5125 1600 0    50   ~ 0
 BT_en
-Text Label 5025 3875 0    50   ~ 0
+Text Label 5125 1700 0    50   ~ 0
 BT_bn
-Text Label 5025 3975 0    50   ~ 0
+Text Label 5125 1800 0    50   ~ 0
 BT_state
-Text Label 5025 3200 0    50   ~ 0
+Text Label 5125 1025 0    50   ~ 0
 BT_spdif
-Text Label 8350 4900 0    50   ~ 0
-I2S1_MCK
 Wire Wire Line
 	2125 5675 2900 5675
 Wire Wire Line
@@ -398,7 +342,7 @@ U 1 1 602EF214
 P 4875 6450
 F 0 "TP1" V 5070 6524 50  0000 C CNN
 F 1 "TestPoint" V 4979 6524 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 5075 6450 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 5075 6450 50  0001 C CNN
 F 3 "~" H 5075 6450 50  0001 C CNN
 	1    4875 6450
 	0    -1   -1   0   
@@ -409,7 +353,7 @@ U 1 1 602EF319
 P 4875 6775
 F 0 "TP2" V 5070 6849 50  0000 C CNN
 F 1 "TestPoint" V 4979 6849 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 5075 6775 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 5075 6775 50  0001 C CNN
 F 3 "~" H 5075 6775 50  0001 C CNN
 	1    4875 6775
 	0    -1   -1   0   
@@ -420,7 +364,7 @@ U 1 1 602F1A9C
 P 4875 7075
 F 0 "TP3" V 5070 7149 50  0000 C CNN
 F 1 "TestPoint" V 4979 7149 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 5075 7075 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 5075 7075 50  0001 C CNN
 F 3 "~" H 5075 7075 50  0001 C CNN
 	1    4875 7075
 	0    -1   -1   0   
@@ -431,7 +375,7 @@ U 1 1 602F421F
 P 4875 7425
 F 0 "TP4" V 5070 7499 50  0000 C CNN
 F 1 "TestPoint" V 4979 7499 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 5075 7425 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 5075 7425 50  0001 C CNN
 F 3 "~" H 5075 7425 50  0001 C CNN
 	1    4875 7425
 	0    -1   -1   0   
@@ -442,7 +386,7 @@ U 1 1 602F75E5
 P 6100 6450
 F 0 "TP5" V 6295 6524 50  0000 C CNN
 F 1 "TestPoint" V 6204 6524 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 6300 6450 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 6300 6450 50  0001 C CNN
 F 3 "~" H 6300 6450 50  0001 C CNN
 	1    6100 6450
 	0    -1   -1   0   
@@ -453,7 +397,7 @@ U 1 1 6030D939
 P 6100 6775
 F 0 "TP6" V 6295 6849 50  0000 C CNN
 F 1 "TestPoint" V 6204 6849 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 6300 6775 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 6300 6775 50  0001 C CNN
 F 3 "~" H 6300 6775 50  0001 C CNN
 	1    6100 6775
 	0    -1   -1   0   
@@ -464,7 +408,7 @@ U 1 1 603100B4
 P 6100 7075
 F 0 "TP7" V 6295 7149 50  0000 C CNN
 F 1 "TestPoint" V 6204 7149 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 6300 7075 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 6300 7075 50  0001 C CNN
 F 3 "~" H 6300 7075 50  0001 C CNN
 	1    6100 7075
 	0    -1   -1   0   
@@ -475,7 +419,7 @@ U 1 1 6031282F
 P 6100 7425
 F 0 "TP8" V 6295 7499 50  0000 C CNN
 F 1 "TestPoint" V 6204 7499 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 6300 7425 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 6300 7425 50  0001 C CNN
 F 3 "~" H 6300 7425 50  0001 C CNN
 	1    6100 7425
 	0    -1   -1   0   

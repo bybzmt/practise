@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 10
+Sheet 2 9
 Title ""
 Date ""
 Rev ""
@@ -656,7 +656,7 @@ Wire Wire Line
 	2725 5600 3700 5600
 Text HLabel 8200 3200 2    50   Input ~ 0
 headphone_en
-Text HLabel 5875 4100 0    50   Input ~ 0
+Text HLabel 5875 4300 0    50   Input ~ 0
 headphone_in
 Text HLabel 8200 3100 2    50   Input ~ 0
 headphone_mute
@@ -668,8 +668,6 @@ Text HLabel 5875 4500 0    50   Input ~ 0
 tas6424_warn
 Text HLabel 5875 4400 0    50   Input ~ 0
 tas6424_fault
-Text HLabel 5875 4300 0    50   Input ~ 0
-pcm1863_gp3
 Wire Wire Line
 	7650 1400 8200 1400
 Wire Wire Line
@@ -683,15 +681,11 @@ encoder_a
 Text Label 7725 1600 0    50   ~ 0
 encoder_b
 Wire Wire Line
-	6250 4100 5875 4100
+	6250 4300 5875 4300
 Wire Wire Line
 	6250 4400 5875 4400
 Wire Wire Line
 	6250 4000 5875 4000
-Wire Wire Line
-	6250 4300 5875 4300
-Wire Wire Line
-	6250 4200 5875 4200
 $Comp
 L power:+3.3V #PWR010
 U 1 1 5FD54737
@@ -739,8 +733,6 @@ NoConn ~ 7650 2200
 Wire Wire Line
 	5875 4500 6250 4500
 NoConn ~ 6250 3900
-Text HLabel 5875 4200 0    50   Input ~ 0
-mic_in
 Wire Wire Line
 	7650 4300 8175 4300
 NoConn ~ 7650 2400
@@ -781,4 +773,6 @@ F 3 "~" H 5725 7050 50  0001 C CNN
 	1    5725 7050
 	1    0    0    -1  
 $EndComp
+NoConn ~ 6250 4100
+NoConn ~ 6250 4200
 $EndSCHEMATC
