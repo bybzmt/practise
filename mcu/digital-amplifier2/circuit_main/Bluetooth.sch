@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 9 9
+Sheet 7 7
 Title ""
 Date ""
 Rev ""
@@ -252,21 +252,6 @@ Wire Wire Line
 Wire Wire Line
 	5600 3125 6250 3125
 $Comp
-L Connector:TestPoint TP9
-U 1 1 5FB8F87D
-P 2300 2950
-F 0 "TP9" H 2358 3070 50  0000 L CNN
-F 1 "TestPoint" H 2358 2979 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 2500 2950 50  0001 C CNN
-F 3 "~" H 2500 2950 50  0001 C CNN
-	1    2300 2950
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 2950 2300 3875
-Wire Wire Line
-	2300 3875 2850 3875
-$Comp
 L misc:SJR-BTM331 U13
 U 1 1 5FD6BC07
 P 2950 2475
@@ -305,8 +290,8 @@ Wire Wire Line
 	8875 1425 9050 1425
 Wire Wire Line
 	9250 1425 9425 1425
-Text Label 9900 1425 0    50   ~ 0
-vdd
+Text Label 9775 1425 0    50   ~ 0
+vdd_x
 $Comp
 L Device:C_Small C126
 U 1 1 5FE872FA
@@ -337,9 +322,9 @@ F 3 "" H 9425 1900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 2150 5075 0    50   ~ 0
-vdd
+vdd_x
 Text Label 4700 6900 0    50   ~ 0
-vdd
+vdd_x
 $Comp
 L power:PWR_FLAG #FLG018
 U 1 1 5FE8E41D
@@ -354,31 +339,32 @@ $EndComp
 Wire Wire Line
 	9425 1100 9425 1425
 Text Label 2650 6825 0    50   ~ 0
-vdd
+vdd_x
 Wire Wire Line
 	4600 2175 4900 2175
 Wire Wire Line
 	4900 2175 5875 2175
 Connection ~ 4900 2175
 Wire Wire Line
-	4750 1550 4750 2375
-$Comp
-L Device:Antenna_Shield AE1
-U 1 1 5FC2ABFA
-P 4750 1350
-F 0 "AE1" H 4890 1391 50  0000 L CNN
-F 1 "Antenna_Shield" H 4890 1300 50  0000 L CNN
-F 2 "RF_Antenna:Texas_SWRA117D_2.4GHz_Left" H 4750 1450 50  0001 C CNN
-F 3 "~" H 4750 1450 50  0001 C CNN
-	1    4750 1350
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4850 1550 4850 1800
-Wire Wire Line
-	4850 1800 4900 1800
-Wire Wire Line
 	4900 1800 4900 2175
 Wire Wire Line
 	4900 2175 4900 2375
+NoConn ~ 2850 3875
+$Comp
+L Connector:Conn_Coaxial J7
+U 1 1 6012EC07
+P 4950 1400
+F 0 "J7" H 5050 1400 50  0000 L CNN
+F 1 "Conn_Coaxial" H 5050 1300 50  0000 L CNN
+F 2 "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical" H 4950 1400 50  0001 C CNN
+F 3 " ~" H 4950 1400 50  0001 C CNN
+	1    4950 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 1400 4750 2375
+Wire Wire Line
+	4950 1600 4950 1800
+Wire Wire Line
+	4950 1800 4900 1800
 $EndSCHEMATC

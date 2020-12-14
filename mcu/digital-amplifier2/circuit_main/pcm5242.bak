@@ -189,9 +189,6 @@ Wire Wire Line
 	4200 5175 4400 5175
 Wire Wire Line
 	4400 5175 4400 6275
-Connection ~ 4400 6275
-Wire Wire Line
-	4400 6275 5375 6275
 $Comp
 L Device:R_Small R39
 U 1 1 5FC3D635
@@ -577,4 +574,15 @@ Wire Wire Line
 Connection ~ 4825 1850
 Wire Wire Line
 	1975 4775 2400 4775
+$Comp
+L power:GND #PWR?
+U 1 1 5FCA550C
+P 5375 6275
+F 0 "#PWR?" H 5375 6025 50  0001 C CNN
+F 1 "GND" H 5380 6102 50  0000 C CNN
+F 2 "" H 5375 6275 50  0001 C CNN
+F 3 "" H 5375 6275 50  0001 C CNN
+	1    5375 6275
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

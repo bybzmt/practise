@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 8 9
+Sheet 5 7
 Title ""
 Date ""
 Rev ""
@@ -25,183 +25,6 @@ F 3 "" H 2125 1275 60  0000 C CNN
 	1    2125 1275
 	1    0    0    -1  
 $EndComp
-$Comp
-L ti:TAS6424QDKQRQ1 U12
-U 2 1 6011113E
-P 5125 4375
-F 0 "U12" H 6453 3128 60  0000 L CNN
-F 1 "TAS6424QDKQRQ1" H 6453 3022 60  0000 L CNN
-F 2 "ti:TAS6424QDKQRQ1" H 6225 4715 60  0001 C CNN
-F 3 "" H 5125 4375 60  0000 C CNN
-	2    5125 4375
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5125 5975 4950 5975
-Wire Wire Line
-	4950 5975 4950 6075
-$Comp
-L power:GND #PWR094
-U 1 1 601D1720
-P 4950 7375
-F 0 "#PWR094" H 4950 7125 50  0001 C CNN
-F 1 "GND" H 4955 7202 50  0000 C CNN
-F 2 "" H 4950 7375 50  0001 C CNN
-F 3 "" H 4950 7375 50  0001 C CNN
-	1    4950 7375
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5125 6875 4950 6875
-Connection ~ 4950 6875
-Wire Wire Line
-	4950 6875 4950 6975
-Wire Wire Line
-	5125 6775 4950 6775
-Connection ~ 4950 6775
-Wire Wire Line
-	4950 6775 4950 6875
-Wire Wire Line
-	5125 6675 4950 6675
-Connection ~ 4950 6675
-Wire Wire Line
-	4950 6675 4950 6775
-Wire Wire Line
-	5125 6575 4950 6575
-Connection ~ 4950 6575
-Wire Wire Line
-	4950 6575 4950 6675
-Wire Wire Line
-	5125 6475 4950 6475
-Connection ~ 4950 6475
-Wire Wire Line
-	4950 6475 4950 6575
-Wire Wire Line
-	5125 6375 4950 6375
-Connection ~ 4950 6375
-Wire Wire Line
-	5125 6275 4950 6275
-Connection ~ 4950 6275
-Wire Wire Line
-	4950 6275 4950 6375
-Wire Wire Line
-	5125 6175 4950 6175
-Connection ~ 4950 6175
-Wire Wire Line
-	4950 6175 4950 6275
-Wire Wire Line
-	5125 6075 4950 6075
-Connection ~ 4950 6075
-Wire Wire Line
-	4950 6075 4950 6175
-Wire Wire Line
-	4950 4875 5125 4875
-Wire Wire Line
-	4950 5475 5125 5475
-Wire Wire Line
-	5125 5375 4950 5375
-Wire Wire Line
-	4950 4875 4950 4975
-Connection ~ 4950 5375
-Wire Wire Line
-	5125 5275 4950 5275
-Connection ~ 4950 5275
-Wire Wire Line
-	4950 5275 4950 5375
-Wire Wire Line
-	5125 5175 4950 5175
-Connection ~ 4950 5175
-Wire Wire Line
-	4950 5175 4950 5275
-Wire Wire Line
-	5125 5075 4950 5075
-Connection ~ 4950 5075
-Wire Wire Line
-	4950 5075 4950 5175
-Wire Wire Line
-	5125 4975 4950 4975
-Connection ~ 4950 4975
-Wire Wire Line
-	4950 4975 4950 5075
-$Comp
-L Device:C_Small C96
-U 1 1 601D5360
-P 4075 4900
-F 0 "C96" H 4167 4946 50  0000 L CNN
-F 1 "2.2uf" H 4167 4855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4075 4900 50  0001 C CNN
-F 3 "~" H 4075 4900 50  0001 C CNN
-	1    4075 4900
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C98
-U 1 1 601D53B1
-P 4475 4900
-F 0 "C98" H 4567 4946 50  0000 L CNN
-F 1 "2.2uf" H 4567 4855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4475 4900 50  0001 C CNN
-F 3 "~" H 4475 4900 50  0001 C CNN
-	1    4475 4900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4475 4800 4475 4675
-Wire Wire Line
-	4475 4675 5125 4675
-Wire Wire Line
-	5125 4575 4075 4575
-Wire Wire Line
-	4075 4575 4075 4800
-Wire Wire Line
-	4075 5000 4075 5250
-$Comp
-L power:GND #PWR091
-U 1 1 601D9B12
-P 4075 5250
-F 0 "#PWR091" H 4075 5000 50  0001 C CNN
-F 1 "GND" H 4080 5077 50  0000 C CNN
-F 2 "" H 4075 5250 50  0001 C CNN
-F 3 "" H 4075 5250 50  0001 C CNN
-	1    4075 5250
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR092
-U 1 1 601D9B40
-P 4475 5250
-F 0 "#PWR092" H 4475 5000 50  0001 C CNN
-F 1 "GND" H 4480 5077 50  0000 C CNN
-F 2 "" H 4475 5250 50  0001 C CNN
-F 3 "" H 4475 5250 50  0001 C CNN
-	1    4475 5250
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4475 5000 4475 5250
-$Comp
-L Device:C_Small C94
-U 1 1 601DB5BE
-P 3700 4900
-F 0 "C94" H 3792 4946 50  0000 L CNN
-F 1 "1uf" H 3792 4855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 3700 4900 50  0001 C CNN
-F 3 "~" H 3700 4900 50  0001 C CNN
-	1    3700 4900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3700 4800 3700 4375
-Wire Wire Line
-	3700 4375 5125 4375
-Wire Wire Line
-	3700 5000 3700 5775
-Wire Wire Line
-	3700 5775 5125 5775
-Wire Wire Line
-	4950 5375 4950 5475
-Wire Wire Line
-	4950 6375 4950 6475
 $Comp
 L Device:L_Small L4
 U 1 1 601EFD2E
@@ -256,17 +79,6 @@ Wire Wire Line
 	8850 975  8850 875 
 Wire Wire Line
 	8850 875  8475 875 
-$Comp
-L power:GND #PWR097
-U 1 1 601FBAAB
-P 9225 1300
-F 0 "#PWR097" H 9225 1050 50  0001 C CNN
-F 1 "GND" H 9230 1127 50  0000 C CNN
-F 2 "" H 9225 1300 50  0001 C CNN
-F 3 "" H 9225 1300 50  0001 C CNN
-	1    9225 1300
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8500 1600 8850 1600
 $Comp
@@ -359,18 +171,9 @@ Wire Wire Line
 Wire Wire Line
 	7950 1350 7475 1350
 Wire Wire Line
-	8850 1175 9225 1175
-Connection ~ 8850 1175
-Connection ~ 9625 1175
+	8850 1175 8850 1235
 Wire Wire Line
-	8850 1175 8850 1300
-Wire Wire Line
-	9625 1175 9625 1300
-Wire Wire Line
-	9225 1300 9225 1175
-Connection ~ 9225 1175
-Wire Wire Line
-	9225 1175 9625 1175
+	9625 1175 9625 1235
 $Comp
 L Device:L_Small L5
 U 1 1 6022EF3E
@@ -425,17 +228,6 @@ Wire Wire Line
 	8850 2025 8850 1925
 Wire Wire Line
 	8850 1925 8475 1925
-$Comp
-L power:GND #PWR098
-U 1 1 6022EF5F
-P 9225 2350
-F 0 "#PWR098" H 9225 2100 50  0001 C CNN
-F 1 "GND" H 9230 2177 50  0000 C CNN
-F 2 "" H 9225 2350 50  0001 C CNN
-F 3 "" H 9225 2350 50  0001 C CNN
-	1    9225 2350
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8500 2650 8850 2650
 $Comp
@@ -528,18 +320,9 @@ Wire Wire Line
 Wire Wire Line
 	7950 2400 7475 2400
 Wire Wire Line
-	8850 2225 9225 2225
-Connection ~ 8850 2225
-Connection ~ 9625 2225
+	8850 2225 8850 2275
 Wire Wire Line
-	8850 2225 8850 2350
-Wire Wire Line
-	9625 2225 9625 2350
-Wire Wire Line
-	9225 2350 9225 2225
-Connection ~ 9225 2225
-Wire Wire Line
-	9225 2225 9625 2225
+	9625 2225 9625 2275
 $Comp
 L Device:L_Small L6
 U 1 1 60231E2D
@@ -594,17 +377,6 @@ Wire Wire Line
 	8850 3075 8850 2975
 Wire Wire Line
 	8850 2975 8475 2975
-$Comp
-L power:GND #PWR099
-U 1 1 60231E4E
-P 9225 3400
-F 0 "#PWR099" H 9225 3150 50  0001 C CNN
-F 1 "GND" H 9230 3227 50  0000 C CNN
-F 2 "" H 9225 3400 50  0001 C CNN
-F 3 "" H 9225 3400 50  0001 C CNN
-	1    9225 3400
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8500 3700 8850 3700
 $Comp
@@ -697,18 +469,9 @@ Wire Wire Line
 Wire Wire Line
 	7950 3450 7475 3450
 Wire Wire Line
-	8850 3275 9225 3275
-Connection ~ 8850 3275
-Connection ~ 9625 3275
+	8850 3275 8850 3355
 Wire Wire Line
-	8850 3275 8850 3400
-Wire Wire Line
-	9625 3275 9625 3400
-Wire Wire Line
-	9225 3400 9225 3275
-Connection ~ 9225 3275
-Wire Wire Line
-	9225 3275 9625 3275
+	9625 3275 9625 3355
 $Comp
 L Device:L_Small L7
 U 1 1 60236380
@@ -763,17 +526,6 @@ Wire Wire Line
 	8850 4150 8850 4050
 Wire Wire Line
 	8850 4050 8475 4050
-$Comp
-L power:GND #PWR0100
-U 1 1 602363A1
-P 9225 4475
-F 0 "#PWR0100" H 9225 4225 50  0001 C CNN
-F 1 "GND" H 9230 4302 50  0000 C CNN
-F 2 "" H 9225 4475 50  0001 C CNN
-F 3 "" H 9225 4475 50  0001 C CNN
-	1    9225 4475
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8500 4775 8850 4775
 $Comp
@@ -866,18 +618,9 @@ Wire Wire Line
 Wire Wire Line
 	7950 4525 7475 4525
 Wire Wire Line
-	8850 4350 9225 4350
-Connection ~ 8850 4350
-Connection ~ 9625 4350
+	8850 4350 8850 4410
 Wire Wire Line
-	8850 4350 8850 4475
-Wire Wire Line
-	9625 4350 9625 4475
-Wire Wire Line
-	9225 4475 9225 4350
-Connection ~ 9225 4350
-Wire Wire Line
-	9225 4350 9625 4350
+	9625 4350 9625 4410
 Wire Wire Line
 	2125 2275 2025 2275
 Wire Wire Line
@@ -927,32 +670,11 @@ Wire Wire Line
 Wire Wire Line
 	1550 1975 2125 1975
 Connection ~ 1550 3300
-Wire Wire Line
-	2025 2375 2025 3875
 Connection ~ 2025 2375
-$Comp
-L power:GND #PWR090
-U 1 1 60273E14
-P 2025 3875
-F 0 "#PWR090" H 2025 3625 50  0001 C CNN
-F 1 "GND" H 2030 3702 50  0000 C CNN
-F 2 "" H 2025 3875 50  0001 C CNN
-F 3 "" H 2025 3875 50  0001 C CNN
-	1    2025 3875
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	1950 975  1950 2975
 Wire Wire Line
 	1950 2975 2125 2975
-Wire Wire Line
-	4950 4875 4950 4075
-Connection ~ 4950 4875
-Wire Wire Line
-	4950 7375 4950 6975
-Connection ~ 4950 6975
-Wire Wire Line
-	4950 6975 5125 6975
 Wire Wire Line
 	2125 2475 1100 2475
 Wire Wire Line
@@ -974,17 +696,6 @@ Wire Wire Line
 Wire Wire Line
 	2125 1275 1100 1275
 NoConn ~ 2125 1375
-$Comp
-L Device:C_Small C89
-U 1 1 60321FB6
-P 1950 6900
-F 0 "C89" H 2042 6946 50  0000 L CNN
-F 1 "10uf" H 2042 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1950 6900 50  0001 C CNN
-F 3 "~" H 1950 6900 50  0001 C CNN
-	1    1950 6900
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	4325 1175 4800 1175
 Text Label 4500 1175 0    50   ~ 0
@@ -1101,412 +812,75 @@ Text HLabel 1100 1875 0    50   Input ~ 0
 WARN
 Text HLabel 1100 1275 0    50   Input ~ 0
 SDIN
-$Comp
-L power:+3.3V #PWR095
-U 1 1 605FAFF2
-P 8150 5275
-F 0 "#PWR095" H 8150 5125 50  0001 C CNN
-F 1 "+3.3V" H 8165 5448 50  0000 C CNN
-F 2 "" H 8150 5275 50  0001 C CNN
-F 3 "" H 8150 5275 50  0001 C CNN
-	1    8150 5275
-	1    0    0    -1  
-$EndComp
+$Sheet
+S 1225 5600 1175 1050
+U 5FEF9303
+F0 "tas6424_power" 50
+F1 "tas6424_power.sch" 50
+F2 "EN" I L 1225 5775 50 
+F3 "vcc_x" O R 2400 5775 50 
+F4 "gnd_x" O R 2400 5950 50 
+$EndSheet
+Text HLabel 800  5775 0    50   Input ~ 0
+EN
 Wire Wire Line
-	8150 5675 8150 5275
-$Comp
-L Device:C_Small C81
-U 1 1 6063686A
-P 725 5200
-F 0 "C81" H 817 5246 50  0000 L CNN
-F 1 "100uf" H 817 5155 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 725 5200 50  0001 C CNN
-F 3 "~" H 725 5200 50  0001 C CNN
-	1    725  5200
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C83
-U 1 1 6063695F
-P 1150 5200
-F 0 "C83" H 1242 5246 50  0000 L CNN
-F 1 "10uf" H 1242 5155 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1150 5200 50  0001 C CNN
-F 3 "~" H 1150 5200 50  0001 C CNN
-	1    1150 5200
-	1    0    0    -1  
-$EndComp
+	800  5775 1225 5775
 Wire Wire Line
-	725  5300 725  5425
+	2400 5775 2875 5775
 Wire Wire Line
-	1150 5425 1150 5300
+	2400 5950 2875 5950
+Text Label 2525 5775 0    50   ~ 0
+vcc_x
+Text Label 2525 5950 0    50   ~ 0
+gnd_x
+Text Label 1650 975  0    50   ~ 0
+vcc_x
 Wire Wire Line
-	725  5100 725  4975
+	1950 975  1500 975 
 Wire Wire Line
-	1150 4975 1150 5100
+	2025 4025 2425 4025
 Wire Wire Line
-	725  4975 725  4775
+	2025 2375 2025 4025
+Text Label 2150 4025 0    50   ~ 0
+gnd_x
+Text Label 9185 4410 0    50   ~ 0
+gnd_x
 Wire Wire Line
-	725  5425 725  5650
-$Comp
-L power:GND #PWR085
-U 1 1 60674223
-P 725 5650
-F 0 "#PWR085" H 725 5400 50  0001 C CNN
-F 1 "GND" H 730 5477 50  0000 C CNN
-F 2 "" H 725 5650 50  0001 C CNN
-F 3 "" H 725 5650 50  0001 C CNN
-	1    725  5650
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C84
-U 1 1 60675095
-P 1150 6950
-F 0 "C84" H 1242 6996 50  0000 L CNN
-F 1 "10uf" H 1242 6905 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1150 6950 50  0001 C CNN
-F 3 "~" H 1150 6950 50  0001 C CNN
-	1    1150 6950
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C86
-U 1 1 6067509C
-P 1550 6950
-F 0 "C86" H 1642 6996 50  0000 L CNN
-F 1 "100nf" H 1642 6905 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1550 6950 50  0001 C CNN
-F 3 "~" H 1550 6950 50  0001 C CNN
-	1    1550 6950
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C82
-U 1 1 606750A3
-P 750 6950
-F 0 "C82" H 842 6996 50  0000 L CNN
-F 1 "100uf" H 842 6905 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 750 6950 50  0001 C CNN
-F 3 "~" H 750 6950 50  0001 C CNN
-	1    750  6950
-	1    0    0    -1  
-$EndComp
+	8850 4410 9625 4410
 Wire Wire Line
-	1150 6700 1150 6850
+	8850 3355 9625 3355
+Text Label 9210 3355 0    50   ~ 0
+gnd_x
+Text Label 9170 1235 0    50   ~ 0
+gnd_x
 Wire Wire Line
-	1550 6700 1550 6850
+	8850 1235 9625 1235
+Text Label 9170 2275 0    50   ~ 0
+gnd_x
 Wire Wire Line
-	1550 7150 1550 7050
+	8850 2275 9625 2275
+Connection ~ 8850 1235
 Wire Wire Line
-	1150 7150 1150 7050
-$Comp
-L Device:C_Small C85
-U 1 1 606A5888
-P 1550 5200
-F 0 "C85" H 1642 5246 50  0000 L CNN
-F 1 "100nf" H 1642 5155 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1550 5200 50  0001 C CNN
-F 3 "~" H 1550 5200 50  0001 C CNN
-	1    1550 5200
-	1    0    0    -1  
-$EndComp
+	8850 1235 8850 1300
+Connection ~ 9625 1235
 Wire Wire Line
-	1550 4975 1550 5100
-Connection ~ 1150 4975
-Connection ~ 1150 5425
+	9625 1235 9625 1300
+Connection ~ 8850 2275
 Wire Wire Line
-	1550 5300 1550 5425
+	8850 2275 8850 2350
+Connection ~ 9625 2275
 Wire Wire Line
-	750  7050 750  7150
+	9625 2275 9625 2350
+Connection ~ 8850 3355
 Wire Wire Line
-	750  6850 750  6700
+	8850 3355 8850 3400
+Connection ~ 9625 3355
 Wire Wire Line
-	1150 4975 1550 4975
+	9625 3355 9625 3400
+Connection ~ 8850 4410
 Wire Wire Line
-	1550 5425 1150 5425
+	8850 4410 8850 4475
+Connection ~ 9625 4410
 Wire Wire Line
-	750  6700 1150 6700
-Wire Wire Line
-	1150 6700 1550 6700
-Connection ~ 1150 6700
-Wire Wire Line
-	1550 7150 1150 7150
-Wire Wire Line
-	1150 7150 750  7150
-Connection ~ 1150 7150
-Wire Wire Line
-	1150 7150 1150 7375
-$Comp
-L power:GND #PWR088
-U 1 1 6079A639
-P 1150 7375
-F 0 "#PWR088" H 1150 7125 50  0001 C CNN
-F 1 "GND" H 1155 7202 50  0000 C CNN
-F 2 "" H 1150 7375 50  0001 C CNN
-F 3 "" H 1150 7375 50  0001 C CNN
-	1    1150 7375
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1150 6700 1150 6500
-Connection ~ 725  5425
-Wire Wire Line
-	725  5425 1150 5425
-Wire Wire Line
-	725  4975 1150 4975
-Wire Wire Line
-	1550 6700 1950 6700
-Wire Wire Line
-	1950 6700 1950 6800
-Connection ~ 1550 6700
-Wire Wire Line
-	1950 7150 1550 7150
-Connection ~ 1550 7150
-$Comp
-L Device:R_Small R69
-U 1 1 5FEB8D10
-P 8450 5675
-F 0 "R69" V 8254 5675 50  0000 C CNN
-F 1 "0Ω" V 8345 5675 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 8450 5675 50  0001 C CNN
-F 3 "~" H 8450 5675 50  0001 C CNN
-	1    8450 5675
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	8350 5675 8150 5675
-Text Label 9525 5675 0    50   ~ 0
-vdd
-$Comp
-L Device:C_Small C107
-U 1 1 5FEEF285
-P 8725 5875
-F 0 "C107" H 8817 5921 50  0000 L CNN
-F 1 "10uf" H 8817 5830 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 8725 5875 50  0001 C CNN
-F 3 "~" H 8725 5875 50  0001 C CNN
-	1    8725 5875
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C116
-U 1 1 5FEEF371
-P 9250 5900
-F 0 "C116" H 9342 5946 50  0000 L CNN
-F 1 "100nf" H 9342 5855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 9250 5900 50  0001 C CNN
-F 3 "~" H 9250 5900 50  0001 C CNN
-	1    9250 5900
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR096
-U 1 1 5FEEF45F
-P 8725 6100
-F 0 "#PWR096" H 8725 5850 50  0001 C CNN
-F 1 "GND" H 8730 5927 50  0000 C CNN
-F 2 "" H 8725 6100 50  0001 C CNN
-F 3 "" H 8725 6100 50  0001 C CNN
-	1    8725 6100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8725 6100 8725 6050
-Wire Wire Line
-	8725 5775 8725 5675
-Connection ~ 8725 5675
-Wire Wire Line
-	8725 5675 8550 5675
-Wire Wire Line
-	9250 5800 9250 5675
-Connection ~ 9250 5675
-Wire Wire Line
-	9250 5675 8725 5675
-Wire Wire Line
-	9250 6000 9250 6050
-Wire Wire Line
-	9250 6050 8725 6050
-Connection ~ 8725 6050
-Wire Wire Line
-	8725 6050 8725 5975
-Wire Wire Line
-	9250 5675 9925 5675
-Text Label 4725 5675 0    50   ~ 0
-vdd
-Wire Wire Line
-	5125 5675 4575 5675
-$Comp
-L power:PWR_FLAG #FLG017
-U 1 1 60090447
-P 9250 5400
-F 0 "#FLG017" H 9250 5475 50  0001 C CNN
-F 1 "PWR_FLAG" H 9250 5574 50  0000 C CNN
-F 2 "" H 9250 5400 50  0001 C CNN
-F 3 "~" H 9250 5400 50  0001 C CNN
-	1    9250 5400
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9250 5675 9250 5400
-$Comp
-L power:VCCQ #PWR?
-U 1 1 6013DDD2
-P 4950 4075
-AR Path="/5F16021E/6013DDD2" Ref="#PWR?"  Part="1" 
-AR Path="/5FC5910D/6013DDD2" Ref="#PWR093"  Part="1" 
-F 0 "#PWR093" H 4950 3925 50  0001 C CNN
-F 1 "VCCQ" H 4967 4248 50  0000 C CNN
-F 2 "" H 4950 4075 50  0001 C CNN
-F 3 "" H 4950 4075 50  0001 C CNN
-	1    4950 4075
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:VCCQ #PWR?
-U 1 1 60162EE6
-P 1950 975
-AR Path="/5F16021E/60162EE6" Ref="#PWR?"  Part="1" 
-AR Path="/5FC5910D/60162EE6" Ref="#PWR089"  Part="1" 
-F 0 "#PWR089" H 1950 825 50  0001 C CNN
-F 1 "VCCQ" H 1967 1148 50  0000 C CNN
-F 2 "" H 1950 975 50  0001 C CNN
-F 3 "" H 1950 975 50  0001 C CNN
-	1    1950 975 
-	1    0    0    -1  
-$EndComp
-Connection ~ 725  4975
-$Comp
-L Device:C_Small C92
-U 1 1 5FCEB853
-P 1950 5200
-F 0 "C92" H 2042 5246 50  0000 L CNN
-F 1 "10uf" H 2042 5155 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1950 5200 50  0001 C CNN
-F 3 "~" H 1950 5200 50  0001 C CNN
-	1    1950 5200
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1950 4975 1950 5100
-Wire Wire Line
-	1950 5300 1950 5425
-Wire Wire Line
-	1950 5425 1550 5425
-Connection ~ 1550 5425
-Wire Wire Line
-	1550 4975 1950 4975
-Connection ~ 1550 4975
-Wire Wire Line
-	1950 7000 1950 7150
-$Comp
-L Device:C_Small C32
-U 1 1 5FC64C70
-P 2325 6900
-F 0 "C32" H 2417 6946 50  0000 L CNN
-F 1 "100uf" H 2417 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_1210_3225Metric" H 2325 6900 50  0001 C CNN
-F 3 "~" H 2325 6900 50  0001 C CNN
-	1    2325 6900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2325 6700 2325 6800
-Wire Wire Line
-	2325 7000 2325 7150
-$Comp
-L Device:C_Small C33
-U 1 1 5FC95E47
-P 2725 6900
-F 0 "C33" H 2817 6946 50  0000 L CNN
-F 1 "100uf" H 2817 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_1210_3225Metric" H 2725 6900 50  0001 C CNN
-F 3 "~" H 2725 6900 50  0001 C CNN
-	1    2725 6900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2725 6700 2725 6800
-Wire Wire Line
-	2725 7000 2725 7150
-$Comp
-L Device:C_Small C34
-U 1 1 5FCA66DA
-P 3125 6900
-F 0 "C34" H 3217 6946 50  0000 L CNN
-F 1 "100uf" H 3217 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_1210_3225Metric" H 3125 6900 50  0001 C CNN
-F 3 "~" H 3125 6900 50  0001 C CNN
-	1    3125 6900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3125 6700 3125 6800
-Wire Wire Line
-	3125 7000 3125 7150
-$Comp
-L Device:C_Small C35
-U 1 1 5FCB73A0
-P 3525 6900
-F 0 "C35" H 3617 6946 50  0000 L CNN
-F 1 "100uf" H 3617 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_1210_3225Metric" H 3525 6900 50  0001 C CNN
-F 3 "~" H 3525 6900 50  0001 C CNN
-	1    3525 6900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3525 6700 3525 6800
-Wire Wire Line
-	3525 7000 3525 7150
-Wire Wire Line
-	1950 7150 2325 7150
-Connection ~ 1950 7150
-Wire Wire Line
-	2325 7150 2725 7150
-Connection ~ 2325 7150
-Wire Wire Line
-	2725 7150 3125 7150
-Connection ~ 2725 7150
-Wire Wire Line
-	3125 7150 3525 7150
-Connection ~ 3125 7150
-Wire Wire Line
-	3525 6700 3125 6700
-Wire Wire Line
-	3125 6700 2725 6700
-Connection ~ 3125 6700
-Wire Wire Line
-	2725 6700 2325 6700
-Connection ~ 2725 6700
-Wire Wire Line
-	2325 6700 1950 6700
-Connection ~ 2325 6700
-Connection ~ 1950 6700
-$Comp
-L power:VCCQ #PWR?
-U 1 1 5FCB3AB2
-P 725 4775
-AR Path="/5F16021E/5FCB3AB2" Ref="#PWR?"  Part="1" 
-AR Path="/5FC5910D/5FCB3AB2" Ref="#PWR0108"  Part="1" 
-F 0 "#PWR0108" H 725 4625 50  0001 C CNN
-F 1 "VCCQ" H 742 4948 50  0000 C CNN
-F 2 "" H 725 4775 50  0001 C CNN
-F 3 "" H 725 4775 50  0001 C CNN
-	1    725  4775
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:VCCQ #PWR?
-U 1 1 5FCC61D5
-P 1150 6500
-AR Path="/5F16021E/5FCC61D5" Ref="#PWR?"  Part="1" 
-AR Path="/5FC5910D/5FCC61D5" Ref="#PWR0109"  Part="1" 
-F 0 "#PWR0109" H 1150 6350 50  0001 C CNN
-F 1 "VCCQ" H 1167 6673 50  0000 C CNN
-F 2 "" H 1150 6500 50  0001 C CNN
-F 3 "" H 1150 6500 50  0001 C CNN
-	1    1150 6500
-	1    0    0    -1  
-$EndComp
+	9625 4410 9625 4475
 $EndSCHEMATC
