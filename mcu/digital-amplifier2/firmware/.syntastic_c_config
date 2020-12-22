@@ -1,0 +1,24 @@
+-I./Src
+-I./Src/usb_audio1
+-I./Src/usb_audio1/lib
+-I./Src/usb_audio2
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS/inc
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS/Device
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS/Device/inc
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/STM32F4xx_HAL_Driver/Inc
+-I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/STM32F4xx_HAL_Driver/Src
+-I./lib/FreeRTOSv10.2.1/FreeRTOS/Source/include
+-I./lib/FreeRTOSv10.2.1/FreeRTOS/Source
+-Wall
+-std=gnu11
+-mcpu=cortex-m4
+-mthumb
+-ffunction-sections
+-fdata-sections
+-lc
+-lm
+-specs=nano.specs
+-specs=nosys.specs
+-D DSTM32F446xx
+-D USE_HAL_DRIVER
