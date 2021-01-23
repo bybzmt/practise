@@ -16,8 +16,8 @@ I2C_HandleTypeDef hi2c1 = {
         .DualAddressMode  = I2C_DUALADDRESS_DISABLE,
         .GeneralCallMode  = I2C_GENERALCALL_DISABLE,
         .NoStretchMode    = I2C_NOSTRETCH_DISABLE,
-        .OwnAddress1      = 0x11,
-        .OwnAddress2      = 0,
+        .OwnAddress1      = 0xFF,
+        .OwnAddress2      = 0xFE,
     },
     .MspInitCallback = MY_I2C_MspInit,
     .MspDeInitCallback = MY_I2C_MspDeInit,
@@ -34,6 +34,10 @@ static DMA_HandleTypeDef hdma_tx = {
         .MemDataAlignment    = DMA_MDATAALIGN_BYTE,
         .Mode                = DMA_NORMAL,
         .Priority            = DMA_PRIORITY_LOW,
+        .FIFOMode            = DMA_FIFOMODE_DISABLE,
+        .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
+        .MemBurst            = DMA_MBURST_SINGLE,
+        .PeriphBurst         = DMA_MBURST_INC4,
     },
 };
 
@@ -48,30 +52,48 @@ static DMA_HandleTypeDef hdma_rx = {
         .MemDataAlignment    = DMA_MDATAALIGN_BYTE,
         .Mode                = DMA_NORMAL,
         .Priority            = DMA_PRIORITY_HIGH,
+        .FIFOMode            = DMA_FIFOMODE_DISABLE,
+        .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
+        .MemBurst            = DMA_MBURST_INC4,
+        .PeriphBurst         = DMA_MBURST_INC4,
     },
 };
 
 static void MY_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
     __HAL_RCC_I2C1_CLK_ENABLE();
-    __HAL_RCC_I2C1_FORCE_RESET();
-    __HAL_RCC_I2C1_RELEASE_RESET();
+    __HAL_RCC_DMA1_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
 
     GPIO_InitTypeDef  gpio;
     gpio.Pin       = GPIO_PIN_6|GPIO_PIN_7;
     gpio.Mode      = GPIO_MODE_AF_OD;
-    gpio.Pull      = GPIO_NOPULL;
+    gpio.Pull      = GPIO_PULLUP;
     gpio.Speed     = GPIO_SPEED_FREQ_HIGH;
+    gpio.Alternate = GPIO_AF4_I2C1;
     HAL_GPIO_Init(GPIOB, &gpio);
-
-    /* DMAx */
-    __HAL_RCC_DMA1_CLK_ENABLE();
 
     HAL_DMA_Init(&hdma_tx);
     __HAL_LINKDMA(hi2c, hdmatx, hdma_tx);
 
     HAL_DMA_Init(&hdma_rx);
     __HAL_LINKDMA(hi2c, hdmarx, hdma_rx);
+
+    HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+    //系统中断优先级
+    HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(PendSV_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0);
+
+    HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 6, 1);
+    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 6, 0);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 6, 2);
+    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 6, 3);
 
     HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
     HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
@@ -108,12 +130,12 @@ void I2C1_ER_IRQHandler(void)
     HAL_I2C_ER_IRQHandler(&hi2c1);
 }
 
-void DMA1_Channel6_IRQHandler(void)
+void DMA1_Stream6_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(hi2c1.hdmatx);
 }
 
-void DMA1_Channel5_IRQHandler(void)
+void DMA1_Stream5_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(hi2c1.hdmarx);
 }

@@ -62,6 +62,8 @@ static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
     HAL_Delay(10);
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+
+    printf("usb initd\n");
 }
 
 static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)

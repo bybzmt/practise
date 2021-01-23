@@ -590,12 +590,13 @@ F 3 "~" H 5225 1975 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L misc:LT3045xMSE-1 U?
+L digital-amplifier2-rescue:LT3045xMSE-1-misc U?
 U 1 1 5FBE4493
 P 7550 1975
 AR Path="/5F115848/5FEDDDE8/5FBE4493" Ref="U?"  Part="1" 
 AR Path="/5FBB5CE4/5FBE4493" Ref="U?"  Part="1" 
 AR Path="/5F16021E/5FBE4493" Ref="U5"  Part="1" 
+AR Path="/5FBE4493" Ref="U5"  Part="1" 
 F 0 "U5" H 7550 2442 50  0000 C CNN
 F 1 "LT3045xMSE-1" H 7550 2351 50  0000 C CNN
 F 2 "Package_SO:MSOP-12-1EP_3x4mm_P0.65mm_EP1.65x2.85mm" H 7550 2400 50  0001 C CNN

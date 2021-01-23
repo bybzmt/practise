@@ -24,15 +24,28 @@ STM32Cube_DIR = lib/STM32Cube_FW_F4_V1.25.0
 ######################################
 # source
 ######################################
+
+# C includes
+C_INCLUDES = Src
+
 # C sources
 C_SOURCES =Src/main.c
 C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
 C_SOURCES+=Src/bsp_audio.c
+C_SOURCES+=Src/bsp_tas6424.c
 C_SOURCES+=Src/bsp_msp_pcd.c
 C_SOURCES+=Src/bsp_msp_i2c.c
 C_SOURCES+=Src/bsp_msp_sai.c
 C_SOURCES+=Src/system_stm32f4xx.c
+
+C_INCLUDES+=Src/ssd1306
+
+C_SOURCES+=Src/bsp_ssd1306.c
+C_SOURCES+=Src/ssd1306/ssd1306.c
+C_SOURCES+=Src/ssd1306/ssd1306_fonts.c
+C_SOURCES+=Src/ssd1306/ssd1306_lowLevel.c
+C_SOURCES+=Src/ssd1306/ssd1306_tests.c
 
 C_HAL_FILE = stm32f4xx_hal_pcd.c
 C_HAL_FILE+=stm32f4xx_hal_pcd_ex.c
@@ -69,9 +82,6 @@ C_SOURCES+=$(RTOS_DIR)/portable/GCC/ARM_CM4F/port.c
 C_SOURCES+=$(RTOS_DIR)/portable/MemMang/heap_4.c
 C_SOURCES+=$(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
 
-# C includes
-C_INCLUDES = Src
-C_INCLUDES+= Src/usb_audio
 C_INCLUDES+= $(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc
 C_INCLUDES+= $(STM32Cube_DIR)/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
 

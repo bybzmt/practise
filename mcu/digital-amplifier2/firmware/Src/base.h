@@ -17,9 +17,13 @@ extern I2C_HandleTypeDef hi2c1;
 extern PCD_HandleTypeDef hpcd;
 extern SAI_HandleTypeDef hsai_out;
 
+bool volume_mute;
+uint8_t volume;
 
 void bsp_tas6424_init(void);
 void bsp_tas6424_DC_diagnostic(void);
+void bsp_ssd1306_init(void);
+
 void bsp_ssd1306_init(void);
 
 

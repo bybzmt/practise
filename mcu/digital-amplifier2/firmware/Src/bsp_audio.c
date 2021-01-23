@@ -112,7 +112,7 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
         RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
         RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
-        RCC_ExCLKInitStruct.SpdifrxClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
+        RCC_ExCLKInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 429;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 2;
@@ -127,7 +127,7 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
            SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
         RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
-        RCC_ExCLKInitStruct.SpdifrxClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
+        RCC_ExCLKInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
         RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;

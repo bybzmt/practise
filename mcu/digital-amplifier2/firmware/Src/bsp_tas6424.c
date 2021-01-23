@@ -1,26 +1,55 @@
 #include "base.h"
 
-#define ADDR 0xD5
+#define ADDR 0xD4
 
-static HAL_StatusTypeDef MY_Read(uint8_t reg, uint8_t*data, uint16_t len)
+static void MY_Read(uint8_t reg, uint8_t*data, uint16_t len)
 {
-    return HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, &data, len, 100);
+    HAL_StatusTypeDef flag = HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 100);
+    if (flag != HAL_OK) {
+        printf("tas6424 read err\n");
+    }
 }
 
 static uint8_t MY_Read_REG(uint8_t reg)
 {
     uint8_t data = 0;
-    HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, &data, 1, 100);
+    HAL_StatusTypeDef flag = HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, &data, 1, 100);
+    if (flag != HAL_OK) {
+        printf("tas6424 readReg err\n");
+    }
     return data;
 }
 
-static HAL_StatusTypeDef MY_Write_REG(uint8_t reg, uint8_t data)
+static void MY_Write_REG(uint8_t reg, uint8_t data)
 {
-    return HAL_I2C_Mem_Write_DMA(&hi2c1, ADDR, (uint16_t)reg, 1, &data, 1);
+    /* HAL_StatusTypeDef flag = HAL_I2C_Mem_Write_DMA(&hi2c1, ADDR, (uint16_t)reg, 1, &data, 1); */
+    HAL_StatusTypeDef flag = HAL_I2C_Mem_Write(&hi2c1, ADDR, (uint16_t)reg, 1, &data, 1, 500);
+    if (flag != HAL_OK) {
+        printf("tas6424 write err\n");
+    }
+}
+
+static void bsp_tas6424_en(void)
+{
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    GPIO_InitTypeDef  GPIO_InitStruct;
+    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
+    vTaskDelay(100);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+    vTaskDelay(100);
 }
 
 void bsp_tas6424_init(void)
 {
+    bsp_tas6424_en();
+
     /* Set Channels BTL or PBTL mode */
     MY_Write_REG(0x00, 0x00);
     /*

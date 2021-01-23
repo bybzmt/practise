@@ -2,6 +2,7 @@
 #define __SSD1306_LOWLEVEL_H__
 
 #include <stdbool.h>
+#include <stdint.h>
 
 // Low-level procedures
 void ssd1306_Delay(uint16_t tick);

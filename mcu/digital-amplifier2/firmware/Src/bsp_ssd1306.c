@@ -36,20 +36,8 @@ void bsp_ssd1306_show_vol()
     }
 
     char buf[5];
-    int16_t db = VOLUME_TO_DB(volume);
 
-    ssd1306_SetCursor(50, 26);
-    if (db < 0) {
-        sprintf(buf, "%d", -db);
-        ssd1306_Char(2D, 7, 10, White);
-
-        printf("vol: -%ddB\n", -db);
-    } else {
-        sprintf(buf, "%d", db);
-        ssd1306_Char(2B, 7, 10, White);
-
-        printf("vol: %ddB\n", db);
-    }
+    sprintf(buf, "%d", volume);
 
     ssd1306_FillRectangle(50+7+1, 20, 16*3+7*2+1, 26, Black);
     ssd1306_SetCursor(50+7+1, 20);
@@ -57,8 +45,7 @@ void bsp_ssd1306_show_vol()
 
     uint8_t len = strlen(buf);
     ssd1306_SetCursor(50+7+2 + (len*16), 36);
-    ssd1306_Char(d, 7, 10, White);
-    ssd1306_Char(B, 7, 10, White);
+    ssd1306_Char(25, 7, 10, White);
 
     ssd1306_UpdateScreen();
 }
@@ -79,7 +66,8 @@ void bsp_ssd1306_init(void)
 {
     ssd1306_Init();
 
-    bsp_ssd1306_show_input();
+    ssd1306_TestAll();
 
-    bsp_ssd1306_show_vol();
+    /* bsp_ssd1306_show_input(); */
+    /* bsp_ssd1306_show_vol(); */
 }
