@@ -29,7 +29,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
     hpcd.Init.phy_itface = PCD_PHY_EMBEDDED;
     hpcd.Init.Sof_enable = 0;
     hpcd.Init.speed = PCD_SPEED_FULL;
-    hpcd.Init.vbus_sensing_enable = 1;
+    hpcd.Init.vbus_sensing_enable = 0;
     hpcd.Init.lpm_enable = 0;
 
     /* Link The driver to the stack */
@@ -176,7 +176,7 @@ uint8_t USBD_LL_IsStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_addr)
 {
     HAL_PCD_SetAddress(pdev->pData, dev_addr);
-    return USBD_OK; 
+    return USBD_OK;
 }
 
 /**
@@ -184,10 +184,10 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_a
  * @param  pdev: Device handle
  * @param  ep_addr: Endpoint Number
  * @param  pbuf: Pointer to data to be sent
- * @param  size: Data size    
+ * @param  size: Data size
  * @retval USBD Status
  */
-USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, 
+USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev,
         uint8_t ep_addr,
         uint8_t *pbuf,
         uint32_t size)

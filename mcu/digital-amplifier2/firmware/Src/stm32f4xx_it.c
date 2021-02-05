@@ -1,9 +1,5 @@
 #include "stm32f4xx_it.h"
 
-extern PCD_HandleTypeDef hpcd;
-extern SAI_HandleTypeDef hsai_out;
-
-
 void NMI_Handler(void)
 {
 }

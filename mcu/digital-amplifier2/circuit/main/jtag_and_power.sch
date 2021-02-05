@@ -522,17 +522,6 @@ F 3 "~" H 2675 2475 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Transistor_BJT:S8550 Q1
-U 1 1 5FE10923
-P 3350 2950
-F 0 "Q1" H 3541 2904 50  0000 L CNN
-F 1 "S8550" H 3541 2995 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 3550 2875 50  0001 L CIN
-F 3 "http://www.unisonic.com.tw/datasheet/S8550.pdf" H 3350 2950 50  0001 L CNN
-	1    3350 2950
-	-1   0    0    1   
-$EndComp
-$Comp
 L power:+3.3V #PWR022
 U 1 1 5FE16E8B
 P 3250 2550
@@ -801,4 +790,15 @@ Connection ~ 9475 1575
 Connection ~ 9475 1850
 Wire Wire Line
 	9475 1850 9825 1850
+$Comp
+L Device:Q_PNP_BEC Q1
+U 1 1 601B7316
+P 3350 2950
+F 0 "Q1" H 3550 2900 50  0000 L CNN
+F 1 "s8550" H 3550 2950 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3550 3050 50  0001 C CNN
+F 3 "~" H 3350 2950 50  0001 C CNN
+	1    3350 2950
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC

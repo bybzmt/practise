@@ -11,32 +11,42 @@ static void BSP_SAI_ErrorCallback(SAI_HandleTypeDef *hsai);
 
 uint8_t BSP_AUDIO_Init(uint8_t mode, uint8_t Volume, uint32_t AudioFreq)
 {
-    BSP_AUDIO_DeInit();
+    printf("audio init %ld\n", AudioFreq);
+
+    /* BSP_AUDIO_DeInit(); */
 
     BSP_SAI_ClockConfig(AudioFreq);
 
+    __HAL_SAI_DISABLE(&hsai_out);
+
     hsai_out.Init.AudioFrequency = AudioFreq;
-    hsai_out.TxCpltCallback     = BSP_SAI_TxCpltCallback;
-    hsai_out.TxHalfCpltCallback = BSP_SAI_TxHalfCpltCallback;
-    hsai_out.ErrorCallback      = BSP_SAI_ErrorCallback;
 
     if (HAL_SAI_Init(&hsai_out) != HAL_OK)
     {
         return AUDIO_ERROR;
     }
 
+    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_COMPLETE_CB_ID, BSP_SAI_TxCpltCallback);
+    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_HALFCOMPLETE_CB_ID, BSP_SAI_TxHalfCpltCallback);
+    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_ERROR_CB_ID, BSP_SAI_ErrorCallback);
+
     __HAL_SAI_ENABLE(&hsai_out);
+
+    bsp_tas6424_play(AudioFreq);
 
     return AUDIO_OK;
 }
 
 uint8_t BSP_AUDIO_Play(uint8_t* pBuffer, uint32_t Size)
 {
-    uint8_t ret = HAL_SAI_Transmit_DMA(&hsai_out, pBuffer, Size);
+    HAL_SAI_DMAStop(&hsai_out);
+
+    HAL_StatusTypeDef ret = HAL_SAI_Transmit_DMA(&hsai_out, pBuffer, Size);
     if (ret!= HAL_OK) {
         printf("play err:%d\n", ret);
         return AUDIO_ERROR;
     }
+
     return AUDIO_OK;
 }
 
@@ -62,16 +72,22 @@ uint8_t BSP_AUDIO_OUT_Resume(void)
 
 uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume)
 {
+    printf("volume %d\n", Volume);
+    bsp_tas6424_mute(Volume);
     return AUDIO_OK;
 }
 
 uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd)
 {
+    printf("mute %d\n", (uint8_t)Cmd);
+    bsp_tas6424_mute((uint8_t)Cmd);
     return AUDIO_OK;
 }
 
 void BSP_AUDIO_DeInit(void)
 {
+    printf("audio deInit\n");
+
     __HAL_SAI_DISABLE(&hsai_out);
     HAL_SAI_DeInit(&hsai_out);
 }

@@ -82,19 +82,6 @@ Wire Wire Line
 	4150 7260 4150 7135
 Connection ~ 4150 7135
 $Comp
-L Transistor_BJT:S8550 Q?
-U 1 1 5FEF94AF
-P 3150 6335
-AR Path="/5F16021E/5FEF94AF" Ref="Q?"  Part="1" 
-AR Path="/5FC5910D/5FEF9303/5FEF94AF" Ref="Q3"  Part="1" 
-F 0 "Q3" H 3341 6381 50  0000 L CNN
-F 1 "S8550" H 3341 6290 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 3350 6260 50  0001 L CIN
-F 3 "http://www.unisonic.com.tw/datasheet/S8550.pdf" H 3150 6335 50  0001 L CNN
-	1    3150 6335
-	1    0    0    1   
-$EndComp
-$Comp
 L Device:R_Small R?
 U 1 1 5FEF94B6
 P 2625 6335
@@ -110,19 +97,6 @@ $EndComp
 Wire Wire Line
 	3250 6535 3250 6735
 Connection ~ 3250 6735
-$Comp
-L Transistor_BJT:S8050 Q?
-U 1 1 5FEF94CF
-P 2225 6735
-AR Path="/5F16021E/5FEF94CF" Ref="Q?"  Part="1" 
-AR Path="/5FC5910D/5FEF9303/5FEF94CF" Ref="Q2"  Part="1" 
-F 0 "Q2" H 2416 6781 50  0000 L CNN
-F 1 "S8050" H 2416 6690 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 2425 6660 50  0001 L CIN
-F 3 "http://www.unisonic.com.tw/datasheet/S8050.pdf" H 2225 6735 50  0001 L CNN
-	1    2225 6735
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:R_Small R?
 U 1 1 5FEF94E8
@@ -619,8 +593,6 @@ Wire Wire Line
 Wire Wire Line
 	2725 6335 2950 6335
 Wire Wire Line
-	2325 6535 2325 6335
-Wire Wire Line
 	2325 6335 2525 6335
 Wire Wire Line
 	3250 5985 3250 6135
@@ -972,4 +944,30 @@ F 3 "" H 3250 5510 50  0001 C CNN
 	1    3250 5510
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:Q_PNP_BEC Q?
+U 1 1 601C108B
+P 3150 6335
+AR Path="/5F047EA6/5FD62F96/601C108B" Ref="Q?"  Part="1" 
+AR Path="/5FC5910D/5FEF9303/601C108B" Ref="Q3"  Part="1" 
+F 0 "Q3" H 3360 6430 50  0000 L CNN
+F 1 "S8550" H 3360 6330 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3350 6435 50  0001 C CNN
+F 3 "~" H 3150 6335 50  0001 C CNN
+	1    3150 6335
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:Q_NPN_BEC Q2
+U 1 1 601C8527
+P 2225 6735
+F 0 "Q2" H 2450 6820 50  0000 L CNN
+F 1 "S8050" H 2450 6720 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 2425 6835 50  0001 C CNN
+F 3 "~" H 2225 6735 50  0001 C CNN
+	1    2225 6735
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2325 6335 2325 6535
 $EndSCHEMATC

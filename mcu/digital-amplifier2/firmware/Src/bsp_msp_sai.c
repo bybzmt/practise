@@ -15,7 +15,7 @@ SAI_HandleTypeDef hsai_out = {
         .AudioMode     = SAI_MODEMASTER_TX,
         .NoDivider     = SAI_MASTERDIVIDER_ENABLE,
         .Protocol      = SAI_FREE_PROTOCOL,
-        .DataSize      = SAI_DATASIZE_24,
+        .DataSize      = SAI_DATASIZE_16,
         .FirstBit      = SAI_FIRSTBIT_MSB,
         .ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE,
         .Synchro       = SAI_ASYNCHRONOUS,
@@ -23,14 +23,14 @@ SAI_HandleTypeDef hsai_out = {
         .FIFOThreshold = SAI_FIFOTHRESHOLD_1QF,
     },
     .FrameInit = {
-        .FrameLength       = 64,
-        .ActiveFrameLength = 32,
-        .FSDefinition      = SAI_FS_CHANNEL_IDENTIFICATION,
+        .FrameLength       = 32,
+        .ActiveFrameLength = 16,
+        .FSDefinition      = SAI_FS_STARTFRAME,
         .FSPolarity        = SAI_FS_ACTIVE_LOW,
-        .FSOffset          = SAI_FS_BEFOREFIRSTBIT,
+        .FSOffset          = SAI_FS_FIRSTBIT,
     },
     .SlotInit = {
-        .FirstBitOffset = 0,
+        .FirstBitOffset = 1,
         .SlotSize       = SAI_SLOTSIZE_DATASIZE,
         .SlotNumber     = 2,
         .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
@@ -46,8 +46,8 @@ static DMA_HandleTypeDef hdma_sai_tx = {
         .Direction           = DMA_MEMORY_TO_PERIPH,
         .PeriphInc           = DMA_PINC_DISABLE,
         .MemInc              = DMA_MINC_ENABLE,
-        .PeriphDataAlignment = DMA_PDATAALIGN_WORD,
-        .MemDataAlignment    = DMA_MDATAALIGN_WORD,
+        .PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD,
+        .MemDataAlignment    = DMA_MDATAALIGN_HALFWORD,
         .Mode                = DMA_CIRCULAR,
         .Priority            = DMA_PRIORITY_HIGH,
         .FIFOMode            = DMA_FIFOMODE_ENABLE,
@@ -60,6 +60,9 @@ static DMA_HandleTypeDef hdma_sai_tx = {
 static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai)
 {
     __HAL_RCC_SAI1_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef  gpio_init_structure = {
         .Mode = GPIO_MODE_AF_PP,
@@ -100,11 +103,11 @@ static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai)
 
 static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai)
 {
+    __HAL_SAI_DISABLE(hsai);
+
     HAL_NVIC_DisableIRQ(DMA2_Stream5_IRQn);
 
     HAL_DMA_DeInit(hsai->hdmatx);
-
-    __HAL_SAI_DISABLE(hsai);
 
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0);
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9);
@@ -121,6 +124,8 @@ void DMA2_Stream5_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(hsai_out.hdmatx);
 }
+
+/* void SAI1_IRQHandler(void) {} */
 
 
 

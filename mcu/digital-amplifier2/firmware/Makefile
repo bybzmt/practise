@@ -108,15 +108,17 @@ C_SOURCES+=Src/usb_audio1/usbd_conf.c
 C_SOURCES+=Src/usb_audio1/usbd_desc.c
 C_SOURCES+=Src/usb_audio1/usbd_audio_if.c
 else
-# C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_Audio/Addons/PDM/Inc
 C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc
 C_INCLUDES+= Src/usb_audio2
+
+# C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc
+# C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Src/usbd_audio.c
+
+C_SOURCES+=Src/usb_audio2/usbd_audio.c
 
 C_SOURCES+=Src/usb_audio2/usbd_conf.c
 C_SOURCES+=Src/usb_audio2/usbd_desc.c
 C_SOURCES+=Src/usb_audio2/usbd_audio_if.c
-C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Src/usbd_audio.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c

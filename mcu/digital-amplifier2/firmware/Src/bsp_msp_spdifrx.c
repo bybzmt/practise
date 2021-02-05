@@ -94,7 +94,7 @@ static void my_SPDIFRX_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     }
 
     /* NVIC configuration for DMA transfer complete interrupt (SPDIFRX) */
-    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   0x01, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   6, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
 }
 

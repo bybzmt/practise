@@ -10,7 +10,7 @@ static void MY_I2C_MspInit(I2C_HandleTypeDef *hi2c);
 I2C_HandleTypeDef hi2c1 = {
     .Instance              = I2C1,
     .Init = {
-        .ClockSpeed       = 400000,
+        .ClockSpeed       = 100000,
         .DutyCycle        = I2C_DUTYCYCLE_2,
         .AddressingMode   = I2C_ADDRESSINGMODE_7BIT,
         .DualAddressMode  = I2C_DUALADDRESS_DISABLE,
@@ -54,7 +54,7 @@ static DMA_HandleTypeDef hdma_rx = {
         .Priority            = DMA_PRIORITY_HIGH,
         .FIFOMode            = DMA_FIFOMODE_DISABLE,
         .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
-        .MemBurst            = DMA_MBURST_INC4,
+        .MemBurst            = DMA_MBURST_SINGLE,
         .PeriphBurst         = DMA_MBURST_INC4,
     },
 };

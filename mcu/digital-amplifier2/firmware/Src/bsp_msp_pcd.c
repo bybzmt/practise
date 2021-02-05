@@ -15,23 +15,24 @@ static void MY_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd);
 static void MY_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd);
 
 PCD_HandleTypeDef hpcd = {
-  .SetupStageCallback = MY_PCD_SetupStageCallback,
-  .SOFCallback = MY_PCD_SOFCallback,
-  .ResetCallback = MY_PCD_ResetCallback,
-  .SuspendCallback = MY_PCD_SuspendCallback,
-  .ResumeCallback = MY_PCD_ResumeCallback,
-  .DataInStageCallback = MY_PCD_DataInStageCallback,
-  .DataOutStageCallback = MY_PCD_DataOutStageCallback,
-  .ISOOUTIncompleteCallback = MY_PCD_ISOINIncompleteCallback,
-  .ISOINIncompleteCallback = MY_PCD_ISOOUTIncompleteCallback,
-  .ConnectCallback = MY_PCD_ConnectCallback,
-  .DisconnectCallback = MY_PCD_DisconnectCallback,
   .MspInitCallback = MY_PCD_MspInit,
   .MspDeInitCallback = MY_PCD_MspDeInit,
 };
 
 static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 {
+    hpcd->SetupStageCallback = MY_PCD_SetupStageCallback;
+    hpcd->SOFCallback = MY_PCD_SOFCallback;
+    hpcd->ResetCallback = MY_PCD_ResetCallback;
+    hpcd->SuspendCallback = MY_PCD_SuspendCallback;
+    hpcd->ResumeCallback = MY_PCD_ResumeCallback;
+    hpcd->DataInStageCallback = MY_PCD_DataInStageCallback;
+    hpcd->DataOutStageCallback = MY_PCD_DataOutStageCallback;
+    hpcd->ISOOUTIncompleteCallback = MY_PCD_ISOOUTIncompleteCallback;
+    hpcd->ISOINIncompleteCallback = MY_PCD_ISOINIncompleteCallback;
+    hpcd->ConnectCallback = MY_PCD_ConnectCallback;
+    hpcd->DisconnectCallback = MY_PCD_DisconnectCallback;
+
     GPIO_InitTypeDef  GPIO_InitStruct;
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -61,19 +62,20 @@ static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
     HAL_Delay(10);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
 
-    printf("usb initd\n");
+    printf("pcd initd\n");
 }
 
 static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
 {
+    printf("pcd deInit\n");
     /* Disable USB FS Clock */
     __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
     /* __HAL_RCC_SYSCFG_CLK_DISABLE(); */
 
     //usb上拉电阻
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
 }
 
 static void MY_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
@@ -124,11 +126,13 @@ static void MY_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnu
 
 static void MY_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
 {
+    printf("pcd con\n");
     USBD_LL_DevConnected(hpcd->pData);
 }
 
 static void MY_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
 {
+    printf("pcd dis\n");
     USBD_LL_DevDisconnected(hpcd->pData);
 }
 
