@@ -366,14 +366,15 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     haudio->alt_setting = 0U;
     haudio->wr_ptr = 0U;
 
+    USBD_AUDIO_ItfTypeDef *ift = ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData);
+
     /* Initialize the Audio output Hardware layer */
-    if (((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->Init(USBD_AUDIO_FREQ, 16, AUDIO_DEFAULT_VOLUME) != 0U)
-    {
-        return (uint8_t)USBD_FAIL;
-    }
+    ift->Init(USBD_AUDIO_FREQ, 16, AUDIO_OUT_PACKET, AUDIO_DEFAULT_VOLUME);
+
+    uint8_t* buf = ift->AllocBuffer();
 
     /* Prepare Out endpoint to receive 1st packet */
-    (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, (uint8_t*)haudio->buffer[0], AUDIO_OUT_PACKET);
+    (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, buf, AUDIO_OUT_PACKET);
 
     return (uint8_t)USBD_OK;
 }
@@ -639,19 +640,19 @@ static uint8_t USBD_AUDIO_IsoOutIncomplete(USBD_HandleTypeDef *pdev, uint8_t epn
 static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
     uint16_t PacketSize;
-    USBD_AUDIO_HandleTypeDef *haudio;
+    USBD_AUDIO_ItfTypeDef *ift;
 
     if (epnum == AUDIO_OUT_EP)
     {
-        haudio = (USBD_AUDIO_HandleTypeDef *)pdev->pClassData;
+        ift = ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData);
 
         PacketSize = (uint16_t)USBD_LL_GetRxDataSize(pdev, epnum);
 
-        ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->AudioPlay((uint8_t*)haudio->buffer[haudio->wr_ptr], PacketSize);
+        ift->PostBuffer(PacketSize);
 
-        haudio->wr_ptr = (haudio->wr_ptr+1) % AUDIO_OUT_PACKET_NUM;
+        uint8_t* buf = ift->AllocBuffer();
 
-        (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, (uint8_t*)haudio->buffer[haudio->wr_ptr], AUDIO_OUT_PACKET);
+        (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, buf, AUDIO_OUT_PACKET);
     }
 
     return (uint8_t)USBD_OK;

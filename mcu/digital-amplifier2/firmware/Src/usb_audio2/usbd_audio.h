@@ -25,6 +25,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 /* Includes ------------------------------------------------------------------*/
 #include  "usbd_ioreq.h"
 
@@ -103,7 +105,7 @@ extern "C" {
 #define AUDIO_IN_TC                                   0x02U
 
 
-#define AUDIO_OUT_PACKET                              (uint16_t)(((USBD_AUDIO_FREQ * 2U * 2U) / 1000U))
+#define AUDIO_OUT_PACKET                              (uint16_t)(((USBD_AUDIO_FREQ * 2U * 4U) / 1000U))
 #define AUDIO_DEFAULT_VOLUME                          70U
 
 /* Number of sub-packets in the audio transfer buffer. You can modify this value but always make sure
@@ -139,11 +141,12 @@ typedef struct
 
 typedef struct
 {
-  int8_t (*Init)(uint32_t audioFreq, uint8_t audioSize, uint8_t volume);
-  int8_t (*DeInit)(void);
-  int8_t (*AudioPlay)(uint8_t *pbuf, uint16_t size);
-  int8_t (*VolumeCtl)(uint8_t vol);
-  int8_t (*MuteCtl)(uint8_t cmd);
+  void (*Init)(uint32_t audioFreq, uint8_t audioSize, uint16_t bufferSize, uint8_t volume);
+  void (*DeInit)(void);
+  uint8_t* (*AllocBuffer)(void);
+  void (*PostBuffer)(uint16_t received_size);
+  void (*VolumeCtl)(uint8_t vol);
+  void (*MuteCtl)(bool cmd);
 } USBD_AUDIO_ItfTypeDef;
 /**
   * @}

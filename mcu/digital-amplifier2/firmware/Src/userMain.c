@@ -25,7 +25,5 @@ void UserMain()
     usb_to_sai_init();
 
     printf("runing.\n");
-
-    BSP_AUDIO_service();
 }
 
