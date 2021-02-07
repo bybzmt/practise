@@ -74,10 +74,10 @@ void bsp_tas6424_init(void)
     MY_Write_REG(0x00, 0x80);
 
     /* Automatic diagnostics when leaving Hi-Z and after channel fault */
-    MY_Write_REG(0x09, 0x00);
+    /* MY_Write_REG(0x09, 0x00); */
     /* shorted-load threshold: 1.5Ω */
-    MY_Write_REG(0x0a, 0b00100010);
-    MY_Write_REG(0x0b, 0b00100010);
+    /* MY_Write_REG(0x0a, 0b00100010); */
+    /* MY_Write_REG(0x0b, 0b00100010); */
     /* All Channel State: DC load diagnostics */
     MY_Write_REG(0x04, 0xff);
 
@@ -88,7 +88,7 @@ void bsp_tas6424_init(void)
      * Overcurrent is level 2
      * Volume update rate is 1 step / FSYNC
      */
-    MY_Write_REG(0x01, 0b01110000);
+    /* MY_Write_REG(0x01, 0b01110010); */
     /* i2s 44k */
     MY_Write_REG(0x03, 0b00000100);
     /* 44khz TDM */
@@ -98,17 +98,22 @@ void bsp_tas6424_init(void)
     bsp_tas6424_mute(volume_mute);
 }
 
+void bsp_tas6424_deInit(void)
+{
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+}
+
 void bsp_tas6424_mute(bool ok)
 {
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, !ok);
 }
 
-void bsp_tas6424_vol(uint8_t volume)
+void bsp_tas6424_vol(uint8_t _vol)
 {
     /* Volume */
-    uint8_t vol = volume>0 ? (volume * 2) + 7 : 0;
-    uint8_t _vol[] = {vol, vol, vol, vol};
-    MY_Write(0x5, _vol, 4);
+    uint8_t vol = _vol>0 ? (_vol* 2) + 7 : 0;
+    uint8_t raw[] = {vol, vol, vol, vol};
+    MY_Write(0x5, raw, 4);
 }
 
 void bsp_tas6424_play(uint32_t AudioFreq)

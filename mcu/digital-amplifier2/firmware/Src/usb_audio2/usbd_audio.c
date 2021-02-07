@@ -364,24 +364,16 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     pdev->ep_out[AUDIO_OUT_EP & 0xFU].is_used = 1U;
 
     haudio->alt_setting = 0U;
-    haudio->offset = AUDIO_OFFSET_UNKNOWN;
     haudio->wr_ptr = 0U;
-    haudio->rd_ptr = 0U;
-    haudio->rd_enable = 0U;
 
     /* Initialize the Audio output Hardware layer */
-    if (((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->Init(USBD_AUDIO_FREQ,
-                AUDIO_DEFAULT_VOLUME,
-                0U) != 0U)
+    if (((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->Init(USBD_AUDIO_FREQ, 16, AUDIO_DEFAULT_VOLUME) != 0U)
     {
         return (uint8_t)USBD_FAIL;
     }
 
-    memset(haudio->buffer, 0, AUDIO_TOTAL_BUF_SIZE);
-
     /* Prepare Out endpoint to receive 1st packet */
-    (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer,
-            AUDIO_OUT_PACKET);
+    (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, (uint8_t*)haudio->buffer[0], AUDIO_OUT_PACKET);
 
     return (uint8_t)USBD_OK;
 }
@@ -405,7 +397,7 @@ static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   /* DeInit  physical Interface components */
   if (pdev->pClassData != NULL)
   {
-    ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->DeInit(0U);
+    ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->DeInit();
     (void)USBD_free(pdev->pClassData);
     pdev->pClassData = NULL;
   }
@@ -610,37 +602,6 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef *pdev)
 }
 
 /**
-  * @brief  USBD_AUDIO_SOF
-  *         handle SOF event
-  * @param  pdev: device instance
-  * @retval status
-  */
-void USBD_AUDIO_Sync(USBD_HandleTypeDef *pdev, AUDIO_OffsetTypeDef offset)
-{
-    USBD_AUDIO_HandleTypeDef *haudio;
-
-    if (pdev->pClassData == NULL)
-    {
-        return;
-    }
-
-    haudio = (USBD_AUDIO_HandleTypeDef *)pdev->pClassData;
-
-    haudio->offset = offset;
-
-    if (haudio->offset == AUDIO_OFFSET_HALF) {
-        haudio->rd_ptr = AUDIO_TOTAL_BUF_SIZE / 2;
-    } else {
-        haudio->rd_ptr = AUDIO_TOTAL_BUF_SIZE;
-    }
-
-    if (haudio->rd_ptr == haudio->wr_ptr)
-    {
-        haudio->rd_enable = 1;
-    }
-}
-
-/**
   * @brief  USBD_AUDIO_IsoINIncomplete
   *         handle data ISO IN Incomplete event
   * @param  pdev: device instance
@@ -680,43 +641,17 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
     uint16_t PacketSize;
     USBD_AUDIO_HandleTypeDef *haudio;
 
-    haudio = (USBD_AUDIO_HandleTypeDef *)pdev->pClassData;
-
     if (epnum == AUDIO_OUT_EP)
     {
-        /* Get received data packet length */
+        haudio = (USBD_AUDIO_HandleTypeDef *)pdev->pClassData;
+
         PacketSize = (uint16_t)USBD_LL_GetRxDataSize(pdev, epnum);
 
-        /* Packet received Callback */
-        ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->PeriodicTC(&haudio->buffer[haudio->wr_ptr],
-            PacketSize, AUDIO_OUT_TC);
+        ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->AudioPlay((uint8_t*)haudio->buffer[haudio->wr_ptr], PacketSize);
 
-        /* Increment the Buffer pointer or roll it back when all buffers are full */
-        haudio->wr_ptr += PacketSize;
+        haudio->wr_ptr = (haudio->wr_ptr+1) % AUDIO_OUT_PACKET_NUM;
 
-        if (haudio->offset == AUDIO_OFFSET_UNKNOWN && (haudio->wr_ptr / AUDIO_OUT_PACKET > 2))
-        {
-            ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData)->AudioCmd(&haudio->buffer[0], AUDIO_TOTAL_BUF_SIZE / 2U, AUDIO_CMD_START);
-
-            haudio->offset = AUDIO_OFFSET_NONE;
-        }
-
-        if (haudio->rd_enable == 1) {
-            haudio->wr_ptr += AUDIO_OUT_PACKET;
-
-            haudio->rd_enable = 0;
-        }
-
-        if (haudio->wr_ptr >= AUDIO_TOTAL_BUF_SIZE)
-        {
-            /* All buffers are full: roll back */
-            haudio->wr_ptr = 0U;
-        }
-
-        /* Prepare Out endpoint to receive next audio packet */
-        (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP,
-                &haudio->buffer[haudio->wr_ptr],
-                AUDIO_OUT_PACKET);
+        (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, (uint8_t*)haudio->buffer[haudio->wr_ptr], AUDIO_OUT_PACKET);
     }
 
     return (uint8_t)USBD_OK;

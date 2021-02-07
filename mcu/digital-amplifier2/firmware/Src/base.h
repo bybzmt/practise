@@ -20,10 +20,13 @@ extern SAI_HandleTypeDef hsai_out;
 extern bool volume_mute;
 extern uint8_t volume;
 
+void BSP_SAI_ClockConfig(uint32_t AudioFreq);
+
 void bsp_tas6424_init(void);
 void bsp_tas6424_play(uint32_t AudioFreq);
 void bsp_tas6424_mute(bool ok);
 void bsp_tas6424_vol(uint8_t volume);
+void bsp_tas6424_deInit(void);
 
 void bsp_ssd1306_init(void);
 

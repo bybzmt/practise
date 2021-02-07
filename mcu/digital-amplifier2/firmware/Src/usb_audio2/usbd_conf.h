@@ -18,7 +18,7 @@
 #define USBD_DEBUG_LEVEL                      0
 
 /* AUDIO Class Config */
-#define USBD_AUDIO_FREQ                       48000
+#define USBD_AUDIO_FREQ                       44100
 
 /* Exported macro ------------------------------------------------------------*/
 /* Memory management macros */   

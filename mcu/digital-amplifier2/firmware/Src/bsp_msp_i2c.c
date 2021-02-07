@@ -82,18 +82,18 @@ static void MY_I2C_MspInit(I2C_HandleTypeDef *hi2c)
     HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
     //系统中断优先级
-    HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
-    HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
-    HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
-    HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
-    HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
-    HAL_NVIC_SetPriority(PendSV_IRQn, 1, 0);
-    HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0);
+    /* HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0); */
+    /* HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0); */
+    /* HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0); */
+    /* HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0); */
+    /* HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0); */
+    /* HAL_NVIC_SetPriority(PendSV_IRQn, 1, 0); */
+    /* HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0); */
 
-    HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 6, 1);
-    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 6, 0);
-    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 6, 2);
-    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 6, 3);
+    HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 7, 1);
+    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 7, 0);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 7, 2);
+    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 7, 3);
 
     HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
     HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);

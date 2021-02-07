@@ -19,17 +19,13 @@ void UserMain()
     if (flag != HAL_OK) {
         printf("i2c init err\n");
     }
+
     bsp_tas6424_init();
 
     usb_to_sai_init();
 
     printf("runing.\n");
 
-    /* while(1) { */
-        /* uint8_t f1 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14); */
-        /* uint8_t f2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15); */
-        /* printf("pin: %d %d\n", f1, f2); */
-        /* vTaskDelay(1000); */
-    /* } */
+    BSP_AUDIO_service();
 }
 
