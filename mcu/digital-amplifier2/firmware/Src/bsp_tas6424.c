@@ -2,7 +2,7 @@
 
 #define ADDR 0xD4
 
-uint8_t volume = 100;
+uint8_t volume = 70;
 bool volume_mute = false;
 
 bool bsp_tas6424_DC_diagnostic(void);
@@ -60,10 +60,12 @@ static void bsp_tas6424_en(void)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 void bsp_tas6424_init(void)
@@ -72,6 +74,9 @@ void bsp_tas6424_init(void)
 
     /* reset device */
     MY_Write_REG(0x00, 0x80);
+    vTaskDelay(10);
+    MY_Write_REG(0x21, 0x80);
+    vTaskDelay(10);
 
     /* Automatic diagnostics when leaving Hi-Z and after channel fault */
     MY_Write_REG(0x09, 0x00);
@@ -88,7 +93,7 @@ void bsp_tas6424_init(void)
      * Overcurrent is level 2
      * Volume update rate is 1 step / FSYNC
      */
-    MY_Write_REG(0x01, 0b01110000);
+    MY_Write_REG(0x01, 0b01110010);
     /* i2s 44k */
     MY_Write_REG(0x03, 0b00000100);
     /* 44khz TDM */
@@ -107,8 +112,8 @@ void bsp_tas6424_vol(uint8_t volume)
 {
     /* Volume */
     uint8_t vol = volume>0 ? (volume * 2) + 7 : 0;
-    uint8_t _vol[] = {vol, vol, vol, vol};
-    MY_Write(0x5, _vol, 4);
+    uint8_t raw[] = {vol, vol, vol, vol};
+    MY_Write(0x5, raw, 4);
 }
 
 void bsp_tas6424_play(uint32_t AudioFreq)
@@ -148,4 +153,74 @@ bool bsp_tas6424_DC_diagnostic(void)
     }
 
     return false;
+}
+
+static char *chanel_state[] = {
+    "PLAY",
+    "Hi-Z",
+    "MUTE",
+    "DC load diagnostics",
+};
+
+static char *c_yes_no[] = {
+    "No",
+    "Yes",
+};
+
+void bsp_tas6424_reporting(void)
+{
+    uint8_t data[5]={0};
+
+    MY_Read(0x0F, &data[0], 5);
+
+    char *fmt= "CH%d STATE: %s\n";
+    printf(fmt, 1, chanel_state[(data[0]>>6) & 3]);
+    printf(fmt, 2, chanel_state[(data[0]>>4) & 3]);
+    printf(fmt, 3, chanel_state[(data[0]>>2) & 3]);
+    printf(fmt, 4, chanel_state[(data[0]) & 3]);
+
+    fmt = "CH%d Overcurrent: %s\n";
+    printf(fmt, 1, c_yes_no[(data[1]>>7) & 1]);
+    printf(fmt, 2, c_yes_no[(data[1]>>6) & 1]);
+    printf(fmt, 3, c_yes_no[(data[1]>>5) & 1]);
+    printf(fmt, 4, c_yes_no[(data[1]>>4) & 1]);
+
+    fmt = "CH%d DC fault: %s\n";
+    printf(fmt, 1, c_yes_no[(data[1]>>3) & 1]);
+    printf(fmt, 2, c_yes_no[(data[1]>>2) & 1]);
+    printf(fmt, 3, c_yes_no[(data[1]>>1) & 1]);
+    printf(fmt, 4, c_yes_no[(data[1]) & 1]);
+
+    printf("Clock fault: %s\n",       c_yes_no[(data[2]>>4) & 1]);
+    printf("PVDD overvoltage: %s\n",  c_yes_no[(data[2]>>3) & 1]);
+    printf("VBAT overvoltage: %s\n",  c_yes_no[(data[2]>>2) & 1]);
+    printf("PVDD undervoltage: %s\n", c_yes_no[(data[2]>>1) & 1]);
+    printf("VBAT undervoltage: %s\n", c_yes_no[(data[2]>>0) & 1]);
+
+    printf("Global overtemperature: %s\n", c_yes_no[(data[3]>>4) & 1]);
+
+    fmt = "CH%d Overtemperature: %s\n";
+    printf(fmt, 1, c_yes_no[(data[3]>>3) & 1]);
+    printf(fmt, 2, c_yes_no[(data[3]>>2) & 1]);
+    printf(fmt, 3, c_yes_no[(data[3]>>1) & 1]);
+    printf(fmt, 4, c_yes_no[(data[3]>>0) & 1]);
+
+    printf("VDD POR occurred: %s\n",               c_yes_no[(data[4]>>5) & 1]);
+    printf("Global overtemperature warning: %s\n", c_yes_no[(data[4]>>4) & 1]);
+
+    fmt = "CH%d overtemperature warning: %s\n";
+    printf(fmt, 1, c_yes_no[(data[4]>>3) & 1]);
+    printf(fmt, 2, c_yes_no[(data[4]>>2) & 1]);
+    printf(fmt, 3, c_yes_no[(data[4]>>1) & 1]);
+    printf(fmt, 4, c_yes_no[(data[4]>>0) & 1]);
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14|GPIO_PIN_15);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    bsp_tas6424_reporting();
 }

@@ -1,13 +1,15 @@
 #include "base.h"
 
-static void my_SPDIFRX_MspInit(SPDIFRX_HandleTypeDef *hspdif);
-static void my_SPDIFRX_MspDeInit(SPDIFRX_HandleTypeDef *hspdif);
+static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif);
+static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif);
+static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif);
+static void my_spdif_rx_halfcplt(SPDIFRX_HandleTypeDef *hspdif);
 
 SPDIFRX_HandleTypeDef SpdifrxHandle = {
     .Instance = SPDIFRX,
     .Init = {
         .InputSelection = SPDIFRX_INPUT_IN3,
-        .Retries = SPDIFRX_MAXRETRIES_15,
+        .Retries = SPDIFRX_MAXRETRIES_NONE,
         .WaitForActivity = SPDIFRX_WAITFORACTIVITY_ON,
         .ChannelSelection = SPDIFRX_CHANNEL_A,
         .DataFormat = SPDIFRX_DATAFORMAT_LSB,
@@ -17,8 +19,8 @@ SPDIFRX_HandleTypeDef SpdifrxHandle = {
         .ValidityBitMask = SPDIFRX_VALIDITYMASK_OFF,
         .ParityErrorMask = SPDIFRX_PARITYERRORMASK_OFF,
     },
-    .MspInitCallback = my_SPDIFRX_MspInit,
-    .MspDeInitCallback = my_SPDIFRX_MspDeInit,
+    .MspInitCallback = my_spdif_MspInit,
+    .MspDeInitCallback = my_spdif_MspDeInit,
 };
 
 DMA_HandleTypeDef SpdifrxDmaHandle = {
@@ -44,8 +46,11 @@ uint8_t my_spdifrx_stop(uint32_t *buf, size_t size)
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 }
 
-uint8_t my_spdifrx_start(uint32_t *buf, size_t size)
+uint8_t my_spdifrx_start()
 {
+    size_t size = 1024 * 8;
+    uint8_t *buf = malloc(size);
+
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 
     if (HAL_SPDIFRX_Init(&SpdifrxHandle) != HAL_OK)
@@ -66,8 +71,11 @@ uint8_t my_spdifrx_start(uint32_t *buf, size_t size)
 }
 
 
-static void my_SPDIFRX_MspInit(SPDIFRX_HandleTypeDef *hspdif)
+static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
 {
+    hspdif->RxHalfCpltCallback = my_spdif_rx_halfcplt;
+    hspdif->RxCpltCallback = my_spdif_rx_cplt;
+
     __HAL_RCC_SPDIFRX_CLK_ENABLE();
 
     /* Configure SPDIFRX_IN pin */
@@ -98,7 +106,32 @@ static void my_SPDIFRX_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
 }
 
-static void my_SPDIFRX_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
+static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
 {
 }
 
+static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif)
+{
+}
+
+static void my_spdif_rx_halfcplt(SPDIFRX_HandleTypeDef *hspdif)
+{
+}
+
+void spdifClock_Config(void)
+{
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_SPDIFRX;
+    PeriphClkInitStruct.PLLSAI.PLLSAIM = 5;
+    PeriphClkInitStruct.PLLSAI.PLLSAIN = 96;
+    PeriphClkInitStruct.PLLSAI.PLLSAIQ = 5;
+    PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV2;
+    PeriphClkInitStruct.PLLSAIDivQ = 5;
+    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
+    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
