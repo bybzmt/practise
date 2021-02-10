@@ -16,6 +16,7 @@
 extern I2C_HandleTypeDef hi2c1;
 extern PCD_HandleTypeDef hpcd;
 extern SAI_HandleTypeDef hsai_out;
+extern SPDIFRX_HandleTypeDef SpdifrxHandle;
 
 extern bool volume_mute;
 extern uint8_t volume;

@@ -22,6 +22,7 @@ void    BSP_AUDIO_DeInit(void);
 uint32_t BSP_AUDIO_OUT_GetRemainingDataSize(void);
 void    BSP_AUDIO_OUT_TransferComplete_CallBack(void);
 void    BSP_AUDIO_OUT_HalfTransfer_CallBack(void);
+void my_spdifrx_start(void);
 
 
 #ifdef __cplusplus

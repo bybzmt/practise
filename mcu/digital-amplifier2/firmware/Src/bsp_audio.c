@@ -9,6 +9,9 @@ static void BSP_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai);
 static void BSP_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai);
 static void BSP_SAI_ErrorCallback(SAI_HandleTypeDef *hsai);
 
+static void spdifClock_Config(void);
+static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif);
+
 uint8_t BSP_AUDIO_Init(uint8_t mode, uint8_t Volume, uint32_t AudioFreq)
 {
     printf("audio init %ld\n", AudioFreq);
@@ -18,6 +21,7 @@ uint8_t BSP_AUDIO_Init(uint8_t mode, uint8_t Volume, uint32_t AudioFreq)
     BSP_SAI_ClockConfig(AudioFreq);
 
     __HAL_SAI_DISABLE(&hsai_out);
+    HAL_SAI_DeInit(&hsai_out);
 
     hsai_out.Init.AudioFrequency = AudioFreq;
 
@@ -128,7 +132,6 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
         RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
         RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
-        RCC_ExCLKInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 429;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 2;
@@ -143,7 +146,6 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
            SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
         RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
-        RCC_ExCLKInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
         RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;
@@ -154,6 +156,89 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
     }
 }
 
+void my_spdifrx_stop(void)
+{
+    HAL_SPDIFRX_DeInit(&SpdifrxHandle);
+}
+
+void my_spdifrx_start(void)
+{
+    printf("spdifrx start\n");
+
+    size_t size = 1024 * 8;
+    uint32_t *buf = (uint32_t*)malloc(size);
+
+    HAL_SPDIFRX_DeInit(&SpdifrxHandle);
+    __HAL_SPDIFRX_IDLE(&SpdifrxHandle);
+
+    spdifClock_Config();
+
+    if (HAL_SPDIFRX_Init(&SpdifrxHandle) != HAL_OK)
+    {
+        printf("spdifrx init err\n");
+        return;
+    }
+
+    HAL_SPDIFRX_RegisterCallback(&SpdifrxHandle, HAL_SPDIFRX_RX_CPLT_CB_ID, my_spdif_rx_cplt);
+    HAL_SPDIFRX_RegisterCallback(&SpdifrxHandle, HAL_SPDIFRX_CX_CPLT_CB_ID, my_spdif_rx_cplt);
+    HAL_SPDIFRX_RegisterCallback(&SpdifrxHandle, HAL_SPDIFRX_ERROR_CB_ID, my_spdif_rx_cplt);
+
+    /* 配置SAI */
+    /* __HAL_SAI_DISABLE(&hsai_out); */
+    /* HAL_SAI_DeInit(&hsai_out); */
+
+    /* hsai_out.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K; */
+
+    /* HAL_SAI_Init(&hsai_out); */
+    /* __HAL_SAI_ENABLE(&hsai_out); */
+
+    /* HAL_SAI_Transmit_DMA(&hsai_out, buf, size); */
+    /* HAL_SAI_DMAPause(&hsai_out); */
+    /* bsp_tas6424_play(SAI_AUDIO_FREQUENCY_48K); */
+
+    /* 启动spdif */
+    HAL_SPDIFRX_ReceiveDataFlow_DMA(&SpdifrxHandle, buf, size/4);
+
+    HAL_StatusTypeDef ret;
+    ret = HAL_SPDIFRX_ReceiveDataFlow(&SpdifrxHandle, buf, size/4, 2000);
+    printf("ret: %d\n", ret);
 
 
+    if (SpdifrxHandle.ErrorCode != HAL_SPDIFRX_ERROR_NONE)
+    {
+        printf("spdifrx start err\n");
+        return;
+    }
 
+    printf("spdifrx over\n");
+}
+
+static void spdifClock_Config(void)
+{
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX|RCC_PERIPHCLK_SAI1;
+    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP; */
+    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
+    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
+    PeriphClkInitStruct.PLLI2S.PLLI2SM = 8;
+    PeriphClkInitStruct.PLLI2S.PLLI2SN = 344;
+    PeriphClkInitStruct.PLLI2S.PLLI2SQ = 7;
+    PeriphClkInitStruct.PLLI2S.PLLI2SP = RCC_PLLI2SP_DIV2;
+    PeriphClkInitStruct.PLLI2SDivQ = 1;
+
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+        printf("spdif clock error\n");
+    }
+}
+
+static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif)
+{
+    static bool once = true;
+    if (once) {
+        printf("once\n");
+        /* HAL_SAI_DMAResume(&hsai_out); */
+        once = false;
+    }
+}

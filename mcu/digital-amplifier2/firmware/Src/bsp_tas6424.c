@@ -58,14 +58,6 @@ static void bsp_tas6424_en(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 void bsp_tas6424_init(void)
@@ -80,9 +72,9 @@ void bsp_tas6424_init(void)
 
     /* Automatic diagnostics when leaving Hi-Z and after channel fault */
     MY_Write_REG(0x09, 0x00);
-    /* shorted-load threshold: 1.5Ω */
-    MY_Write_REG(0x0a, 0b00100010);
-    MY_Write_REG(0x0b, 0b00100010);
+    /* shorted-load threshold: 1.0Ω */
+    MY_Write_REG(0x0a, 0b00010001);
+    MY_Write_REG(0x0b, 0b00010001);
     /* All Channel State: DC load diagnostics */
     MY_Write_REG(0x04, 0xff);
 
@@ -139,16 +131,25 @@ void bsp_tas6424_play(uint32_t AudioFreq)
 
     /* play */
     MY_Write_REG(0x04, 0b00000101);
+
+    GPIO_InitTypeDef  GPIO_InitStruct;
+    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 bool bsp_tas6424_DC_diagnostic(void)
 {
-    uint16_t data=0;
+    uint8_t data[2]={0};
 
     MY_Read(0x0C, (uint8_t*)&data, 2);
 
-    if (data != 0) {
-        printf("diagnostic: 0x%X 0x%X\n", (uint8_t)(data>>8), (uint8_t)data);
+    if (data[0] != 0) {
+        printf("diagnostic: 0x%X 0x%X\n", data[0], data[1]);
         return true;
     }
 

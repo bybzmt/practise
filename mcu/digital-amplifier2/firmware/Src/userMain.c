@@ -15,21 +15,19 @@ void usb_to_sai_init(void)
 
 void UserMain()
 {
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
     HAL_StatusTypeDef flag = HAL_I2C_Init(&hi2c1);
     if (flag != HAL_OK) {
         printf("i2c init err\n");
     }
-    bsp_tas6424_init();
+    /* bsp_tas6424_init(); */
 
-    usb_to_sai_init();
+    /* usb_to_sai_init(); */
+
+    my_spdifrx_start();
 
     printf("runing.\n");
 
-    /* while(1) { */
-        /* uint8_t f1 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14); */
-        /* uint8_t f2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15); */
-        /* printf("pin: %d %d\n", f1, f2); */
-        /* vTaskDelay(1000); */
-    /* } */
+
 }
 

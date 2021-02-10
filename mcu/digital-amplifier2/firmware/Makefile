@@ -37,6 +37,7 @@ C_SOURCES+=Src/bsp_tas6424.c
 C_SOURCES+=Src/bsp_msp_pcd.c
 C_SOURCES+=Src/bsp_msp_i2c.c
 C_SOURCES+=Src/bsp_msp_sai.c
+C_SOURCES+=Src/bsp_msp_spdifrx.c
 C_SOURCES+=Src/system_stm32f4xx.c
 
 C_INCLUDES+=Src/ssd1306
@@ -52,6 +53,7 @@ C_HAL_FILE+=stm32f4xx_hal_pcd_ex.c
 C_HAL_FILE+=stm32f4xx_ll_usb.c
 C_HAL_FILE+=stm32f4xx_hal_i2c.c
 C_HAL_FILE+=stm32f4xx_hal_i2c_ex.c
+C_HAL_FILE+=stm32f4xx_hal_spdifrx.c
 C_HAL_FILE+=stm32f4xx_hal_sai.c
 C_HAL_FILE+=stm32f4xx_hal_sai_ex.c
 C_HAL_FILE+=stm32f4xx_hal_tim.c
