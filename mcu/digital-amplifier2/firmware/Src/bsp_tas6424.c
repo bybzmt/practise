@@ -223,5 +223,5 @@ void EXTI15_10_IRQHandler(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    bsp_tas6424_reporting();
+    /* bsp_tas6424_reporting(); */
 }

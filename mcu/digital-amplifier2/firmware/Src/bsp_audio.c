@@ -123,6 +123,14 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
 
     HAL_RCCEx_GetPeriphCLKConfig(&RCC_ExCLKInitStruct);
 
+    RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48 | RCC_PERIPHCLK_SAI1;
+    RCC_ExCLKInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIM = 8;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIN = 384;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV8;
+
+    RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
+
     /* Set the PLL configuration according to the audio frequency */
     if ((AudioFreq == SAI_AUDIO_FREQUENCY_11K) || (AudioFreq == SAI_AUDIO_FREQUENCY_22K) || (AudioFreq == SAI_AUDIO_FREQUENCY_44K))
     {
@@ -130,14 +138,10 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
         /* PLLSAI_VCO: VCO_429M
            SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 429/2 = 214.5 Mhz
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
-        RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
-        RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 429;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 2;
         RCC_ExCLKInitStruct.PLLI2SDivQ = 19;
-
-        HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
     }
     else /* SAI_AUDIO_FREQUENCY_8K, SAI_AUDIO_FREQUENCY_16K, SAI_AUDIO_FREQUENCY_48K), SAI_AUDIO_FREQUENCY_96K */
     {
@@ -145,14 +149,15 @@ static void BSP_SAI_ClockConfig(uint32_t AudioFreq)
            PLLSAI_VCO: VCO_344M
            SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
            SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
-        RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
-        RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 7;
         RCC_ExCLKInitStruct.PLLI2SDivQ = 1;
+    }
 
-        HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
+    if (HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct) != HAL_OK)
+    {
+        printf("spdif clock error\n");
     }
 }
 
@@ -161,12 +166,22 @@ void my_spdifrx_stop(void)
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 }
 
+// amount of SPDIF sub-frame per block
+#define SPDIF_SUBFRAMES_PER_BLOCK  (192 * 2)
+
+// sub-frame transfer unit (multiple of SPDIF_SUBFRAMES_PER_BLOCK)
+#define TRANSFER_UNIT  SPDIF_SUBFRAMES_PER_BLOCK
+
 void my_spdifrx_start(void)
 {
     printf("spdifrx start\n");
 
     size_t size = 1024 * 8;
-    uint32_t *buf = (uint32_t*)malloc(size);
+    uint32_t *buf = (uint32_t*)pvPortMalloc(size);
+    if (buf == NULL) {
+        printf("malloc error %d/%d\n", size, xPortGetFreeHeapSize());
+        return;
+    }
 
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
     __HAL_SPDIFRX_IDLE(&SpdifrxHandle);
@@ -184,25 +199,23 @@ void my_spdifrx_start(void)
     HAL_SPDIFRX_RegisterCallback(&SpdifrxHandle, HAL_SPDIFRX_ERROR_CB_ID, my_spdif_rx_cplt);
 
     /* 配置SAI */
-    /* __HAL_SAI_DISABLE(&hsai_out); */
-    /* HAL_SAI_DeInit(&hsai_out); */
+    __HAL_SAI_DISABLE(&hsai_out);
+    HAL_SAI_DeInit(&hsai_out);
 
-    /* hsai_out.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K; */
+    hsai_out.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K;
 
-    /* HAL_SAI_Init(&hsai_out); */
-    /* __HAL_SAI_ENABLE(&hsai_out); */
+    HAL_SAI_Init(&hsai_out);
+    __HAL_SAI_ENABLE(&hsai_out);
 
-    /* HAL_SAI_Transmit_DMA(&hsai_out, buf, size); */
-    /* HAL_SAI_DMAPause(&hsai_out); */
-    /* bsp_tas6424_play(SAI_AUDIO_FREQUENCY_48K); */
-
-    /* 启动spdif */
-    HAL_SPDIFRX_ReceiveDataFlow_DMA(&SpdifrxHandle, buf, size/4);
+    HAL_SAI_Transmit_DMA(&hsai_out, &buf[0], size/2);
+    HAL_SAI_DMAPause(&hsai_out);
+    bsp_tas6424_play(SAI_AUDIO_FREQUENCY_48K);
 
     HAL_StatusTypeDef ret;
-    ret = HAL_SPDIFRX_ReceiveDataFlow(&SpdifrxHandle, buf, size/4, 2000);
-    printf("ret: %d\n", ret);
-
+    ret = HAL_SPDIFRX_ReceiveDataFlow_DMA(&SpdifrxHandle, &buf[0], size/4);
+    if (ret != 0 ) {
+         printf("ret: %d\n", ret);
+    }
 
     if (SpdifrxHandle.ErrorCode != HAL_SPDIFRX_ERROR_NONE)
     {
@@ -216,16 +229,22 @@ void my_spdifrx_start(void)
 static void spdifClock_Config(void)
 {
     RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+    HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInitStruct);
 
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX|RCC_PERIPHCLK_SAI1;
-    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP; */
-    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
-    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
+    /* PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX; */
+    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
+    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR; */
+    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI;
     PeriphClkInitStruct.PLLI2S.PLLI2SM = 8;
-    PeriphClkInitStruct.PLLI2S.PLLI2SN = 344;
+    PeriphClkInitStruct.PLLI2S.PLLI2SN = 336;
     PeriphClkInitStruct.PLLI2S.PLLI2SQ = 7;
     PeriphClkInitStruct.PLLI2S.PLLI2SP = RCC_PLLI2SP_DIV2;
     PeriphClkInitStruct.PLLI2SDivQ = 1;
+    PeriphClkInitStruct.PLLSAI.PLLSAIM = 8;
+    PeriphClkInitStruct.PLLSAI.PLLSAIN = 344;
+    PeriphClkInitStruct.PLLSAI.PLLSAIQ = 7;
+    PeriphClkInitStruct.PLLSAIDivQ = 1;
 
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
@@ -237,8 +256,14 @@ static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
     static bool once = true;
     if (once) {
-        printf("once\n");
-        /* HAL_SAI_DMAResume(&hsai_out); */
+        HAL_SAI_DMAResume(&hsai_out);
         once = false;
     }
+}
+
+void HAL_SPDIFRX_RxCpltCallback(SPDIFRX_HandleTypeDef *hspdif) {
+    my_spdif_rx_cplt(hspdif);
+}
+void HAL_SPDIFRX_ErrorCallback(SPDIFRX_HandleTypeDef *hspdif) {
+    printf("spidf callback err\n");
 }

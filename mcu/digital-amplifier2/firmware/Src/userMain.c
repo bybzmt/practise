@@ -20,7 +20,7 @@ void UserMain()
     if (flag != HAL_OK) {
         printf("i2c init err\n");
     }
-    /* bsp_tas6424_init(); */
+    bsp_tas6424_init();
 
     /* usb_to_sai_init(); */
 

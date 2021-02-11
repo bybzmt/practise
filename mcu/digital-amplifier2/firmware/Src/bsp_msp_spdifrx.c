@@ -7,11 +7,12 @@ SPDIFRX_HandleTypeDef SpdifrxHandle = {
     .Instance = SPDIFRX,
     .Init = {
         .InputSelection = SPDIFRX_INPUT_IN3,
-        /* .Retries = SPDIFRX_MAXRETRIES_NONE, */
-        .Retries = SPDIFRX_MAXRETRIES_15,
+        .Retries = SPDIFRX_MAXRETRIES_NONE,
+        /* .Retries = SPDIFRX_MAXRETRIES_15, */
         .WaitForActivity = SPDIFRX_WAITFORACTIVITY_ON,
         .ChannelSelection = SPDIFRX_CHANNEL_A,
-        .DataFormat = SPDIFRX_DATAFORMAT_LSB,
+        /* .DataFormat = SPDIFRX_DATAFORMAT_LSB, */
+        .DataFormat = SPDIFRX_DATAFORMAT_32BITS,
         .StereoMode = SPDIFRX_STEREOMODE_ENABLE,
         .PreambleTypeMask = SPDIFRX_PREAMBLETYPEMASK_OFF,
         .ChannelStatusMask = SPDIFRX_CHANNELSTATUS_OFF,
@@ -56,8 +57,8 @@ static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     GPIO_InitStructure.Pin       = GPIO_PIN_5;
     GPIO_InitStructure.Mode      = GPIO_MODE_AF_PP;
     /* GPIO_InitStructure.Mode      = GPIO_MODE_INPUT; */
-    /* GPIO_InitStructure.Pull      = GPIO_NOPULL; */
-    GPIO_InitStructure.Pull      = GPIO_PULLDOWN;
+    GPIO_InitStructure.Pull      = GPIO_NOPULL;
+    /* GPIO_InitStructure.Pull      = GPIO_PULLDOWN; */
     GPIO_InitStructure.Speed     = GPIO_SPEED_FREQ_MEDIUM;
     GPIO_InitStructure.Alternate = GPIO_AF8_SPDIFRX;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
@@ -94,7 +95,7 @@ static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
 
 void DMA1_Stream1_IRQHandler(void)
 {
-    HAL_DMA_IRQHandler(&SpdifrxHandle);
+    HAL_DMA_IRQHandler(&SpdifrxDmaHandle);
 }
 
 void SPDIF_RX_IRQHandler(void)

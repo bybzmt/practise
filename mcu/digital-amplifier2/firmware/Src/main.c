@@ -66,7 +66,6 @@ static void SystemClock_Config(void)
 {
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
     RCC_OscInitTypeDef RCC_OscInitStruct;
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
     HAL_StatusTypeDef ret = HAL_OK;
 
     /* Enable Power Control clock */
@@ -96,18 +95,6 @@ static void SystemClock_Config(void)
     /* activate the OverDrive to reach the 180 Mhz Frequency */
     ret = HAL_PWREx_EnableOverDrive();
     if(ret != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    /* Select PLLSAI output as USB clock source */
-    PeriphClkInitStruct.PLLSAI.PLLSAIM = 8;
-    PeriphClkInitStruct.PLLSAI.PLLSAIN = 384;
-    PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV8;
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48;
-    PeriphClkInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
-    ret = HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
-    if (ret != HAL_OK)
     {
         Error_Handler();
     }
