@@ -56,9 +56,7 @@ static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.Pin       = GPIO_PIN_5;
     GPIO_InitStructure.Mode      = GPIO_MODE_AF_PP;
-    /* GPIO_InitStructure.Mode      = GPIO_MODE_INPUT; */
     GPIO_InitStructure.Pull      = GPIO_NOPULL;
-    /* GPIO_InitStructure.Pull      = GPIO_PULLDOWN; */
     GPIO_InitStructure.Speed     = GPIO_SPEED_FREQ_MEDIUM;
     GPIO_InitStructure.Alternate = GPIO_AF8_SPDIFRX;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);

@@ -50,7 +50,7 @@ static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
 
     /* Set USBFS Interrupt priority */
-    HAL_NVIC_SetPriority(OTG_FS_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(OTG_FS_IRQn, 0, 0);
 
     /* Enable USBFS Interrupt */
     HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
@@ -72,7 +72,6 @@ static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
     printf("pcd deInit\n");
     /* Disable USB FS Clock */
     __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
-    /* __HAL_RCC_SYSCFG_CLK_DISABLE(); */
 
     //usb上拉电阻
     HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);

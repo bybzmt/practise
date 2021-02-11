@@ -48,10 +48,7 @@ static void bsp_tas6424_en(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
-    vTaskDelay(50);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
-    vTaskDelay(50);
 
     GPIO_InitStruct.Pin = GPIO_PIN_10;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -60,9 +57,15 @@ static void bsp_tas6424_en(void)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
+void bsp_tas6424_deInit(void)
+{
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+}
+
 void bsp_tas6424_init(void)
 {
     bsp_tas6424_en();
+    vTaskDelay(10);
 
     /* reset device */
     MY_Write_REG(0x00, 0x80);

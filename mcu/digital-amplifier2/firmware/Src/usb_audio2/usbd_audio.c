@@ -377,8 +377,6 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
         return (uint8_t)USBD_FAIL;
     }
 
-    memset(haudio->buffer, 0, AUDIO_TOTAL_BUF_SIZE);
-
     /* Prepare Out endpoint to receive 1st packet */
     (void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer,
             AUDIO_OUT_PACKET);
