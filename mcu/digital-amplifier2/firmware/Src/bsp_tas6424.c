@@ -88,7 +88,7 @@ void bsp_tas6424_init(void)
      * Overcurrent is level 2
      * Volume update rate is 1 step / FSYNC
      */
-    MY_Write_REG(0x01, 0b01110010);
+    MY_Write_REG(0x01, 0b01111110);
     /* i2s 44k */
     MY_Write_REG(0x03, 0b00000100);
     /* 44khz TDM */
@@ -130,6 +130,7 @@ void bsp_tas6424_play(uint32_t AudioFreq)
             printf("96khz\n");
             break;
     }
+
     MY_Write_REG(0x03, freq);
 
     /* play */

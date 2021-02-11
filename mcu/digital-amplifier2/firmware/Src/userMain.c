@@ -36,9 +36,6 @@ void usb_stop(void)
     USBD_Stop(&USBD_Device);
 }
 
-static bool usb_runing = false;
-static bool spdif_running = false;
-
 void UserMain()
 {
     __HAL_RCC_SYSCFG_CLK_ENABLE();
@@ -48,32 +45,11 @@ void UserMain()
     }
 
     usb_init();
+    usb_start();
 
-    for (;;) {
-        if (my_spdif_has()) {
-            if (usb_runing) {
-                usb_stop();
-                usb_runing = false;
-            }
-
-            if (!spdif_running) {
-                my_spdif_start();
-                spdif_running = true;
-            }
-        } else {
-            if (spdif_running) {
-                my_spdif_stop();
-                spdif_running = false;
-            }
-
-            if (!usb_runing) {
-                usb_start();
-                usb_runing = true;
-            }
-        }
-
-        vTaskDelay(1000);
-    }
+    /* for (;;) { */
+        /* vTaskDelay(1000); */
+    /* } */
 
     printf("runing.\n");
 }
