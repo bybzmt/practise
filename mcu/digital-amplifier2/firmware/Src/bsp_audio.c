@@ -160,8 +160,8 @@ void my_spdifrx_stop(void)
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 }
 
-static uint8_t volatile spdif_tick = 0;
-static uint8_t spdif_tick_old = 0;
+static uint16_t volatile spdif_tick = 0;
+static uint16_t spdif_tick_old = 0;
 static uint8_t spdif_runing = 0;
 
 bool my_spdif_has(void)
@@ -182,12 +182,9 @@ void my_spdif_stop(void)
 {
     spdif_runing = 0;
 
-    bsp_tas6424_deInit();
+    bsp_tas6424_mute(true);
 
-    if (spdif_buf != NULL) {
-        vPortFree(spdif_buf);
-        spdif_buf = NULL;
-    }
+    vPortFree(spdif_buf);
 
     __HAL_SAI_DISABLE(&hsai_out);
     HAL_SAI_DeInit(&hsai_out);
@@ -203,7 +200,7 @@ void my_spdif_start(void)
     spdif_runing = 0;
 
     size_t size = 1024 * 8;
-    *spdif_buf = (uint32_t*)pvPortMalloc(size);
+    spdif_buf = (uint32_t*)pvPortMalloc(size);
     if (spdif_buf == NULL) {
         printf("malloc error %d/%d\n", size, xPortGetFreeHeapSize());
         return;
@@ -246,8 +243,8 @@ void my_spdif_start(void)
         return;
     }
 
-    bsp_tas6424_init();
     bsp_tas6424_play(SAI_AUDIO_FREQUENCY_48K);
+    bsp_tas6424_mute(volume_mute);
 
     printf("spdif over\n");
 }
