@@ -1,7 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_audio_if.h"
-#include "bsp_audio.h"
+#include "base.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -38,7 +38,6 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
  */
 static int8_t Audio_Init(uint32_t  AudioFreq, uint32_t Volume, uint32_t options)
 {
-    BSP_AUDIO_Init(1, Volume, AudioFreq);
     return 0;
 }
 
@@ -49,7 +48,6 @@ static int8_t Audio_Init(uint32_t  AudioFreq, uint32_t Volume, uint32_t options)
  */
 static int8_t Audio_DeInit(uint32_t options)
 {
-    BSP_AUDIO_DeInit();
     return 0;
 }
 
@@ -62,16 +60,6 @@ static int8_t Audio_DeInit(uint32_t options)
  */
 static int8_t Audio_PlaybackCmd(uint8_t *pbuf, uint32_t size, uint8_t cmd)
 {
-    switch(cmd)
-    {
-        case AUDIO_CMD_START:
-            BSP_AUDIO_Play((uint8_t *)pbuf, size);
-            break;
-
-        case AUDIO_CMD_PLAY:
-            BSP_AUDIO_Play((uint8_t *)pbuf, size);
-            break;
-    }
     return 0;
 }
 
@@ -82,7 +70,7 @@ static int8_t Audio_PlaybackCmd(uint8_t *pbuf, uint32_t size, uint8_t cmd)
  */
 static int8_t Audio_VolumeCtl(uint8_t vol)
 {
-    BSP_AUDIO_OUT_SetVolume(vol);
+    audio_setVolume(vol);
     return 0;
 }
 
@@ -93,7 +81,7 @@ static int8_t Audio_VolumeCtl(uint8_t vol)
  */
 static int8_t Audio_MuteCtl(uint8_t cmd)
 {
-    BSP_AUDIO_OUT_SetMute(cmd);
+    audio_setMute(cmd);
     return 0;
 }
 

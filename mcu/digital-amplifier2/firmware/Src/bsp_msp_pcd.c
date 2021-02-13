@@ -1,5 +1,7 @@
 #include "base.h"
 
+static bsp_usb_clock_config(void);
+
 static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd);
 static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd);
 static void MY_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd);
@@ -21,6 +23,8 @@ PCD_HandleTypeDef hpcd = {
 
 static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 {
+    bsp_usb_clock_config();
+
     hpcd->SetupStageCallback = MY_PCD_SetupStageCallback;
     hpcd->SOFCallback = MY_PCD_SOFCallback;
     hpcd->ResetCallback = MY_PCD_ResetCallback;
@@ -75,6 +79,18 @@ static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
 
     //usb上拉电阻
     HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
+}
+
+static bsp_usb_clock_config(void)
+{
+    RCC_PeriphCLKInitTypeDef RCC_ExCLKInitStruct;
+    HAL_RCCEx_GetPeriphCLKConfig(&RCC_ExCLKInitStruct);
+    RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48;
+    RCC_ExCLKInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIM = 8;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIN = 384;
+    RCC_ExCLKInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV8;
+    HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
 }
 
 static void MY_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)

@@ -1,9 +1,6 @@
-
+#include "base.h"
 #include <string.h>
 #include <stdio.h>
-
-#include "bsp_audio.h"
-#include "stm32f4xx_ll_dma.h"
 
 static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai);
 static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai);

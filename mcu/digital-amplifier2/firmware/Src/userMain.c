@@ -13,17 +13,6 @@ void usb_init(void)
 
 void usb_start(void)
 {
-    RCC_PeriphCLKInitTypeDef RCC_ExCLKInitStruct;
-    HAL_RCCEx_GetPeriphCLKConfig(&RCC_ExCLKInitStruct);
-    RCC_ExCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48;
-    RCC_ExCLKInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
-    RCC_ExCLKInitStruct.PLLSAI.PLLSAIM = 8;
-    RCC_ExCLKInitStruct.PLLSAI.PLLSAIN = 384;
-    RCC_ExCLKInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV8;
-    HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);
-
-    bsp_tas6424_init();
-
     USBD_Start(&USBD_Device);
 }
 
@@ -36,9 +25,6 @@ void usb_stop(void)
     USBD_Stop(&USBD_Device);
 }
 
-static bool usb_runing = false;
-static bool spdif_running = false;
-
 void UserMain()
 {
     __HAL_RCC_SYSCFG_CLK_ENABLE();
@@ -47,17 +33,29 @@ void UserMain()
         printf("i2c init err\n");
     }
 
+    bsp_tas6424_init();
+
+    audio_init(&audio, SAI_AUDIO_FREQUENCY_48K, 4);
+
+    spdif_init();
+
     usb_init();
     usb_start();
 
-    /* bsp_tas6424_init(); */
-    /* for (;;) { */
-        /* if (!my_spdif_has()) { */
-            /* my_spdif_stop(); */
-            /* my_spdif_start(); */
-        /* } */
-        /* vTaskDelay(3000); */
-    /* } */
+    bool spdif_check = false;
+
+    for (;;) {
+        if (spdif_check != volume_mute) {
+            if (volume_mute) {
+                spdif_start();
+            } else {
+                spdif_stop();
+            }
+            spdif_check = volume_mute;
+        }
+
+        vTaskDelay(2000);
+    }
 
     printf("runing.\n");
 }

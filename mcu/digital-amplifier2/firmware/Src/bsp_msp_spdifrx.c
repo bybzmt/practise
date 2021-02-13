@@ -1,5 +1,6 @@
 #include "base.h"
 
+static void bsp_spdif_clock_config(void);
 static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif);
 static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif);
 
@@ -9,7 +10,8 @@ SPDIFRX_HandleTypeDef SpdifrxHandle = {
         .InputSelection = SPDIFRX_INPUT_IN3,
         .Retries = SPDIFRX_MAXRETRIES_NONE,
         /* .Retries = SPDIFRX_MAXRETRIES_15, */
-        .WaitForActivity = SPDIFRX_WAITFORACTIVITY_ON,
+        /* .WaitForActivity = SPDIFRX_WAITFORACTIVITY_ON, */
+        .WaitForActivity = SPDIFRX_WAITFORACTIVITY_OFF,
         .ChannelSelection = SPDIFRX_CHANNEL_A,
         /* .DataFormat = SPDIFRX_DATAFORMAT_LSB, */
         .DataFormat = SPDIFRX_DATAFORMAT_32BITS,
@@ -41,12 +43,25 @@ DMA_HandleTypeDef SpdifrxDmaHandle = {
     },
 };
 
+static void bsp_spdif_clock_config(void)
+{
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+    HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInitStruct);
+
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX;
+    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
+
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+        printf("spdif clock error\n");
+    }
+}
+
 static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
 {
     printf("spdifrx init\n");
 
-    /* hspdif->RxHalfCpltCallback = my_spdif_rx_halfcplt; */
-    /* hspdif->RxCpltCallback = my_spdif_rx_cplt; */
+    bsp_spdif_clock_config();
 
     __HAL_RCC_SPDIFRX_CLK_ENABLE();
 
@@ -74,8 +89,8 @@ static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     }
 
     /* NVIC configuration for DMA transfer complete interrupt (SPDIFRX) */
-    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   6, 0);
-    HAL_NVIC_SetPriority(SPDIF_RX_IRQn,   6, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   0, 0);
+    HAL_NVIC_SetPriority(SPDIF_RX_IRQn,   0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
     HAL_NVIC_EnableIRQ(SPDIF_RX_IRQn);
 }

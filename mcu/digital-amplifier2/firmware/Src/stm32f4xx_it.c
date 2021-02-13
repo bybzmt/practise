@@ -2,25 +2,30 @@
 
 void NMI_Handler(void)
 {
+    NVIC_SystemReset();
 }
 
 void HardFault_Handler(void)
 {
+    NVIC_SystemReset();
     while (1) {}
 }
 
 void MemManage_Handler(void)
 {
+    NVIC_SystemReset();
     while (1) {}
 }
 
 void BusFault_Handler(void)
 {
+    NVIC_SystemReset();
     while (1) {}
 }
 
 void UsageFault_Handler(void)
 {
+    NVIC_SystemReset();
     while (1) {}
 }
 
