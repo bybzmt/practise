@@ -1,6 +1,6 @@
 #include "base.h"
 
-static bsp_usb_clock_config(void);
+static void bsp_usb_clock_config(void);
 
 static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd);
 static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd);
@@ -81,7 +81,7 @@ static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
     HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
 }
 
-static bsp_usb_clock_config(void)
+static void bsp_usb_clock_config(void)
 {
     RCC_PeriphCLKInitTypeDef RCC_ExCLKInitStruct;
     HAL_RCCEx_GetPeriphCLKConfig(&RCC_ExCLKInitStruct);

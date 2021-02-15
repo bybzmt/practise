@@ -18,18 +18,16 @@
 extern I2C_HandleTypeDef hi2c1;
 extern PCD_HandleTypeDef hpcd;
 
-extern bool volume_mute;
-extern uint8_t volume;
+extern bool usb_used;
+extern bool spdif_run;
 
-void bsp_tas6424_init(void);
-void bsp_tas6424_deInit(void);
-void bsp_tas6424_play(uint32_t AudioFreq);
-void bsp_tas6424_mute(bool ok);
-void bsp_tas6424_vol(uint8_t volume);
+void tas6424_init(void);
+void tas6424_deInit(void);
+void tas6424_play(uint32_t AudioFreq);
+void tas6424_mute(bool ok);
+void tas6424_vol(uint8_t volume);
+void tas6424_check(void);
 
-void bsp_ssd1306_init(void);
-
-void spdif_init(void);
 void spdif_start(void);
 void spdif_stop(void);
 

@@ -34,20 +34,19 @@ C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
 C_SOURCES+=Src/audio.c
 C_SOURCES+=Src/spdif.c
-C_SOURCES+=Src/bsp_tas6424.c
+C_SOURCES+=Src/tas6424.c
 C_SOURCES+=Src/bsp_msp_pcd.c
 C_SOURCES+=Src/bsp_msp_i2c.c
 C_SOURCES+=Src/bsp_msp_sai.c
 C_SOURCES+=Src/bsp_msp_spdifrx.c
 C_SOURCES+=Src/system_stm32f4xx.c
 
-C_INCLUDES+=Src/ssd1306
-
-C_SOURCES+=Src/bsp_ssd1306.c
-C_SOURCES+=Src/ssd1306/ssd1306.c
-C_SOURCES+=Src/ssd1306/ssd1306_fonts.c
-C_SOURCES+=Src/ssd1306/ssd1306_lowLevel.c
-C_SOURCES+=Src/ssd1306/ssd1306_tests.c
+# C_INCLUDES+=Src/ssd1306
+# C_SOURCES+=Src/bsp_ssd1306.c
+# C_SOURCES+=Src/ssd1306/ssd1306.c
+# C_SOURCES+=Src/ssd1306/ssd1306_fonts.c
+# C_SOURCES+=Src/ssd1306/ssd1306_lowLevel.c
+# C_SOURCES+=Src/ssd1306/ssd1306_tests.c
 
 C_HAL_FILE = stm32f4xx_hal_pcd.c
 C_HAL_FILE+=stm32f4xx_hal_pcd_ex.c

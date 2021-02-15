@@ -13,12 +13,10 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
 
     audio.freq = AudioFreq;
     audio.bit_depth = bit_depth;
-    audio.offset = 0;
+    audio.heartbeat = 0;
     audio.wr_ptr = 0;
     audio.enable = true;
     audio.sync = false;
-    audio.vol = 70;
-    audio.mute = false;
 
     HAL_SAI_DeInit(&audio.hsai);
 
@@ -48,19 +46,22 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_ERROR_CB_ID, my_SAI_ErrorCallback);
 
     HAL_StatusTypeDef ret;
-    ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], AUDIO_BUF_SIZE/2);
+    ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], AUDIO_BUF_SIZE/(audio.bit_depth/8));
     if (ret!= HAL_OK) {
         printf("play err:%d\n", ret);
         return;
     }
 
-    bsp_tas6424_play(audio.freq);
-    bsp_tas6424_vol(audio.vol);
-    bsp_tas6424_mute(audio.mute);
+    tas6424_play(audio.freq);
+    tas6424_vol(audio.vol);
+    tas6424_mute(audio.mute);
 }
 
 void audio_deInit()
 {
+    audio.sync = false;
+    audio.enable = false;
+    tas6424_mute(true);
     HAL_SAI_DeInit(&audio.hsai);
 }
 
@@ -72,7 +73,7 @@ void audio_append(uint8_t* buf, uint16_t buf_len)
         audio.wr_ptr = idx + AUDIO_BUF_SIZE/2;
         audio.sync = true;
     }
-    audio.offset = 0;
+    audio.heartbeat = 0;
 
     for (uint16_t i=0; i<buf_len; i++) {
         audio.buf[(audio.wr_ptr+i) % AUDIO_BUF_SIZE] = buf[i];
@@ -92,27 +93,27 @@ void audio_setVolume(uint8_t vol)
 {
     printf("volume %d\n", vol);
     audio.vol = vol;
-    bsp_tas6424_vol(vol);
+    tas6424_vol(vol);
 }
 
 void audio_setMute(bool flag)
 {
     printf("mute %d\n", flag);
     audio.mute = flag;
-    bsp_tas6424_mute(flag);
+    tas6424_mute(flag);
 }
 
 static void my_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
 {
-    if (audio.offset != 0) {
+    if (audio.heartbeat > 1) {
+        audio.enable = false;
         audio_setMute(true);
     }
-    audio.offset = 1;
+    audio.heartbeat++;
 }
 
 static void my_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
 {
-    audio.offset = 2;
 }
 
 static void my_SAI_ErrorCallback(SAI_HandleTypeDef *hsai)

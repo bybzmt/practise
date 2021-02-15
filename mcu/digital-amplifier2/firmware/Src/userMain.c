@@ -2,13 +2,14 @@
 
 USBD_HandleTypeDef USBD_Device;
 
+bool usb_used = false;
+bool spdif_run = false;
+
 void usb_init(void)
 {
     USBD_Init(&USBD_Device, &AUDIO_Desc, 0);
 
     USBD_RegisterClass(&USBD_Device, USBD_AUDIO_CLASS);
-
-    /* USBD_AUDIO_RegisterInterface(&USBD_Device, &USBD_AUDIO_fops); */
 }
 
 void usb_start(void)
@@ -19,8 +20,6 @@ void usb_start(void)
 void usb_stop(void)
 {
     printf("sub stop\n");
-
-    bsp_tas6424_deInit();
 
     USBD_Stop(&USBD_Device);
 }
@@ -33,28 +32,30 @@ void UserMain()
         printf("i2c init err\n");
     }
 
-    bsp_tas6424_init();
+    tas6424_init();
 
-
-    /* spdif_init(); */
+    audio.vol = 70;
+    audio.mute = false;
 
     usb_init();
     usb_start();
 
-    bool spdif_check = false;
+    for (;;) {
+        if (!usb_used) {
+            if (!spdif_run) {
+                spdif_start();
+            } else {
+                if (audio.enable == false) {
+                    spdif_stop();
+                    spdif_start();
+                }
+            }
+        }
 
-    /* for (;;) { */
-        /* if (spdif_check != volume_mute) { */
-            /* if (volume_mute) { */
-                /* spdif_start(); */
-            /* } else { */
-                /* spdif_stop(); */
-            /* } */
-            /* spdif_check = volume_mute; */
-        /* } */
+        tas6424_check();
 
-        /* vTaskDelay(2000); */
-    /* } */
+        vTaskDelay(3000);
+    }
 
     printf("runing.\n");
 }

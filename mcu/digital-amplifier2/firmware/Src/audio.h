@@ -14,7 +14,7 @@
 typedef struct {
     uint8_t buf[AUDIO_BUF_SIZE];
     uint32_t freq;
-    volatile uint16_t offset;
+    volatile uint16_t heartbeat;
     uint16_t wr_ptr;
     bool enable;
     bool sync;
