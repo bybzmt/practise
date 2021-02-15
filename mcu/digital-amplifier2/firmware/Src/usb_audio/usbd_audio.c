@@ -398,11 +398,9 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
     } else {
         haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
         haudio->alt_setting = 0U;
-        haudio->wr_ptr = 0U;
-        haudio->rd_ptr = 0U;
         haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
         haudio->bit_depth = 16U;
-        haudio->vol = USBD_AUDIO_VOL_DEFAULT;
+        haudio->vol = audio.vol;
 
         spdif_stop();
         usb_used = true;
@@ -953,14 +951,8 @@ static uint8_t USBD_AUDIO_EP0_TxReady(USBD_HandleTypeDef* pdev)
  */
 static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
 {
-    USBD_AUDIO_HandleTypeDef* haudio;
-    haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
-
     all_ready = 0U;
     tx_flag = 1U;
-
-    haudio->rd_ptr = 0U;
-    haudio->wr_ptr = 0U;
 
     USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
     USBD_LL_FlushEP(pdev, AUDIO_OUT_EP);

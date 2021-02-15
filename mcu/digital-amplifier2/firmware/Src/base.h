@@ -9,14 +9,13 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
-#include "usbd_core.h"
+// #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_audio.h"
 
 #include "audio.h"
 
 extern I2C_HandleTypeDef hi2c1;
-extern PCD_HandleTypeDef hpcd;
 
 extern bool usb_used;
 extern bool spdif_run;
