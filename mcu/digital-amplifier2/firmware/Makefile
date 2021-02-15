@@ -11,8 +11,6 @@ TARGET = AudioAmplifier
 DEBUG = 0
 # optimization
 OPT = -Og
-#usb audio lib select 1 or 2
-AUDIO_LIB = 1
 
 #######################################
 # paths
@@ -98,32 +96,17 @@ C_INCLUDES+= $(RTOS_DIR)/portable/GCC/ARM_CM4F
 C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
 
 #usb audio lib
-ifeq ($(AUDIO_LIB), 1)
-C_INCLUDES+= Src/usb_audio1
-C_INCLUDES+= Src/usb_audio1/lib
+C_INCLUDES+= Src/usb_audio
 
-C_SOURCES+=Src/usb_audio1/lib/usbd_audio.c
-C_SOURCES+=Src/usb_audio1/lib/usbd_core.c
-C_SOURCES+=Src/usb_audio1/lib/usbd_ctlreq.c
-C_SOURCES+=Src/usb_audio1/lib/usbd_ioreq.c
-C_SOURCES+=Src/usb_audio1/usbd_conf.c
-C_SOURCES+=Src/usb_audio1/usbd_desc.c
-else
+C_SOURCES+=Src/usb_audio/usbd_audio.c
+C_SOURCES+=Src/usb_audio/usbd_conf.c
+C_SOURCES+=Src/usb_audio/usbd_desc.c
+
 C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-C_INCLUDES+= Src/usb_audio2
 
-# C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc
-# C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Src/usbd_audio.c
-
-C_SOURCES+=Src/usb_audio2/usbd_audio.c
-
-C_SOURCES+=Src/usb_audio2/usbd_conf.c
-C_SOURCES+=Src/usb_audio2/usbd_desc.c
-C_SOURCES+=Src/usb_audio2/usbd_audio_if.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
 C_SOURCES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
-endif
 
 # ASM sources
 ASM_SOURCES = startup_stm32f446xx.s

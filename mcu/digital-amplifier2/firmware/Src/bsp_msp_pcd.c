@@ -131,23 +131,41 @@ static void MY_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 
 static void MY_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 {
-    USBD_LL_IsoOUTIncomplete(hpcd->pData, epnum);
+    /* USBD_LL_IsoOUTIncomplete(hpcd->pData, epnum); */
+
+    USBD_HandleTypeDef *pdev = hpcd->pData;
+
+    if (pdev->dev_state == USBD_STATE_CONFIGURED)
+    {
+        if(pdev->pClass->IsoOUTIncomplete != NULL)
+        {
+            pdev->pClass->IsoOUTIncomplete(pdev, epnum);
+        }
+    }
 }
 
 static void MY_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 {
-    USBD_LL_IsoINIncomplete(hpcd->pData, epnum);
+    /* USBD_LL_IsoINIncomplete(hpcd->pData, epnum); */
+
+    USBD_HandleTypeDef *pdev = hpcd->pData;
+
+    if (pdev->dev_state == USBD_STATE_CONFIGURED)
+    {
+        if (pdev->pClass->IsoINIncomplete != NULL)
+        {
+            pdev->pClass->IsoINIncomplete(pdev, epnum);
+        }
+    }
 }
 
 static void MY_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
 {
-    printf("pcd con\n");
     USBD_LL_DevConnected(hpcd->pData);
 }
 
 static void MY_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
 {
-    printf("pcd dis\n");
     USBD_LL_DevDisconnected(hpcd->pData);
 }
 
