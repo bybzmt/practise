@@ -8,7 +8,7 @@ void usb_init(void)
 
     USBD_RegisterClass(&USBD_Device, USBD_AUDIO_CLASS);
 
-    USBD_AUDIO_RegisterInterface(&USBD_Device, &USBD_AUDIO_fops);
+    /* USBD_AUDIO_RegisterInterface(&USBD_Device, &USBD_AUDIO_fops); */
 }
 
 void usb_start(void)
@@ -35,27 +35,26 @@ void UserMain()
 
     bsp_tas6424_init();
 
-    audio_init(&audio, SAI_AUDIO_FREQUENCY_48K, 4);
 
-    spdif_init();
+    /* spdif_init(); */
 
     usb_init();
     usb_start();
 
     bool spdif_check = false;
 
-    for (;;) {
-        if (spdif_check != volume_mute) {
-            if (volume_mute) {
-                spdif_start();
-            } else {
-                spdif_stop();
-            }
-            spdif_check = volume_mute;
-        }
+    /* for (;;) { */
+        /* if (spdif_check != volume_mute) { */
+            /* if (volume_mute) { */
+                /* spdif_start(); */
+            /* } else { */
+                /* spdif_stop(); */
+            /* } */
+            /* spdif_check = volume_mute; */
+        /* } */
 
-        vTaskDelay(2000);
-    }
+        /* vTaskDelay(2000); */
+    /* } */
 
     printf("runing.\n");
 }

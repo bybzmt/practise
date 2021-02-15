@@ -8,11 +8,11 @@ TARGET = AudioAmplifier
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 OPT = -Og
 #usb audio lib select 1 or 2
-AUDIO_LIB = 2
+AUDIO_LIB = 1
 
 #######################################
 # paths
@@ -109,7 +109,6 @@ C_SOURCES+=Src/usb_audio1/lib/usbd_ctlreq.c
 C_SOURCES+=Src/usb_audio1/lib/usbd_ioreq.c
 C_SOURCES+=Src/usb_audio1/usbd_conf.c
 C_SOURCES+=Src/usb_audio1/usbd_desc.c
-C_SOURCES+=Src/usb_audio1/usbd_audio_if.c
 else
 C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
 C_INCLUDES+= Src/usb_audio2

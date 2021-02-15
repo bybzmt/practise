@@ -41,6 +41,7 @@ static void bsp_tas6424_en(void)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
+    /* en pin */
     GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Pin = GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -50,11 +51,21 @@ static void bsp_tas6424_en(void)
 
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
 
+    /* mute pin */
     GPIO_InitStruct.Pin = GPIO_PIN_10;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* fall event */
+    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 void bsp_tas6424_deInit(void)
@@ -93,9 +104,6 @@ void bsp_tas6424_init(void)
     MY_Write_REG(0x03, 0b00000100);
     /* 44khz TDM */
     /* MY_Write_REG(0x03, 0b00000110); */
-
-    bsp_tas6424_vol(volume);
-    bsp_tas6424_mute(volume_mute);
 }
 
 void bsp_tas6424_mute(bool ok)
@@ -135,15 +143,6 @@ void bsp_tas6424_play(uint32_t AudioFreq)
 
     /* play */
     MY_Write_REG(0x04, 0b00000101);
-
-    GPIO_InitTypeDef  GPIO_InitStruct;
-    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 bool bsp_tas6424_DC_diagnostic(void)
