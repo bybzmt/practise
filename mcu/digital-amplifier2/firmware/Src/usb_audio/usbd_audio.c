@@ -1005,10 +1005,28 @@ static uint8_t* USBD_AUDIO_GetDeviceQualifierDesc(uint16_t* length)
     return USBD_AUDIO_DeviceQualifierDesc;
 }
 
-/* Convert USB volume value to % */
+/* Convert USB volume value to uint8_t 0xff +24db - 0x00 -103db */
 uint8_t VOL_PERCENT(int16_t vol)
 {
-    return (uint8_t)((vol - (int16_t)USBD_AUDIO_VOL_MIN) / (((int16_t)USBD_AUDIO_VOL_MAX - (int16_t)USBD_AUDIO_VOL_MIN) / 100));
+/*
+    0x7FFF: 127.9961 DB
+    0x0100: 1.0000   DB
+    0x0000: 0.0000   DB
+    0xFE00: -1.0000  DB
+    0x8001: -127.9961 DB
+    0x8000: -∞
+*/
+
+    vol = vol / 128;
+
+    if (vol > 48) {
+        vol = 48;
+    }
+    if (vol < -207) {
+        vol = -207;
+    }
+    vol += 207;
+    return vol;
 }
 
 

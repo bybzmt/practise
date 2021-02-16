@@ -44,20 +44,18 @@ void spdif_start(void)
     if (ret != 0 ) {
          printf("ret: %d\n", ret);
     }
-
-    audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
-    HAL_SAI_DMAPause(&audio.hsai);
 }
 
 static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
     if (spdif_sync == false) {
         spdif_sync = true;
-        HAL_SAI_DMAResume(&audio.hsai);
+        audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
     }
     audio.heartbeat = 0;
 }
 
 static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
+    audio.heartbeat = 0;
 }

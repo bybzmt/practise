@@ -21,6 +21,7 @@ extern bool usb_used;
 extern bool spdif_run;
 
 void tas6424_init(void);
+void tas6424_en(bool ok);
 void tas6424_deInit(void);
 void tas6424_play(uint32_t AudioFreq);
 void tas6424_mute(bool ok);

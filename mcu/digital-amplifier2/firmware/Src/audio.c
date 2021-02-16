@@ -52,6 +52,7 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
         return;
     }
 
+    tas6424_en(true);
     tas6424_play(audio.freq);
     tas6424_vol(audio.vol);
     tas6424_mute(audio.mute);
@@ -61,7 +62,7 @@ void audio_deInit()
 {
     audio.sync = false;
     audio.enable = false;
-    tas6424_mute(true);
+    tas6424_en(false);
     HAL_SAI_DeInit(&audio.hsai);
 }
 
@@ -91,7 +92,7 @@ void audio_mixer(uint16_t idx, uint8_t* buf, uint16_t buf_len)
 
 void audio_setVolume(uint8_t vol)
 {
-    printf("volume %d\n", vol);
+    printf("volume: %d\n", vol);
     audio.vol = vol;
     tas6424_vol(vol);
 }
@@ -107,7 +108,7 @@ static void my_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
 {
     if (audio.heartbeat > 1) {
         audio.enable = false;
-        audio_setMute(true);
+        tas6424_mute(true);
     }
     audio.heartbeat++;
 }

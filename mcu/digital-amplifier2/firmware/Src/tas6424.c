@@ -2,6 +2,8 @@
 
 #define ADDR 0xD4
 
+static bool tas6424_en_flag;
+static void tas6424_msp_init(void);
 static bool tas6424_checkFatalError(void);
 static void tas6424_reporting(void);
 
@@ -34,7 +36,13 @@ static void MY_Write_REG(uint8_t reg, uint8_t data)
     MY_Write(reg, &data, 1);
 }
 
-static void tas6424_en(void)
+void tas6424_en(bool flag)
+{
+    tas6424_en_flag = flag;
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, flag);
+}
+
+static void tas6424_msp_init(void)
 {
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -46,8 +54,6 @@ static void tas6424_en(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
 
     /* mute pin */
     GPIO_InitStruct.Pin = GPIO_PIN_10;
@@ -66,14 +72,12 @@ static void tas6424_en(void)
     /* HAL_NVIC_EnableIRQ(EXTI15_10_IRQn); */
 }
 
-void tas6424_deInit(void)
-{
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
-}
-
 void tas6424_init(void)
 {
-    tas6424_en();
+    tas6424_msp_init();
+
+    tas6424_en(true);
+
     vTaskDelay(10);
 
     /* reset device */
@@ -109,10 +113,9 @@ void tas6424_mute(bool ok)
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, !ok);
 }
 
-void tas6424_vol(uint8_t volume)
+/* volume: 0.5db/setp 0xff +24db - 0x00 -103db */
+void tas6424_vol(uint8_t vol)
 {
-    /* Volume */
-    uint8_t vol = volume>0 ? (volume * 2) + 7 : 0;
     uint8_t raw[] = {vol, vol, vol, vol};
     MY_Write(0x5, raw, 4);
 }
@@ -125,7 +128,7 @@ void tas6424_play(uint32_t AudioFreq)
     }
 
     /* 44khz TDM */
-    uint8_t freq = 0b00000100;
+    uint8_t freq = 0b00001100;
     switch(AudioFreq) {
         case SAI_AUDIO_FREQUENCY_48K:
             freq |= 0b01000000;
@@ -171,6 +174,10 @@ static char *c_yes_no[] = {
 
 void tas6424_check(void)
 {
+    if (!tas6424_en_flag) {
+        return;
+    }
+
     uint8_t p14 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14);
     uint8_t p15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15);
 
@@ -187,7 +194,7 @@ void tas6424_check(void)
         /* Hi-Z */
         MY_Write_REG(0x04, 0b01010101);
 
-        printf("stop!");
+        printf("stop!\n");
         return;
     }
 
@@ -196,6 +203,7 @@ void tas6424_check(void)
 
     /* clear fault and play */
     MY_Write_REG(0x21, 0x80);
+    vTaskDelay(5);
     MY_Write_REG(0x04, 0b00000101);
 }
 
@@ -248,25 +256,25 @@ static void tas6424_reporting(void)
 
     MY_Read(0x0C, (uint8_t*)&data, 2);
 
-    printf(fmt, "CH1 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>7) & 1]);
-    printf(fmt, "CH1 P short-to-power detected: %s\n", c_yes_no[(data[0]>>6) & 1]);
-    printf(fmt, "CH1 Open load detected: %s\n",        c_yes_no[(data[0]>>5) & 1]);
-    printf(fmt, "CH1 Shorted load detected: %s\n",     c_yes_no[(data[0]>>4) & 1]);
+    printf("CH1 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>7) & 1]);
+    printf("CH1 P short-to-power detected: %s\n", c_yes_no[(data[0]>>6) & 1]);
+    printf("CH1 Open load detected: %s\n",        c_yes_no[(data[0]>>5) & 1]);
+    printf("CH1 Shorted load detected: %s\n",     c_yes_no[(data[0]>>4) & 1]);
 
-    printf(fmt, "CH2 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>3) & 1]);
-    printf(fmt, "CH2 P short-to-power detected: %s\n", c_yes_no[(data[0]>>2) & 1]);
-    printf(fmt, "CH2 Open load detected: %s\n",        c_yes_no[(data[0]>>1) & 1]);
-    printf(fmt, "CH2 Shorted load detected: %s\n",     c_yes_no[(data[0]>>0) & 1]);
+    printf("CH2 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>3) & 1]);
+    printf("CH2 P short-to-power detected: %s\n", c_yes_no[(data[0]>>2) & 1]);
+    printf("CH2 Open load detected: %s\n",        c_yes_no[(data[0]>>1) & 1]);
+    printf("CH2 Shorted load detected: %s\n",     c_yes_no[(data[0]>>0) & 1]);
 
-    printf(fmt, "CH3 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>7) & 1]);
-    printf(fmt, "CH3 P short-to-power detected: %s\n", c_yes_no[(data[1]>>6) & 1]);
-    printf(fmt, "CH3 Open load detected: %s\n",        c_yes_no[(data[1]>>5) & 1]);
-    printf(fmt, "CH3 Shorted load detected: %s\n",     c_yes_no[(data[1]>>4) & 1]);
+    printf("CH3 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>7) & 1]);
+    printf("CH3 P short-to-power detected: %s\n", c_yes_no[(data[1]>>6) & 1]);
+    printf("CH3 Open load detected: %s\n",        c_yes_no[(data[1]>>5) & 1]);
+    printf("CH3 Shorted load detected: %s\n",     c_yes_no[(data[1]>>4) & 1]);
 
-    printf(fmt, "CH4 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>3) & 1]);
-    printf(fmt, "CH4 P short-to-power detected: %s\n", c_yes_no[(data[1]>>2) & 1]);
-    printf(fmt, "CH4 Open load detected: %s\n",        c_yes_no[(data[1]>>1) & 1]);
-    printf(fmt, "CH4 Shorted load detected: %s\n",     c_yes_no[(data[1]>>0) & 1]);
+    printf("CH4 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>3) & 1]);
+    printf("CH4 P short-to-power detected: %s\n", c_yes_no[(data[1]>>2) & 1]);
+    printf("CH4 Open load detected: %s\n",        c_yes_no[(data[1]>>1) & 1]);
+    printf("CH4 Shorted load detected: %s\n",     c_yes_no[(data[1]>>0) & 1]);
 }
 
 void EXTI15_10_IRQHandler(void)
