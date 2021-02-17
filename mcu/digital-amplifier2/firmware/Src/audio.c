@@ -15,6 +15,7 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     audio.bit_depth = bit_depth;
     audio.heartbeat = 0;
     audio.wr_ptr = 0;
+    audio.channel_num = 2;
     audio.enable = true;
     audio.sync = false;
 
@@ -33,8 +34,9 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
         return;
     }
 
-    audio.hsai.FrameInit.FrameLength = bit_depth * 2;
+    audio.hsai.FrameInit.FrameLength = bit_depth * audio.channel_num;
     audio.hsai.FrameInit.ActiveFrameLength = bit_depth;
+    audio.hsai.SlotInit.SlotNumber = audio.channel_num;
 
     if (HAL_SAI_Init(&audio.hsai) != HAL_OK) {
         printf("sai init error\n");
@@ -44,6 +46,8 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_TX_COMPLETE_CB_ID, my_SAI_TxCpltCallback);
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_TX_HALFCOMPLETE_CB_ID, my_SAI_TxHalfCpltCallback);
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_ERROR_CB_ID, my_SAI_ErrorCallback);
+
+    memset(&audio.buf[0], 0, AUDIO_BUF_SIZE);
 
     HAL_StatusTypeDef ret;
     ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], AUDIO_BUF_SIZE/(audio.bit_depth/8));
@@ -62,32 +66,36 @@ void audio_deInit()
 {
     audio.sync = false;
     audio.enable = false;
-    tas6424_en(false);
+    tas6424_mute(true);
     HAL_SAI_DeInit(&audio.hsai);
 }
 
 void audio_append(uint8_t* buf, uint16_t buf_len)
 {
+    uint16_t sample_size = audio.bit_depth/8*2;
+
     if (audio.sync == false) {
-        uint8_t s1 = audio.bit_depth / 8 * 2;
-        uint16_t idx = audio_play_idx() / s1 * s1;
-        audio.wr_ptr = idx + AUDIO_BUF_SIZE/2;
+        uint16_t idx = audio_play_idx() / sample_size * sample_size;
+        audio.wr_ptr = idx + (AUDIO_BUF_SIZE/2/sample_size*sample_size);
         audio.sync = true;
     }
     audio.heartbeat = 0;
 
-    for (uint16_t i=0; i<buf_len; i++) {
-        audio.buf[(audio.wr_ptr+i) % AUDIO_BUF_SIZE] = buf[i];
+    uint16_t sample_num = buf_len / sample_size;
+    uint16_t base;
+
+    for (uint16_t i=0; i<sample_num; i++) {
+        base = sample_size * i;
+
+        for (uint16_t x=0; x<sample_size; x++) {
+            audio.buf[(audio.wr_ptr+x) % AUDIO_BUF_SIZE] = buf[base+x];
+        }
+
+        audio.wr_ptr += sample_size;
+        audio.wr_ptr %= AUDIO_BUF_SIZE;
     }
 
-    audio.wr_ptr = (audio.wr_ptr + buf_len) % AUDIO_BUF_SIZE;
-}
-
-void audio_mixer(uint16_t idx, uint8_t* buf, uint16_t buf_len)
-{
-    for (uint16_t i=0; i<buf_len; i++) {
-        audio.buf[(idx+i) % AUDIO_BUF_SIZE] = buf[i];
-    }
+    /* audio.wr_ptr %= AUDIO_BUF_SIZE; */
 }
 
 void audio_setVolume(uint8_t vol)

@@ -22,7 +22,7 @@ Audio audio = {
             .FIFOThreshold = SAI_FIFOTHRESHOLD_1QF,
         },
         .FrameInit = {
-            .FrameLength       = 32,
+            .FrameLength       = 64,
             .ActiveFrameLength = 16,
             .FSDefinition      = SAI_FS_STARTFRAME,
             .FSPolarity        = SAI_FS_ACTIVE_LOW,
@@ -31,8 +31,8 @@ Audio audio = {
         .SlotInit = {
             .FirstBitOffset = 1,
             .SlotSize       = SAI_SLOTSIZE_DATASIZE,
-            .SlotNumber     = 2,
-            .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
+            .SlotNumber     = 8,
+            .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_2 | SAI_SLOTACTIVE_3,
         },
         .MspInitCallback    = MY_SAI_OUT_MspInit,
         .MspDeInitCallback  = MY_SAI_OUT_MspDeInit,

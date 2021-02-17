@@ -15,10 +15,15 @@
 
 #include "audio.h"
 
-extern I2C_HandleTypeDef hi2c1;
+#define MODE_IDLE  0
+#define MODE_USB   1
+#define MODE_SPDIF 2
+#define MODE_BT    3
 
-extern bool usb_used;
-extern bool spdif_run;
+extern uint8_t device_mode;
+void device_mode_change(uint8_t mode);
+
+extern I2C_HandleTypeDef hi2c1;
 
 void tas6424_init(void);
 void tas6424_en(bool ok);

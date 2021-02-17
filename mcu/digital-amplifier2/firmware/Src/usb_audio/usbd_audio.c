@@ -402,8 +402,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->bit_depth = 16U;
         haudio->vol = audio.vol;
 
-        spdif_stop();
-        usb_used = true;
+        device_mode_change(MODE_USB);
         audio_init(haudio->freq, haudio->bit_depth);
 
         USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, tmpbuf, AUDIO_OUT_PACKET_24B);
@@ -438,7 +437,8 @@ static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef* pdev,
 
     /* DeInit physical Interface components */
     if (pdev->pClassData != NULL) {
-        usb_used = false;
+
+        device_mode_change(MODE_IDLE);
         audio_deInit();
 
         USBD_free(pdev->pClassData);
@@ -957,7 +957,7 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
     USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
     USBD_LL_FlushEP(pdev, AUDIO_OUT_EP);
 
-    usb_used = false;
+    device_mode_change(MODE_IDLE);
     audio_deInit();
 }
 
@@ -985,8 +985,7 @@ static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev)
             fb_raw = fb_nom = fb_value = 96 << 22;
     }
 
-    spdif_stop();
-    usb_used = true;
+    device_mode_change(MODE_USB);
     audio_init(haudio->freq, haudio->bit_depth);
 
     tx_flag = 0U;

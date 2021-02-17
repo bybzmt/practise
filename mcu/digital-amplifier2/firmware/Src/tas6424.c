@@ -3,6 +3,7 @@
 #define ADDR 0xD4
 
 static bool tas6424_en_flag;
+static uint8_t tas6424_idle_tick;
 static void tas6424_msp_init(void);
 static bool tas6424_checkFatalError(void);
 static void tas6424_reporting(void);
@@ -97,19 +98,25 @@ void tas6424_init(void)
     /* Set Channels BTL or PBTL mode */
     /*
      * High pass filter eneabled
-     * Global overtemperature warning set to 110°C
+     * Global overtemperature warning set to 120°C
      * Overcurrent is level 2
-     * Volume update rate is 1 step / FSYNC
+     * Volume update rate is 1 step /8 FSYNC
      */
-    MY_Write_REG(0x01, 0b01111110);
-    /* i2s 44k */
-    MY_Write_REG(0x03, 0b00000100);
-    /* 44khz TDM */
-    /* MY_Write_REG(0x03, 0b00000110); */
+    MY_Write_REG(0x01, 0b00111110);
+
+    /* Hi-Z */
+    MY_Write_REG(0x04, 0b01010101);
 }
 
 void tas6424_mute(bool ok)
 {
+    if (ok) {
+        tas6424_idle_tick = 1;
+    } else {
+        tas6424_idle_tick = 0;
+        tas6424_en(true);
+    }
+
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, !ok);
 }
 
@@ -122,13 +129,16 @@ void tas6424_vol(uint8_t vol)
 
 void tas6424_play(uint32_t AudioFreq)
 {
+    /* Hi-Z */
+    MY_Write_REG(0x04, 0b01010101);
+
     if (tas6424_checkFatalError()) {
         printf("tas6424 stop\n");
         return;
     }
 
     /* 44khz TDM */
-    uint8_t freq = 0b00001100;
+    uint8_t freq = 0b00010100;
     switch(AudioFreq) {
         case SAI_AUDIO_FREQUENCY_48K:
             freq |= 0b01000000;
@@ -178,6 +188,16 @@ void tas6424_check(void)
         return;
     }
 
+    if (tas6424_idle_tick > 0) {
+        tas6424_idle_tick++;
+
+        if (tas6424_idle_tick > 5) {
+            tas6424_en(false);
+            return;
+        }
+        return;
+    }
+
     uint8_t p14 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14);
     uint8_t p15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15);
 
@@ -185,18 +205,7 @@ void tas6424_check(void)
         return;
     }
 
-    /* Diagnostic */
-    MY_Write_REG(0x04, 0xff);
-
     tas6424_reporting();
-
-    if (tas6424_checkFatalError()) {
-        /* Hi-Z */
-        MY_Write_REG(0x04, 0b01010101);
-
-        printf("stop!\n");
-        return;
-    }
 
     /* Hi-Z */
     MY_Write_REG(0x04, 0b01010101);
@@ -256,23 +265,23 @@ static void tas6424_reporting(void)
 
     MY_Read(0x0C, (uint8_t*)&data, 2);
 
-    printf("CH1 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>7) & 1]);
-    printf("CH1 P short-to-power detected: %s\n", c_yes_no[(data[0]>>6) & 1]);
+    printf("CH1 short-to-GND detected: %s\n",     c_yes_no[(data[0]>>7) & 1]);
+    printf("CH1 short-to-power detected: %s\n",   c_yes_no[(data[0]>>6) & 1]);
     printf("CH1 Open load detected: %s\n",        c_yes_no[(data[0]>>5) & 1]);
     printf("CH1 Shorted load detected: %s\n",     c_yes_no[(data[0]>>4) & 1]);
 
-    printf("CH2 G short-to-GND detected: %s\n",   c_yes_no[(data[0]>>3) & 1]);
-    printf("CH2 P short-to-power detected: %s\n", c_yes_no[(data[0]>>2) & 1]);
+    printf("CH2 short-to-GND detected: %s\n",     c_yes_no[(data[0]>>3) & 1]);
+    printf("CH2 short-to-power detected: %s\n",   c_yes_no[(data[0]>>2) & 1]);
     printf("CH2 Open load detected: %s\n",        c_yes_no[(data[0]>>1) & 1]);
     printf("CH2 Shorted load detected: %s\n",     c_yes_no[(data[0]>>0) & 1]);
 
-    printf("CH3 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>7) & 1]);
-    printf("CH3 P short-to-power detected: %s\n", c_yes_no[(data[1]>>6) & 1]);
+    printf("CH3 short-to-GND detected: %s\n",     c_yes_no[(data[1]>>7) & 1]);
+    printf("CH3 short-to-power detected: %s\n",   c_yes_no[(data[1]>>6) & 1]);
     printf("CH3 Open load detected: %s\n",        c_yes_no[(data[1]>>5) & 1]);
     printf("CH3 Shorted load detected: %s\n",     c_yes_no[(data[1]>>4) & 1]);
 
-    printf("CH4 G short-to-GND detected: %s\n",   c_yes_no[(data[1]>>3) & 1]);
-    printf("CH4 P short-to-power detected: %s\n", c_yes_no[(data[1]>>2) & 1]);
+    printf("CH4 short-to-GND detected: %s\n",     c_yes_no[(data[1]>>3) & 1]);
+    printf("CH4 short-to-power detected: %s\n",   c_yes_no[(data[1]>>2) & 1]);
     printf("CH4 Open load detected: %s\n",        c_yes_no[(data[1]>>1) & 1]);
     printf("CH4 Shorted load detected: %s\n",     c_yes_no[(data[1]>>0) & 1]);
 }

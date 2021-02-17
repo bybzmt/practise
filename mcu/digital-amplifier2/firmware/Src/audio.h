@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define AUDIO_BUF_SIZE (1024*8)
+#define AUDIO_BUF_SIZE (2*4*1000)
 
 typedef struct {
     uint8_t buf[AUDIO_BUF_SIZE];
@@ -19,6 +19,7 @@ typedef struct {
     bool enable;
     bool sync;
     uint8_t bit_depth;
+    uint8_t channel_num;
     uint8_t vol;
     bool mute;
     SAI_HandleTypeDef hsai;
@@ -30,7 +31,6 @@ extern Audio audio;
 void audio_init(uint32_t AudioFreq, uint8_t sample_size);
 void audio_deInit();
 void audio_append(uint8_t* buf, uint16_t buf_len);
-void audio_mixer(uint16_t idx, uint8_t* buf, uint16_t buf_len);
 void audio_setVolume(uint8_t vol);
 void audio_setMute(bool flag);
 

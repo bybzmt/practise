@@ -1,9 +1,7 @@
 #include "base.h"
 
 USBD_HandleTypeDef USBD_Device;
-
-bool usb_used = false;
-bool spdif_run = false;
+uint8_t device_mode = MODE_IDLE;
 
 void usb_init(void)
 {
@@ -24,6 +22,18 @@ void usb_stop(void)
     USBD_Stop(&USBD_Device);
 }
 
+uint8_t device_mode;
+void device_mode_change(uint8_t mode)
+{
+    switch (device_mode) {
+        case MODE_SPDIF: spdif_stop(); break;
+        case MODE_BT: break;
+        case MODE_USB: break;
+    }
+
+    device_mode = mode;
+}
+
 void UserMain()
 {
     __HAL_RCC_SYSCFG_CLK_ENABLE();
@@ -41,20 +51,19 @@ void UserMain()
     usb_start();
 
     for (;;) {
-        if (!usb_used) {
-            if (!spdif_run) {
+        if (device_mode == MODE_IDLE) {
+            device_mode_change(MODE_SPDIF);
+            spdif_start();
+        } else if (device_mode == MODE_SPDIF) {
+            if (audio.enable == false) {
+                spdif_stop();
                 spdif_start();
-            } else {
-                if (audio.enable == false) {
-                    spdif_stop();
-                    spdif_start();
-                }
             }
         }
 
         tas6424_check();
 
-        vTaskDelay(3000);
+        vTaskDelay(2000);
     }
 
     printf("runing.\n");
