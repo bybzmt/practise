@@ -51,6 +51,8 @@ void UserMain()
     usb_start();
 
     for (;;) {
+        vTaskDelay(2000);
+
         if (device_mode == MODE_IDLE) {
             device_mode_change(MODE_SPDIF);
             spdif_start();
@@ -62,8 +64,6 @@ void UserMain()
         }
 
         tas6424_check();
-
-        vTaskDelay(2000);
     }
 
     printf("runing.\n");
