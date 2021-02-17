@@ -129,7 +129,7 @@ static void audio_sai_clockConfig(uint32_t AudioFreq)
     RCC_ExCLKInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
 
     /* Set the PLL configuration according to the audio frequency */
-    if ((AudioFreq == SAI_AUDIO_FREQUENCY_11K) || (AudioFreq == SAI_AUDIO_FREQUENCY_22K) || (AudioFreq == SAI_AUDIO_FREQUENCY_44K))
+    if (AudioFreq == SAI_AUDIO_FREQUENCY_44K)
     {
         /* Configure PLLSAI prescalers */
         /* PLLSAI_VCO: VCO_429M
@@ -139,9 +139,17 @@ static void audio_sai_clockConfig(uint32_t AudioFreq)
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 429;
         RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 2;
         RCC_ExCLKInitStruct.PLLI2SDivQ = 19;
-    }
-    else /* SAI_AUDIO_FREQUENCY_8K, SAI_AUDIO_FREQUENCY_16K, SAI_AUDIO_FREQUENCY_48K), SAI_AUDIO_FREQUENCY_96K */
-    {
+    } else if (AudioFreq == SAI_AUDIO_FREQUENCY_48K) {
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 7;
+        RCC_ExCLKInitStruct.PLLI2SDivQ = 4;
+    } else if (AudioFreq == SAI_AUDIO_FREQUENCY_96K) {
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SM = 8;
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = 344;
+        RCC_ExCLKInitStruct.PLLI2S.PLLI2SQ = 7;
+        RCC_ExCLKInitStruct.PLLI2SDivQ = 2;
+    } else {
         /* SAI clock config
            PLLSAI_VCO: VCO_344M
            SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
