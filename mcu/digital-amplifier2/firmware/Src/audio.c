@@ -167,7 +167,7 @@ static void my_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
         audio.sample_diff += audio.sample_count;
         audio.sample_count = 0;
 
-        if (audio.sample_count < -(AUDIO_BUF_SAMPLE_NUM*2)) {
+        if (audio.sample_diff < -(AUDIO_BUF_SAMPLE_NUM*2)) {
             audio.state = AUDIO_STATE_ERROR;
             tas6424_en(false);
         }
