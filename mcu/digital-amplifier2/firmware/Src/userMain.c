@@ -57,7 +57,7 @@ void UserMain()
             device_mode_change(MODE_SPDIF);
             spdif_start();
         } else if (device_mode == MODE_SPDIF) {
-            if (audio.enable == false) {
+            if (audio.state == AUDIO_STATE_ERROR) {
                 spdif_stop();
                 spdif_start();
             }

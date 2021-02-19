@@ -634,7 +634,7 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
             /* Calculate feedback value based on the change of writable buffer size */
             /* v2 */
             int32_t audio_buf_writable_size_dev_from_nom;
-            audio_buf_writable_size_dev_from_nom = audio_buf_writable_size - (AUDIO_BUF_SIZE >> 1);
+            audio_buf_writable_size_dev_from_nom = audio_buf_writable_size - (audio_buf_size() >> 1);
             // fb_value += audio_buf_writable_size_dev_from_nom * 1352;
             fb_value += audio_buf_writable_size_dev_from_nom * audio_buf_writable_size_dev_from_nom / 912673 * 128 * audio_buf_writable_size_dev_from_nom;
 

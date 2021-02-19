@@ -3,7 +3,6 @@
 #define ADDR 0xD4
 
 static bool tas6424_en_flag;
-static uint8_t tas6424_idle_tick;
 static void tas6424_msp_init(void);
 static bool tas6424_checkFatalError(void);
 static void tas6424_reporting(void);
@@ -110,13 +109,6 @@ void tas6424_init(void)
 
 void tas6424_mute(bool ok)
 {
-    if (ok) {
-        tas6424_idle_tick = 1;
-    } else {
-        tas6424_idle_tick = 0;
-        tas6424_en(true);
-    }
-
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, !ok);
 }
 
@@ -185,16 +177,6 @@ static char *c_yes_no[] = {
 void tas6424_check(void)
 {
     if (!tas6424_en_flag) {
-        return;
-    }
-
-    if (tas6424_idle_tick > 0) {
-        tas6424_idle_tick++;
-
-        if (tas6424_idle_tick > 5) {
-            tas6424_en(false);
-            return;
-        }
         return;
     }
 

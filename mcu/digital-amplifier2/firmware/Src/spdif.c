@@ -51,10 +51,10 @@ static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif)
         audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
     }
 
-    audio_append(&spdif_buf[0], SPDIF_BUF_SIZE/2);
+    audio_append_adapt(&spdif_buf[0], SPDIF_BUF_SIZE/2);
 }
 
 static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
-    audio_append(&spdif_buf[SPDIF_BUF_SIZE/2], SPDIF_BUF_SIZE/2);
+    audio_append_adapt(&spdif_buf[SPDIF_BUF_SIZE/2], SPDIF_BUF_SIZE/2);
 }

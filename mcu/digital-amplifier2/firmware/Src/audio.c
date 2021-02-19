@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "stm32f4xx_ll_dma.h"
 
+static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num);
+static void audio_play(void);
 static void my_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai);
 static void my_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai);
 static void my_SAI_ErrorCallback(SAI_HandleTypeDef *hsai);
@@ -13,11 +15,12 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
 
     audio.freq = AudioFreq;
     audio.bit_depth = bit_depth;
-    audio.heartbeat = 0;
-    audio.wr_ptr = 0;
+    audio.sample_size = bit_depth/8*2;
+    audio.sample_count = 0;
+    audio.sample_diff = 0;
+    audio.wr_idx = 0;
     audio.channel_num = 2;
-    audio.enable = true;
-    audio.sync = false;
+    audio.state = AUDIO_STATE_INIT;
 
     HAL_SAI_DeInit(&audio.hsai);
 
@@ -38,6 +41,8 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     audio.hsai.FrameInit.ActiveFrameLength = bit_depth;
     audio.hsai.SlotInit.SlotNumber = audio.channel_num;
 
+    memset(&audio.buf[0], 0, AUDIO_BUF_SIZE);
+
     if (HAL_SAI_Init(&audio.hsai) != HAL_OK) {
         printf("sai init error\n");
         return;
@@ -46,56 +51,88 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_TX_COMPLETE_CB_ID, my_SAI_TxCpltCallback);
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_TX_HALFCOMPLETE_CB_ID, my_SAI_TxHalfCpltCallback);
     HAL_SAI_RegisterCallback(&audio.hsai, HAL_SAI_ERROR_CB_ID, my_SAI_ErrorCallback);
+}
 
-    memset(&audio.buf[0], 0, AUDIO_BUF_SIZE);
+void audio_deInit()
+{
+    printf("audio deInit\n");
+    audio.state = AUDIO_STATE_INIT;
+    tas6424_en(false);
+    HAL_SAI_DeInit(&audio.hsai);
+}
 
-    HAL_StatusTypeDef ret;
-    ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], AUDIO_BUF_SIZE/(audio.bit_depth/8));
+static void audio_play(void)
+{
+    printf("play\n");
+
+    uint16_t len = audio_buf_size() / 2;
+
+    HAL_StatusTypeDef ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], len);
     if (ret!= HAL_OK) {
         printf("play err:%d\n", ret);
         return;
     }
 
     tas6424_en(true);
-    tas6424_play(audio.freq);
     tas6424_vol(audio.vol);
     tas6424_mute(audio.mute);
+    tas6424_play(audio.freq);
 }
 
-void audio_deInit()
+static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
 {
-    audio.sync = false;
-    audio.enable = false;
-    tas6424_mute(true);
-    HAL_SAI_DeInit(&audio.hsai);
+    for (uint16_t i=0; i<sample_num; i++) {
+        uint16_t base = audio.sample_size * idx;
+        uint16_t oft = audio.sample_size * i;
+
+        for (uint16_t x=0; x<audio.sample_size; x++) {
+            audio.buf[base+x] = buf[oft + x];
+        }
+
+        idx = (idx + 1) % AUDIO_BUF_SAMPLE_NUM;
+    }
+}
+
+void audio_append_adapt(uint8_t* buf, uint16_t buf_len)
+{
+    if (audio.sample_diff > 0) {
+        audio.sample_diff--;
+
+        if (audio.wr_idx == 0) {
+            audio.wr_idx = AUDIO_BUF_SAMPLE_NUM -1;
+        } else {
+            audio.wr_idx--;
+        }
+
+        audio.wr_idx %= AUDIO_BUF_SAMPLE_NUM;
+    } else if (audio.sample_diff < 0) {
+        audio.sample_diff++;
+
+        audio_sample_copy(audio.wr_idx, buf, 1);
+
+        audio.wr_idx++;
+        audio.wr_idx %= AUDIO_BUF_SAMPLE_NUM;
+    }
+
+    audio_append(buf, buf_len);
 }
 
 void audio_append(uint8_t* buf, uint16_t buf_len)
 {
-    uint16_t sample_size = audio.bit_depth/8*2;
+    uint16_t sample_num = buf_len / audio.sample_size;
+    audio.sample_count += sample_num;
 
-    if (audio.sync == false) {
-        uint16_t idx = audio_play_idx() / sample_size * sample_size;
-        audio.wr_ptr = idx + (AUDIO_BUF_SIZE/2/sample_size*sample_size);
-        audio.sync = true;
-    }
-    audio.heartbeat = 0;
+    audio_sample_copy(audio.wr_idx, buf, sample_num);
 
-    uint16_t sample_num = buf_len / sample_size;
-    uint16_t base;
+    audio.wr_idx += sample_num;
+    audio.wr_idx %= AUDIO_BUF_SAMPLE_NUM;
 
-    for (uint16_t i=0; i<sample_num; i++) {
-        base = sample_size * i;
-
-        for (uint16_t x=0; x<sample_size; x++) {
-            audio.buf[(audio.wr_ptr+x) % AUDIO_BUF_SIZE] = buf[base+x];
+    if (audio.state == AUDIO_STATE_INIT) {
+        if (audio.wr_idx >= AUDIO_BUF_SAMPLE_NUM/2) {
+            audio_play();
+            audio.state = AUDIO_STATE_SYNC;
         }
-
-        audio.wr_ptr += sample_size;
-        audio.wr_ptr %= AUDIO_BUF_SIZE;
     }
-
-    /* audio.wr_ptr %= AUDIO_BUF_SIZE; */
 }
 
 void audio_setVolume(uint8_t vol)
@@ -114,11 +151,27 @@ void audio_setMute(bool flag)
 
 static void my_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
 {
-    if (audio.heartbeat > 1) {
-        audio.enable = false;
-        tas6424_mute(true);
+    if (audio.state == AUDIO_STATE_INIT) {
+        return;
     }
-    audio.heartbeat++;
+
+    if (audio.state == AUDIO_STATE_SYNC) {
+        audio.state = AUDIO_STATE_RUN;
+        audio.sample_count = 0;
+        audio.sample_diff = 0;
+        return;
+    }
+
+    if (audio.state == AUDIO_STATE_RUN) {
+        audio.sample_count -= AUDIO_BUF_SAMPLE_NUM;
+        audio.sample_diff += audio.sample_count;
+        audio.sample_count = 0;
+
+        if (audio.sample_count < -(AUDIO_BUF_SAMPLE_NUM*2)) {
+            audio.state = AUDIO_STATE_ERROR;
+            tas6424_en(false);
+        }
+    }
 }
 
 static void my_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
@@ -131,20 +184,27 @@ static void my_SAI_ErrorCallback(SAI_HandleTypeDef *hsai)
     printf("sai err:%ld\n", num);
 }
 
-uint16_t audio_play_idx(void)
+uint16_t audio_buf_size(void)
 {
-    return (AUDIO_BUF_SIZE - (LL_DMA_ReadReg(audio.hdma_tx.Instance, NDTR) & 0xFFFF));
+    return AUDIO_BUF_SAMPLE_NUM * audio.sample_size;
 }
 
 uint16_t audio_remaining_writable_buffer(void)
 {
-    uint16_t rd_ptr = audio_play_idx();
+    uint16_t buf_size = audio_buf_size();
+
+    if (audio.state != AUDIO_STATE_RUN) {
+        return buf_size/2;
+    }
+
+    uint16_t rd_ptr = (buf_size - (LL_DMA_ReadReg(audio.hdma_tx.Instance, NDTR) & 0xFFFF));
+    uint16_t wd_ptr = audio.wr_idx * audio.sample_size;
     uint16_t out;
 
-    if (rd_ptr < audio.wr_ptr) {
-      out = rd_ptr + AUDIO_BUF_SIZE - audio.wr_ptr;
+    if (rd_ptr < wd_ptr) {
+      out = rd_ptr + buf_size - wd_ptr;
     } else {
-      out = rd_ptr - audio.wr_ptr;
+      out = rd_ptr - wd_ptr;
     }
 
     return out;
