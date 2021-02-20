@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define AUDIO_BUF_SAMPLE_NUM 1000
-#define AUDIO_SAMPLE_SIZE (4*2)
+#define AUDIO_SAMPLE_SIZE (2*2)
 #define AUDIO_BUF_SIZE (AUDIO_SAMPLE_SIZE * AUDIO_BUF_SAMPLE_NUM)
 
 #define AUDIO_STATE_INIT   0
@@ -27,7 +27,6 @@ typedef struct {
     volatile uint8_t state;
     uint8_t bit_depth;
     uint8_t sample_size;
-    uint8_t channel_num;
     uint8_t vol;
     bool mute;
     SAI_HandleTypeDef hsai;

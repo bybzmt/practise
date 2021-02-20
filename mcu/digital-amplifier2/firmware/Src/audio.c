@@ -26,9 +26,9 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     audio.hsai.Init.AudioFrequency = AudioFreq;
 
     audio.hsai.Init.DataSize = SAI_DATASIZE_16;
-    audio.hsai.FrameInit.FrameLength = 16 * 4;
+    audio.hsai.FrameInit.FrameLength = 16 * 2;
     audio.hsai.FrameInit.ActiveFrameLength = 16;
-    audio.hsai.SlotInit.SlotNumber = 4;
+    audio.hsai.SlotInit.SlotNumber = 2;
 
     memset(&audio.buf[0], 0, AUDIO_BUF_SIZE);
 
@@ -71,22 +71,20 @@ static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample
     uint16_t base, oft;
 
     for (uint16_t i=0; i<sample_num; i++) {
-        base = 4 * 2 * idx;
+        base = AUDIO_SAMPLE_SIZE * idx;
         oft = audio.sample_size * i;
 
         if (audio.bit_depth == 16) {
-            audio.buf[base+0] = buf[oft + 1];
-            audio.buf[base+1] = buf[oft + 0];
-            audio.buf[base+2] = buf[oft + 3];
-            audio.buf[base+3] = buf[oft + 2];
-        }
-        else if (audio.bit_depth == 24) {
-            audio.buf[base+0] = buf[oft + 1];
-            audio.buf[base+1] = buf[oft + 0];
-            audio.buf[base+2] = buf[oft + 4];
+            audio.buf[base+0] = buf[oft + 0];
+            audio.buf[base+1] = buf[oft + 1];
+            audio.buf[base+2] = buf[oft + 2];
             audio.buf[base+3] = buf[oft + 3];
         }
-        else if (audio.bit_depth == 32) {
+        else if (audio.bit_depth == 24) {
+            audio.buf[base+0] = buf[oft + 0];
+            audio.buf[base+1] = buf[oft + 1];
+            audio.buf[base+2] = buf[oft + 3];
+            audio.buf[base+3] = buf[oft + 4];
         }
 
         idx = (idx + 1) % AUDIO_BUF_SAMPLE_NUM;

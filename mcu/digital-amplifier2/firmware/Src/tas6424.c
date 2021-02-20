@@ -131,7 +131,7 @@ void tas6424_play(uint32_t AudioFreq)
     }
 
     /* 44khz TDM */
-    uint8_t freq = 0b00010110;
+    uint8_t freq = 0b00010100;
     switch(AudioFreq) {
         case SAI_AUDIO_FREQUENCY_48K:
             freq |= 0b01000000;
