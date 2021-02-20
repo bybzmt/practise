@@ -78,13 +78,13 @@ void tas6424_init(void)
 
     tas6424_en(true);
 
-    vTaskDelay(10);
+    vTaskDelay(6);
 
     /* reset device */
     MY_Write_REG(0x00, 0x80);
-    vTaskDelay(10);
+    vTaskDelay(5);
     MY_Write_REG(0x21, 0x80);
-    vTaskDelay(10);
+    vTaskDelay(5);
 
     /* Automatic diagnostics when leaving Hi-Z and after channel fault */
     MY_Write_REG(0x09, 0x00);
@@ -100,8 +100,9 @@ void tas6424_init(void)
      * Global overtemperature warning set to 120°C
      * Overcurrent is level 2
      * Volume update rate is 1 step /8 FSYNC
+     * 7.6-V peak output voltage
      */
-    MY_Write_REG(0x01, 0b00111110);
+    MY_Write_REG(0x01, 0b00111100);
 
     /* Hi-Z */
     MY_Write_REG(0x04, 0b01010101);
@@ -130,7 +131,7 @@ void tas6424_play(uint32_t AudioFreq)
     }
 
     /* 44khz TDM */
-    uint8_t freq = 0b00010100;
+    uint8_t freq = 0b00010110;
     switch(AudioFreq) {
         case SAI_AUDIO_FREQUENCY_48K:
             freq |= 0b01000000;

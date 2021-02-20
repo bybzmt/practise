@@ -19,27 +19,16 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     audio.sample_count = 0;
     audio.sample_diff = 0;
     audio.wr_idx = 0;
-    audio.channel_num = 2;
     audio.state = AUDIO_STATE_INIT;
 
     HAL_SAI_DeInit(&audio.hsai);
 
     audio.hsai.Init.AudioFrequency = AudioFreq;
 
-    if (bit_depth == 16) {
-        audio.hsai.Init.DataSize = SAI_DATASIZE_16;
-    } else if (bit_depth == 24) {
-        audio.hsai.Init.DataSize = SAI_DATASIZE_24;
-    } else if (bit_depth == 32) {
-        audio.hsai.Init.DataSize = SAI_DATASIZE_32;
-    } else {
-        printf("bit_depth error\n");
-        return;
-    }
-
-    audio.hsai.FrameInit.FrameLength = bit_depth * audio.channel_num;
-    audio.hsai.FrameInit.ActiveFrameLength = bit_depth;
-    audio.hsai.SlotInit.SlotNumber = audio.channel_num;
+    audio.hsai.Init.DataSize = SAI_DATASIZE_16;
+    audio.hsai.FrameInit.FrameLength = 16 * 4;
+    audio.hsai.FrameInit.ActiveFrameLength = 16;
+    audio.hsai.SlotInit.SlotNumber = 4;
 
     memset(&audio.buf[0], 0, AUDIO_BUF_SIZE);
 
@@ -65,9 +54,7 @@ static void audio_play(void)
 {
     printf("play\n");
 
-    uint16_t len = audio_buf_size() / 2;
-
-    HAL_StatusTypeDef ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], len);
+    HAL_StatusTypeDef ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], AUDIO_BUF_SIZE/2);
     if (ret!= HAL_OK) {
         printf("play err:%d\n", ret);
         return;
@@ -81,12 +68,25 @@ static void audio_play(void)
 
 static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
 {
-    for (uint16_t i=0; i<sample_num; i++) {
-        uint16_t base = audio.sample_size * idx;
-        uint16_t oft = audio.sample_size * i;
+    uint16_t base, oft;
 
-        for (uint16_t x=0; x<audio.sample_size; x++) {
-            audio.buf[base+x] = buf[oft + x];
+    for (uint16_t i=0; i<sample_num; i++) {
+        base = 4 * 2 * idx;
+        oft = audio.sample_size * i;
+
+        if (audio.bit_depth == 16) {
+            audio.buf[base+0] = buf[oft + 1];
+            audio.buf[base+1] = buf[oft + 0];
+            audio.buf[base+2] = buf[oft + 3];
+            audio.buf[base+3] = buf[oft + 2];
+        }
+        else if (audio.bit_depth == 24) {
+            audio.buf[base+0] = buf[oft + 1];
+            audio.buf[base+1] = buf[oft + 0];
+            audio.buf[base+2] = buf[oft + 4];
+            audio.buf[base+3] = buf[oft + 3];
+        }
+        else if (audio.bit_depth == 32) {
         }
 
         idx = (idx + 1) % AUDIO_BUF_SAMPLE_NUM;
@@ -197,15 +197,15 @@ uint16_t audio_remaining_writable_buffer(void)
         return buf_size/2;
     }
 
-    uint16_t rd_ptr = (buf_size - (LL_DMA_ReadReg(audio.hdma_tx.Instance, NDTR) & 0xFFFF));
-    uint16_t wd_ptr = audio.wr_idx * audio.sample_size;
+    uint16_t rd_ptr = (AUDIO_BUF_SIZE - (LL_DMA_ReadReg(audio.hdma_tx.Instance, NDTR) & 0xFFFF));
+    uint16_t rd_idx = rd_ptr / 4 / 4;
     uint16_t out;
 
-    if (rd_ptr < wd_ptr) {
-      out = rd_ptr + buf_size - wd_ptr;
+    if (rd_idx < audio.wr_idx) {
+      out = rd_idx + AUDIO_BUF_SAMPLE_NUM - audio.wr_idx;
     } else {
-      out = rd_ptr - wd_ptr;
+      out = rd_idx - audio.wr_idx;
     }
 
-    return out;
+    return out * audio.sample_size;
 }
