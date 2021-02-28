@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 7
+Sheet 5 10
 Title ""
 Date ""
 Rev ""
@@ -676,8 +676,6 @@ Wire Wire Line
 Wire Wire Line
 	1950 2975 2125 2975
 Wire Wire Line
-	2125 2475 1100 2475
-Wire Wire Line
 	2125 2675 1100 2675
 Wire Wire Line
 	2125 2775 1100 2775
@@ -686,13 +684,9 @@ Wire Wire Line
 Wire Wire Line
 	2125 2075 1100 2075
 Wire Wire Line
-	2125 1875 1100 1875
-Wire Wire Line
 	2125 1775 1100 1775
 Wire Wire Line
 	2125 1675 1100 1675
-Wire Wire Line
-	2125 1575 1100 1575
 Wire Wire Line
 	2125 1275 1100 1275
 NoConn ~ 2125 1375
@@ -798,18 +792,12 @@ Text HLabel 1100 2875 0    50   Input ~ 0
 SDA
 Text HLabel 1100 2675 0    50   Input ~ 0
 SCLK
-Text HLabel 1100 2475 0    50   Input ~ 0
-MCLK
 Text HLabel 1100 2075 0    50   Input ~ 0
 FSYNC
 Text HLabel 1100 1675 0    50   Input ~ 0
 MUTE
-Text HLabel 1100 1575 0    50   Input ~ 0
-FAULT
 Text HLabel 1100 1775 0    50   Input ~ 0
 EN
-Text HLabel 1100 1875 0    50   Input ~ 0
-WARN
 Text HLabel 1100 1275 0    50   Input ~ 0
 SDIN
 $Sheet
@@ -883,4 +871,9 @@ Wire Wire Line
 Connection ~ 9625 4410
 Wire Wire Line
 	9625 4410 9625 4475
+Wire Wire Line
+	2125 2675 2125 2475
+Connection ~ 2125 2675
+NoConn ~ 2130 1570
+NoConn ~ 2125 1875
 $EndSCHEMATC

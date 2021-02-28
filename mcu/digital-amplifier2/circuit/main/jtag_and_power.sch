@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 7
+Sheet 3 8
 Title ""
 Date ""
 Rev ""
@@ -186,32 +186,6 @@ Wire Wire Line
 Wire Wire Line
 	8275 1300 8625 1300
 $Comp
-L Device:R_Small R?
-U 1 1 5FD6BC2B
-P 1150 4200
-AR Path="/5F047EA6/5FD6BC2B" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/5FD6BC2B" Ref="R6"  Part="1" 
-F 0 "R6" V 954 4200 50  0000 C CNN
-F 1 "1m" V 1045 4200 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 1150 4200 50  0001 C CNN
-F 3 "~" H 1150 4200 50  0001 C CNN
-	1    1150 4200
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:C_Small C?
-U 1 1 5FD6BC32
-P 1150 4525
-AR Path="/5F047EA6/5FD6BC32" Ref="C?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/5FD6BC32" Ref="C9"  Part="1" 
-F 0 "C9" V 921 4525 50  0000 C CNN
-F 1 "1nF/1KV" V 1012 4525 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1150 4525 50  0001 C CNN
-F 3 "~" H 1150 4525 50  0001 C CNN
-	1    1150 4525
-	0    1    1    0   
-$EndComp
-$Comp
 L power:GND #PWR?
 U 1 1 5FD6BC47
 P 1425 4825
@@ -224,10 +198,6 @@ F 3 "" H 1425 4825 50  0001 C CNN
 	1    1425 4825
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2725 950  2725 1200
-Wire Wire Line
-	2725 1200 2525 1200
 $Comp
 L Device:C_Small C?
 U 1 1 5FD6F329
@@ -483,25 +453,6 @@ F 3 "~" H 2900 1700 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	1050 4525 925  4525
-Wire Wire Line
-	1250 4525 1425 4525
-Connection ~ 1425 4525
-Wire Wire Line
-	1425 4525 1425 4825
-Wire Wire Line
-	1250 4200 1425 4200
-Connection ~ 1425 4200
-Wire Wire Line
-	1425 4200 1425 4525
-Wire Wire Line
-	1050 4200 925  4200
-Connection ~ 925  4200
-Wire Wire Line
-	925  4200 925  4525
-Wire Wire Line
-	925  3800 925  4200
-Wire Wire Line
 	3000 1900 3325 1900
 Wire Wire Line
 	3000 1700 3325 1700
@@ -587,28 +538,6 @@ Connection ~ 4200 2950
 Text HLabel 4675 2950 2    50   Input ~ 0
 USB_CONNECT
 $Comp
-L Device:D D1
-U 1 1 5FC921F8
-P 2375 1200
-F 0 "D1" H 2375 984 50  0000 C CNN
-F 1 "60v 3A" H 2375 1075 50  0000 C CNN
-F 2 "Diode_SMD:D_SMA" H 2375 1200 50  0001 C CNN
-F 3 "~" H 2375 1200 50  0001 C CNN
-	1    2375 1200
-	-1   0    0    1   
-$EndComp
-$Comp
-L power:VCC #PWR021
-U 1 1 601182A8
-P 2725 950
-F 0 "#PWR021" H 2725 800 50  0001 C CNN
-F 1 "VCC" H 2742 1123 50  0000 C CNN
-F 2 "" H 2725 950 50  0001 C CNN
-F 3 "" H 2725 950 50  0001 C CNN
-	1    2725 950 
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:C_Small C16
 U 1 1 6035A323
 P 10075 1175
@@ -664,7 +593,7 @@ U 1 1 5FD557A1
 P 1225 2200
 F 0 "J3" H 1330 3467 50  0000 C CNN
 F 1 "USB_C_Receptacle" H 1330 3376 50  0000 C CNN
-F 2 "connector:usb_c_24p_smd" H 1375 2200 50  0001 C CNN
+F 2 "Connector_USB:USB_C_Receptacle_Amphenol_12401548E4-2A" H 1375 2200 50  0001 C CNN
 F 3 "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" H 1375 2200 50  0001 C CNN
 	1    1225 2200
 	1    0    0    -1  
@@ -760,11 +689,7 @@ Wire Wire Line
 	2300 2200 2300 2575
 Connection ~ 2150 1200
 Wire Wire Line
-	2150 1200 2225 1200
-Wire Wire Line
 	1225 3800 1425 3800
-Wire Wire Line
-	1425 3800 1425 4200
 $Comp
 L power:PWR_FLAG #FLG0104
 U 1 1 5FDE58B4
@@ -801,4 +726,7 @@ F 3 "~" H 3350 2950 50  0001 C CNN
 	1    3350 2950
 	-1   0    0    1   
 $EndComp
+Wire Wire Line
+	1425 3800 1425 4825
+NoConn ~ 925  3800
 $EndSCHEMATC

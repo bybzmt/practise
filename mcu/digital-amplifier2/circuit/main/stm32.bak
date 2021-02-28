@@ -4,7 +4,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 7
+Sheet 2 8
 Title ""
 Date ""
 Rev ""
@@ -230,8 +230,6 @@ Wire Wire Line
 	6250 3500 5525 3500
 Text HLabel 8200 1800 2    50   Input ~ 0
 I2S1_FS
-Text HLabel 5525 3100 0    50   Input ~ 0
-SAI1_A_SD
 Text HLabel 8175 4200 2    50   Input ~ 0
 SAI1_B_SCK
 Text HLabel 8200 2300 2    50   Input ~ 0
@@ -285,13 +283,9 @@ Wire Wire Line
 Wire Wire Line
 	7650 3400 8200 3400
 Wire Wire Line
-	5525 3000 6250 3000
-Wire Wire Line
 	7650 2900 8200 2900
 Text Label 7775 3700 0    50   ~ 0
 I2C_SCL
-Text HLabel 5525 3000 0    50   Input ~ 0
-SAI1_B_MCK
 Wire Wire Line
 	7650 3500 8200 3500
 Text Label 7900 3500 0    50   ~ 0
@@ -405,17 +399,6 @@ F 3 "" H 1725 4100 50  0001 C CNN
 	1    1725 4100
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:R_Small R2
-U 1 1 5FE35E72
-P 2050 3750
-F 0 "R2" V 1854 3750 50  0000 C CNN
-F 1 "49.9Ω" V 1945 3750 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 2050 3750 50  0001 C CNN
-F 3 "~" H 2050 3750 50  0001 C CNN
-	1    2050 3750
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	1550 3550 1725 3550
 Wire Wire Line
@@ -424,11 +407,7 @@ Wire Wire Line
 	1725 4100 1725 3950
 Wire Wire Line
 	1725 3950 1550 3950
-Wire Wire Line
-	1550 3750 1950 3750
-Wire Wire Line
-	2150 3750 2300 3750
-Text Label 2225 3750 0    50   ~ 0
+Text Label 1840 3750 0    50   ~ 0
 SPDIF_RX
 Wire Wire Line
 	8175 4000 7650 4000
@@ -436,8 +415,6 @@ Text HLabel 8200 1900 2    50   Input ~ 0
 I2S1_SCK
 Text HLabel 8200 2100 2    50   Input ~ 0
 I2S1_SD
-Wire Wire Line
-	5525 3100 6250 3100
 $Comp
 L misc:DLT11H0 U1
 U 1 1 5FEBF237
@@ -450,116 +427,32 @@ F 3 "" H 1100 3950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C_Small C2
-U 1 1 60805F3F
-P 2300 3975
-F 0 "C2" H 2392 4021 50  0000 L CNN
-F 1 "10pf" H 2392 3930 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 2300 3975 50  0001 C CNN
-F 3 "~" H 2300 3975 50  0001 C CNN
-	1    2300 3975
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 3875 2300 3750
-Connection ~ 2300 3750
-Wire Wire Line
-	2300 3750 2575 3750
-Wire Wire Line
-	2300 4075 2300 4200
-$Comp
-L power:GND #PWR07
-U 1 1 6080AC7C
-P 2300 4200
-F 0 "#PWR07" H 2300 3950 50  0001 C CNN
-F 1 "GND" H 2305 4027 50  0000 C CNN
-F 2 "" H 2300 4200 50  0001 C CNN
-F 3 "" H 2300 4200 50  0001 C CNN
-	1    2300 4200
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2725 5500 3300 5500
-$Comp
-L Connector:Conn_01x04_Female J1
-U 1 1 5FC46A67
-P 825 5500
-F 0 "J1" H 719 5075 50  0000 C CNN
-F 1 "I2C_oled" H 719 5166 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 825 5500 50  0001 C CNN
-F 3 "~" H 825 5500 50  0001 C CNN
-	1    825  5500
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	2725 5300 2875 5300
-Wire Wire Line
-	2875 5300 2875 4975
-$Comp
 L power:+3.3V #PWR08
 U 1 1 5FC51D80
-P 2875 4975
-F 0 "#PWR08" H 2875 4825 50  0001 C CNN
-F 1 "+3.3V" H 2890 5148 50  0000 C CNN
-F 2 "" H 2875 4975 50  0001 C CNN
-F 3 "" H 2875 4975 50  0001 C CNN
-	1    2875 4975
+P 3300 4730
+F 0 "#PWR08" H 3300 4580 50  0001 C CNN
+F 1 "+3.3V" H 3315 4903 50  0000 C CNN
+F 2 "" H 3300 4730 50  0001 C CNN
+F 3 "" H 3300 4730 50  0001 C CNN
+	1    3300 4730
 	1    0    0    -1  
 $EndComp
 $Comp
 L Connector:Conn_01x04_Female J2
 U 1 1 5FC580D5
-P 2525 5500
-F 0 "J2" H 2419 5075 50  0000 C CNN
-F 1 "encoder" H 2419 5166 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 2525 5500 50  0001 C CNN
-F 3 "~" H 2525 5500 50  0001 C CNN
-	1    2525 5500
+P 2325 5600
+F 0 "J2" H 2219 5175 50  0000 C CNN
+F 1 "encoder" H 2219 5266 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 2325 5600 50  0001 C CNN
+F 3 "~" H 2325 5600 50  0001 C CNN
+	1    2325 5600
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	1025 5500 1600 5500
-Wire Wire Line
-	1025 5400 1600 5400
-Wire Wire Line
-	1025 5600 1175 5600
-Wire Wire Line
-	1175 5600 1175 5825
-$Comp
-L power:GND #PWR03
-U 1 1 5FC5B978
-P 1175 5825
-F 0 "#PWR03" H 1175 5575 50  0001 C CNN
-F 1 "GND" H 1180 5652 50  0000 C CNN
-F 2 "" H 1175 5825 50  0001 C CNN
-F 3 "" H 1175 5825 50  0001 C CNN
-	1    1175 5825
-	1    0    0    -1  
-$EndComp
-Text Label 1250 5500 0    50   ~ 0
-I2C_SCL
-Text Label 1250 5400 0    50   ~ 0
-I2C_SDA
-Wire Wire Line
-	1025 5300 1175 5300
-Wire Wire Line
-	1175 5300 1175 4975
-$Comp
-L power:+3.3V #PWR02
-U 1 1 5FC5B982
-P 1175 4975
-F 0 "#PWR02" H 1175 4825 50  0001 C CNN
-F 1 "+3.3V" H 1190 5148 50  0000 C CNN
-F 2 "" H 1175 4975 50  0001 C CNN
-F 3 "" H 1175 4975 50  0001 C CNN
-	1    1175 4975
-	1    0    0    -1  
-$EndComp
-Text Label 3700 5400 0    50   ~ 0
+Text Label 4065 5400 0    50   ~ 0
 encoder_sw
-Text Label 3700 5500 0    50   ~ 0
+Text Label 4065 5500 0    50   ~ 0
 encoder_a
-Text Label 3700 5600 0    50   ~ 0
+Text Label 4060 5600 0    50   ~ 0
 encoder_b
 $Comp
 L power:GND #PWR09
@@ -608,8 +501,6 @@ $EndComp
 Wire Wire Line
 	2875 5925 2875 6000
 Wire Wire Line
-	2875 6000 3300 6000
-Wire Wire Line
 	3300 6000 3300 5925
 Wire Wire Line
 	3300 6100 3300 6000
@@ -619,38 +510,19 @@ Wire Wire Line
 Wire Wire Line
 	2875 5725 2875 5400
 Wire Wire Line
-	2725 5400 2875 5400
-Connection ~ 2875 5400
-Wire Wire Line
 	3300 5725 3300 5600
 Wire Wire Line
 	3300 5600 3300 5500
 Wire Wire Line
 	3700 5725 3700 5600
 Connection ~ 3700 5600
-Wire Wire Line
-	3700 5600 4175 5600
-Wire Wire Line
-	3300 5500 4175 5500
 Connection ~ 3300 5500
-Wire Wire Line
-	2875 5400 4175 5400
-Wire Wire Line
-	2725 5600 3700 5600
 Text HLabel 8200 3200 2    50   Input ~ 0
 headphone_en
 Text HLabel 5875 4300 0    50   Input ~ 0
 headphone_in
-Text HLabel 8200 3100 2    50   Input ~ 0
-headphone_mute
 Text HLabel 8200 3300 2    50   Input ~ 0
 tas6424_en
-Text HLabel 5875 4000 0    50   Input ~ 0
-tas6424_mute
-Text HLabel 5875 4500 0    50   Input ~ 0
-tas6424_warn
-Text HLabel 5875 4400 0    50   Input ~ 0
-tas6424_fault
 Wire Wire Line
 	7650 1400 8200 1400
 Wire Wire Line
@@ -665,10 +537,6 @@ Text Label 7725 1600 0    50   ~ 0
 encoder_b
 Wire Wire Line
 	6250 4300 5875 4300
-Wire Wire Line
-	6250 4400 5875 4400
-Wire Wire Line
-	6250 4000 5875 4000
 $Comp
 L power:+3.3V #PWR010
 U 1 1 5FD54737
@@ -685,10 +553,6 @@ Wire Wire Line
 Connection ~ 3950 7025
 Wire Wire Line
 	3950 7025 3950 7325
-Wire Wire Line
-	6250 3700 5875 3700
-Text HLabel 5875 3700 0    50   Input ~ 0
-BT_spdif
 Text HLabel 8175 4300 2    50   Input ~ 0
 BT_state
 Text HLabel 8175 4400 2    50   Input ~ 0
@@ -703,8 +567,6 @@ Wire Wire Line
 	8200 3300 7650 3300
 Wire Wire Line
 	7650 3200 8200 3200
-Wire Wire Line
-	8200 3100 7650 3100
 NoConn ~ 6250 3200
 NoConn ~ 6250 3300
 NoConn ~ 6250 3600
@@ -713,8 +575,6 @@ NoConn ~ 7650 3900
 NoConn ~ 7650 3600
 NoConn ~ 7650 2000
 NoConn ~ 7650 2200
-Wire Wire Line
-	5875 4500 6250 4500
 NoConn ~ 6250 3900
 Wire Wire Line
 	7650 4300 8175 4300
@@ -760,10 +620,6 @@ NoConn ~ 6250 4100
 NoConn ~ 6250 3400
 NoConn ~ 7650 1700
 NoConn ~ 7650 4100
-Text HLabel 5875 4200 0    50   Input ~ 0
-headphone_irq
-Wire Wire Line
-	6250 4200 5875 4200
 $Comp
 L Device:C_Small C13
 U 1 1 5FD63401
@@ -807,8 +663,6 @@ F 3 "~" H 3400 1275 50  0001 C CNN
 	1    3400 1275
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	3125 1275 3125 950 
 Wire Wire Line
 	3500 1275 3825 1275
 Connection ~ 3825 1900
@@ -854,21 +708,109 @@ F 3 "~" H 4300 1075 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4300 1275 4300 1075
+Text Label 4400 1275 0    50   ~ 0
+AVDD
+Wire Wire Line
+	1550 3750 2375 3750
+NoConn ~ 6250 4200
+NoConn ~ 6250 4400
+NoConn ~ 6250 4500
+NoConn ~ 6250 3000
+NoConn ~ 6250 3100
+NoConn ~ 6250 4000
+NoConn ~ 7650 3100
 $Comp
-L power:+3.3VA #PWR?
-U 1 1 5FD63431
-P 3125 950
-AR Path="/5F047EA6/5FD62F96/5FD63431" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/5FD63431" Ref="#PWR026"  Part="1" 
-F 0 "#PWR026" H 3125 800 50  0001 C CNN
-F 1 "+3.3VA" H 3140 1123 50  0000 C CNN
-F 2 "" H 3125 950 50  0001 C CNN
-F 3 "" H 3125 950 50  0001 C CNN
-	1    3125 950 
+L Device:R_Small R2
+U 1 1 6038DB07
+P 2875 5175
+F 0 "R2" H 2970 5225 50  0000 L CNN
+F 1 "9.53k" H 2960 5140 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 2875 5175 50  0001 C CNN
+F 3 "~" H 2875 5175 50  0001 C CNN
+	1    2875 5175
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small R26
+U 1 1 6038DBF6
+P 3300 5165
+F 0 "R26" H 3360 5215 50  0000 L CNN
+F 1 "9.53k" H 3365 5115 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 3300 5165 50  0001 C CNN
+F 3 "~" H 3300 5165 50  0001 C CNN
+	1    3300 5165
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small R27
+U 1 1 6038DCE6
+P 3700 5165
+F 0 "R27" H 3785 5255 50  0000 L CNN
+F 1 "9.53k" H 3785 5155 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 3700 5165 50  0001 C CNN
+F 3 "~" H 3700 5165 50  0001 C CNN
+	1    3700 5165
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3125 1275 3300 1275
-Text Label 4400 1275 0    50   ~ 0
-AVDD
+	2525 5500 3300 5500
+Wire Wire Line
+	2525 5600 3700 5600
+Wire Wire Line
+	2525 6000 2875 6000
+Connection ~ 2875 6000
+Wire Wire Line
+	2875 6000 3300 6000
+Wire Wire Line
+	2525 5700 2525 6000
+Wire Wire Line
+	3300 5265 3300 5500
+Wire Wire Line
+	3700 5400 3700 5500
+Wire Wire Line
+	3700 5500 3700 5600
+Wire Wire Line
+	2875 5075 2875 4930
+Wire Wire Line
+	2875 4930 3300 4930
+Wire Wire Line
+	3300 4930 3300 5065
+Wire Wire Line
+	3300 4930 3700 4930
+Connection ~ 3300 4930
+Wire Wire Line
+	3700 4930 3700 5065
+Wire Wire Line
+	3700 5265 3700 5400
+Wire Wire Line
+	3300 4730 3300 4930
+Wire Wire Line
+	3300 5500 4580 5500
+Wire Wire Line
+	3700 5600 4575 5600
+Wire Wire Line
+	2525 5400 2875 5400
+Wire Wire Line
+	2875 5275 2875 5400
+Connection ~ 2875 5400
+Wire Wire Line
+	2875 5400 4580 5400
+NoConn ~ 6250 3700
+$Comp
+L power:+3.3V #PWR?
+U 1 1 6046F722
+P 3125 945
+AR Path="/6035C8F0/6046F722" Ref="#PWR?"  Part="1" 
+AR Path="/5F047EA6/6046F722" Ref="#PWR0132"  Part="1" 
+F 0 "#PWR0132" H 3125 795 50  0001 C CNN
+F 1 "+3.3V" H 3175 1135 50  0000 C CNN
+F 2 "" H 3125 945 50  0001 C CNN
+F 3 "" H 3125 945 50  0001 C CNN
+	1    3125 945 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3300 1275 3125 1275
+Wire Wire Line
+	3125 945  3125 1275
 $EndSCHEMATC
