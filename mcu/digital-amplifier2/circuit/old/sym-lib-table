@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name digital-amplifier2-rescue)(type Legacy)(uri ${KIPRJMOD}/digital-amplifier2-rescue.lib)(options "")(descr ""))
+  (lib (name ti)(type Legacy)(uri ${KIPRJMOD}/mykcad/ti.lib)(options "")(descr ""))
+  (lib (name misc)(type Legacy)(uri ${KIPRJMOD}/mykcad/misc.lib)(options "")(descr ""))
+  (lib (name Regulator_Linear)(type Legacy)(uri ${KIPRJMOD}/libraries/Regulator_Linear/Regulator_Linear.lib)(options "")(descr ""))
+)
