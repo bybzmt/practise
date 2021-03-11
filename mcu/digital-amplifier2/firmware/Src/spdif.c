@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include "stm32f4xx_ll_dma.h"
 
-#define SPDIF_BUF_SIZE 1024
+/* 16bit/8*2 * (48000khz/1000)*4 */
+#define SPDIF_BUF_SIZE (2*2*48*4)
 
 extern SPDIFRX_HandleTypeDef SpdifrxHandle;
 

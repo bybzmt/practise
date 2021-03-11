@@ -11,7 +11,7 @@
 
 #define AUDIO_BUF_SAMPLE_NUM 1000
 #define AUDIO_SAMPLE_SIZE (2*2)
-#define AUDIO_BUF_SIZE (AUDIO_SAMPLE_SIZE * AUDIO_BUF_SAMPLE_NUM)
+#define AUDIO_BUF_MAX_SIZE (AUDIO_SAMPLE_SIZE * AUDIO_BUF_SAMPLE_NUM)
 
 #define AUDIO_STATE_INIT   0
 #define AUDIO_STATE_SYNC   1
@@ -19,7 +19,7 @@
 #define AUDIO_STATE_ERROR  4
 
 typedef struct {
-    uint8_t buf[AUDIO_BUF_SIZE];
+    uint8_t buf[AUDIO_BUF_MAX_SIZE];
     uint32_t freq;
     volatile int16_t sample_count;
     volatile int16_t sample_diff;
@@ -42,8 +42,7 @@ void audio_append_adapt(uint8_t* buf, uint16_t buf_len);
 void audio_setVolume(uint8_t vol);
 void audio_setMute(bool flag);
 
-uint16_t audio_buf_size(void);
-uint16_t audio_remaining_writable_buffer(void);
+int16_t audio_clock_samples_delta(void);
 
 #ifdef __cplusplus
 }

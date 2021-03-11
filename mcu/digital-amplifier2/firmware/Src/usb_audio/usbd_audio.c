@@ -360,8 +360,6 @@ volatile uint32_t fnsof = 0;
  * @{
  */
 
-static uint8_t tmpbuf[1024];
-
 /**
  * @brief  USBD_AUDIO_Init
  *         Initialize the AUDIO interface
@@ -405,7 +403,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         device_mode_change(MODE_USB);
         audio_init(haudio->freq, haudio->bit_depth);
 
-        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, tmpbuf, AUDIO_OUT_PACKET_24B);
+        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer, AUDIO_OUT_PACKET_24B);
     }
     return USBD_OK;
 }
@@ -620,13 +618,11 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
     // static volatile int32_t fb_raw = AUDIO_FB_DEFAULT;
     static volatile uint32_t sof_count = 0;
 
+    USBD_AUDIO_HandleTypeDef* haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
+    int16_t sample_size = haudio->bit_depth / 8 * 2;
+
     /* Do stuff only when playing */
     if (all_ready == 1U) {
-        /* Remaining writable buffer size */
-        uint32_t audio_buf_writable_size;
-
-        audio_buf_writable_size = audio_remaining_writable_buffer();
-
         sof_count += 1;
 
         if (sof_count == 1U) {
@@ -634,7 +630,7 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
             /* Calculate feedback value based on the change of writable buffer size */
             /* v2 */
             int32_t audio_buf_writable_size_dev_from_nom;
-            audio_buf_writable_size_dev_from_nom = audio_buf_writable_size - (audio_buf_size() >> 1);
+            audio_buf_writable_size_dev_from_nom = audio_clock_samples_delta() * sample_size;
             // fb_value += audio_buf_writable_size_dev_from_nom * 1352;
             fb_value += audio_buf_writable_size_dev_from_nom * audio_buf_writable_size_dev_from_nom / 912673 * 128 * audio_buf_writable_size_dev_from_nom;
 
@@ -751,9 +747,12 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,
             curr_length = 0U;
         }
 
-        audio_append(tmpbuf, curr_length);
+        USBD_AUDIO_HandleTypeDef* haudio;
+        haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
 
-        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, tmpbuf, AUDIO_OUT_PACKET_24B);
+        audio_append(haudio->buffer, curr_length);
+
+        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer, AUDIO_OUT_PACKET_24B);
     }
 
     return USBD_OK;

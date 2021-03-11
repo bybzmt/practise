@@ -165,13 +165,10 @@
 
 /* Number of sub-packets in the audio transfer buffer. You can modify this value but always make sure
   that it is an even number and higher than 3 */
-#define AUDIO_OUT_PACKET_NUM                          4U
+#define AUDIO_OUT_PACKET_NUM                          3U
 
-/* Total size of the audio transfer buffer */
-#define AUDIO_TOTAL_BUF_SIZE                          ((uint16_t)((USBD_AUDIO_FREQ_MAX / 1000U + 1) * 2U * 4U * AUDIO_OUT_PACKET_NUM))
-
-/** 
- * The minimum distance that the wr_ptr should keep before rd_ptr to 
+/**
+ * The minimum distance that the wr_ptr should keep before rd_ptr to
  * prevent overwriting unplayed buffer
  */
 #define AUDIO_BUF_SAFEZONE                            ((uint16_t)((USBD_AUDIO_FREQ_MAX / 1000U + 1) * 2U * 4U))
@@ -218,7 +215,7 @@ USBD_AUDIO_ControlTypeDef;
 typedef struct
 {
   uint32_t                  alt_setting;
-  uint16_t                  buffer[AUDIO_TOTAL_BUF_SIZE];
+  uint8_t                  buffer[AUDIO_OUT_PACKET_24B];
   AUDIO_OffsetTypeDef       offset;
   uint8_t                   rd_enable;
   uint16_t                  rd_ptr;
