@@ -64,6 +64,7 @@ C_HAL_FILE+=stm32f4xx_hal_flash_ramfunc.c
 C_HAL_FILE+=stm32f4xx_hal_gpio.c
 C_HAL_FILE+=stm32f4xx_hal_dma_ex.c
 C_HAL_FILE+=stm32f4xx_hal_dma.c
+C_HAL_FILE+=stm32f4xx_hal_iwdg.c
 C_HAL_FILE+=stm32f4xx_hal_pwr.c
 C_HAL_FILE+=stm32f4xx_hal_pwr_ex.c
 C_HAL_FILE+=stm32f4xx_hal_cortex.c

@@ -1,5 +1,8 @@
 #include "base.h"
 
+
+IWDG_HandleTypeDef IwdgHandle;
+
 USBD_HandleTypeDef USBD_Device;
 uint8_t device_mode = MODE_IDLE;
 
@@ -36,6 +39,11 @@ void device_mode_change(uint8_t mode)
 
 void UserMain()
 {
+    IwdgHandle.Instance = IWDG;
+    IwdgHandle.Init.Prescaler = IWDG_PRESCALER_128;
+    IwdgHandle.Init.Reload = 40000/128*5;
+    HAL_IWDG_Init(&IwdgHandle);
+
     __HAL_RCC_SYSCFG_CLK_ENABLE();
     HAL_StatusTypeDef flag = HAL_I2C_Init(&hi2c1);
     if (flag != HAL_OK) {
@@ -61,8 +69,8 @@ void UserMain()
         }
 
         tas6424_check();
-    }
 
-    printf("runing.\n");
+        HAL_IWDG_Refresh(&IwdgHandle);
+    }
 }
 
