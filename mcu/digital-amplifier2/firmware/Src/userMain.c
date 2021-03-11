@@ -51,16 +51,13 @@ void UserMain()
     usb_start();
 
     for (;;) {
-        vTaskDelay(2000);
+        vTaskDelay(1000);
 
         if (device_mode == MODE_IDLE) {
             device_mode_change(MODE_SPDIF);
             spdif_start();
         } else if (device_mode == MODE_SPDIF) {
-            if (audio.state != AUDIO_STATE_RUN) {
-                spdif_stop();
-                spdif_start();
-            }
+            spdif_check();
         }
 
         tas6424_check();

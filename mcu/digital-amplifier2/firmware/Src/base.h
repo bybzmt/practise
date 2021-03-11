@@ -35,6 +35,7 @@ void tas6424_check(void);
 
 void spdif_start(void);
 void spdif_stop(void);
+void spdif_check(void);
 
 #ifdef __cplusplus
 }

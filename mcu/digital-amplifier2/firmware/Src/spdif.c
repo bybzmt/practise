@@ -11,7 +11,7 @@ extern SPDIFRX_HandleTypeDef SpdifrxHandle;
 static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif);
 static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif);
 
-static bool spdif_sync = false;
+static uint8_t spdif_state = 0;
 
 static uint8_t spdif_buf[SPDIF_BUF_SIZE];
 
@@ -27,7 +27,7 @@ void spdif_start(void)
 {
     printf("spdif start\n");
 
-    spdif_sync = false;
+    spdif_state = 0;
 
     if (HAL_SPDIFRX_Init(&SpdifrxHandle) != HAL_OK)
     {
@@ -47,15 +47,26 @@ void spdif_start(void)
 
 static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
-    if (spdif_sync == false) {
-        spdif_sync = true;
+    if (spdif_state == 0) {
         audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
     }
+    spdif_state = 1;
 
     audio_append_adapt(&spdif_buf[0], SPDIF_BUF_SIZE/2);
 }
 
 static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
+    spdif_state = 1;
     audio_append_adapt(&spdif_buf[SPDIF_BUF_SIZE/2], SPDIF_BUF_SIZE/2);
+}
+
+void spdif_check(void)
+{
+    if (spdif_state == 2) {
+        spdif_stop();
+        spdif_start();
+    }
+
+    spdif_state = 2;
 }

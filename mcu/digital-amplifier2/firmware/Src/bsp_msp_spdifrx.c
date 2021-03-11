@@ -104,8 +104,6 @@ static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
     HAL_NVIC_DisableIRQ(SPDIF_RX_IRQn);
 }
 
-/* static void my_spdif_rx_cplt(SPDIFRX_HandleTypeDef *hspdif) {} */
-
 void DMA1_Stream1_IRQHandler(void)
 {
     HAL_DMA_IRQHandler(&SpdifrxDmaHandle);
