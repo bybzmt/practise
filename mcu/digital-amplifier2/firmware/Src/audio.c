@@ -36,7 +36,7 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     }
 }
 
-void audio_deInit()
+void audio_deInit(void)
 {
     printf("audio deInit\n");
     audio.state = AUDIO_STATE_INIT;
@@ -58,8 +58,19 @@ static void audio_play(void)
     tas6424_vol(audio.vol);
     tas6424_mute(audio.mute);
     tas6424_play(audio.freq);
+}
 
-    audio.state = AUDIO_STATE_RUN;
+void audio_check(void)
+{
+    if (audio.state == AUDIO_STATE_SYNC) {
+        audio_deInit();
+        audio.state = AUDIO_STATE_ERROR;
+        return;
+    }
+
+    if (audio.state == AUDIO_STATE_RUN) {
+        audio.state = AUDIO_STATE_SYNC;
+    }
 }
 
 static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
@@ -121,6 +132,8 @@ void audio_append(uint8_t* buf, uint16_t buf_len)
     if (audio.state == AUDIO_STATE_INIT) {
         audio_play();
     }
+
+    audio.state = AUDIO_STATE_RUN;
 }
 
 void audio_setVolume(uint8_t vol)

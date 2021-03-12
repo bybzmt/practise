@@ -36,7 +36,8 @@ typedef struct {
 extern Audio audio;
 
 void audio_init(uint32_t AudioFreq, uint8_t sample_size);
-void audio_deInit();
+void audio_deInit(void);
+void audio_check(void);
 void audio_append(uint8_t* buf, uint16_t buf_len);
 void audio_append_adapt(uint8_t* buf, uint16_t buf_len);
 void audio_setVolume(uint8_t vol);

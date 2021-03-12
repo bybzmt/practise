@@ -106,6 +106,9 @@ void tas6424_init(void)
 
     /* Hi-Z */
     MY_Write_REG(0x04, 0b01010101);
+
+    vTaskDelay(1);
+    tas6424_en(false);
 }
 
 void tas6424_mute(bool ok)
@@ -272,9 +275,4 @@ static void tas6424_reporting(void)
 void EXTI15_10_IRQHandler(void)
 {
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14|GPIO_PIN_15);
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    /* tas6424_reporting(); */
 }

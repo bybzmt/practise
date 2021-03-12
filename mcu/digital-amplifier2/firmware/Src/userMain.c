@@ -20,8 +20,6 @@ void usb_start(void)
 
 void usb_stop(void)
 {
-    printf("sub stop\n");
-
     USBD_Stop(&USBD_Device);
 }
 
@@ -52,9 +50,6 @@ void UserMain()
 
     tas6424_init();
 
-    audio.vol = 70;
-    audio.mute = false;
-
     usb_init();
     usb_start();
 
@@ -64,11 +59,14 @@ void UserMain()
         if (device_mode == MODE_IDLE) {
             device_mode_change(MODE_SPDIF);
             spdif_start();
-        } else if (device_mode == MODE_SPDIF) {
-            spdif_check();
         }
 
         tas6424_check();
+        audio_check();
+
+        if ( audio.state == AUDIO_STATE_ERROR ) {
+            NVIC_SystemReset();
+        }
 
         HAL_IWDG_Refresh(&IwdgHandle);
     }
