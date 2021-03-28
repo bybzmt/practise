@@ -1,7 +1,6 @@
 -I./Src
--I./Src/usb_audio1
--I./Src/usb_audio1/lib
--I./Src/usb_audio2
+-I./Src/usb_audio
+-I./lib
 -I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS
 -I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS/inc
 -I./lib/STM32Cube_FW_F4_V1.25.0/Drivers/CMSIS/Device

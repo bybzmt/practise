@@ -100,9 +100,9 @@ void tas6424_init(void)
      * Global overtemperature warning set to 120°C
      * Overcurrent is level 2
      * Volume update rate is 1 step /8 FSYNC
-     * 7.6-V peak output voltage
+     * 21-V peak output voltage
      */
-    MY_Write_REG(0x01, 0b00111100);
+    MY_Write_REG(0x01, 0b00111110);
 
     /* Hi-Z */
     MY_Write_REG(0x04, 0b01010101);
