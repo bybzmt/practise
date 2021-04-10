@@ -23,10 +23,14 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
 
     audio.hsai.Init.AudioFrequency = AudioFreq;
 
-    audio.hsai.Init.DataSize = SAI_DATASIZE_16;
-    audio.hsai.FrameInit.FrameLength = 16 * 2;
-    audio.hsai.FrameInit.ActiveFrameLength = 16;
-    audio.hsai.SlotInit.SlotNumber = 2;
+    if (bit_depth == 16U) {
+        audio.hsai.Init.DataSize = SAI_DATASIZE_16;
+    } else {
+        audio.hsai.Init.DataSize = SAI_DATASIZE_24;
+    }
+    audio.hsai.FrameInit.FrameLength = audio.bit_depth * 4;
+    audio.hsai.FrameInit.ActiveFrameLength = audio.bit_depth;
+    audio.hsai.SlotInit.SlotNumber = 4;
 
     memset(&audio.buf[0], 0, sizeof(audio.buf));
 
@@ -40,7 +44,7 @@ void audio_deInit(void)
 {
     printf("audio deInit\n");
     audio.state = AUDIO_STATE_INIT;
-    tas6424_en(false);
+    tas6424_stop();
     HAL_SAI_DeInit(&audio.hsai);
 }
 
@@ -55,9 +59,13 @@ static void audio_play(void)
     }
 
     tas6424_en(true);
-    tas6424_vol(audio.vol);
+    tas6424_volume(audio.volume);
     tas6424_mute(audio.mute);
-    tas6424_play(audio.freq);
+    tas6424_play(audio.freq, audio.bit_depth);
+
+    pcm5242_volume(audio.volume);
+    pcm5242_mute(audio.mute);
+    pcm5242_play(audio.freq, audio.bit_depth);
 }
 
 void audio_check(void)
@@ -78,20 +86,30 @@ static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample
     uint16_t base, oft;
 
     for (uint16_t i=0; i<sample_num; i++) {
-        base = AUDIO_SAMPLE_SIZE * idx;
         oft = audio.sample_size * i;
+        base = audio.sample_size * idx * 2;
 
         if (audio.bit_depth == 16) {
             audio.buf[base+0] = buf[oft + 0];
             audio.buf[base+1] = buf[oft + 1];
             audio.buf[base+2] = buf[oft + 2];
             audio.buf[base+3] = buf[oft + 3];
-        }
-        else if (audio.bit_depth == 24) {
+        } else if (audio.bit_depth == 24) {
             audio.buf[base+0] = buf[oft + 0];
             audio.buf[base+1] = buf[oft + 1];
-            audio.buf[base+2] = buf[oft + 3];
-            audio.buf[base+3] = buf[oft + 4];
+            audio.buf[base+2] = buf[oft + 2];
+            audio.buf[base+3] = buf[oft + 3];
+            audio.buf[base+4] = buf[oft + 4];
+            audio.buf[base+5] = buf[oft + 5];
+        } else if (audio.bit_depth == 32) {
+            audio.buf[base+0] = buf[oft + 0];
+            audio.buf[base+1] = buf[oft + 1];
+            audio.buf[base+2] = buf[oft + 2];
+            audio.buf[base+3] = buf[oft + 3];
+            audio.buf[base+4] = buf[oft + 4];
+            audio.buf[base+5] = buf[oft + 5];
+            audio.buf[base+6] = buf[oft + 6];
+            audio.buf[base+7] = buf[oft + 7];
         }
 
         idx = (idx + 1) % AUDIO_BUF_SAMPLE_NUM;
@@ -139,8 +157,8 @@ void audio_append(uint8_t* buf, uint16_t buf_len)
 void audio_setVolume(uint8_t vol)
 {
     printf("volume: %d\n", vol);
-    audio.vol = vol;
-    tas6424_vol(vol);
+    audio.volume = vol;
+    tas6424_volume(vol);
 }
 
 void audio_setMute(bool flag)
@@ -152,7 +170,7 @@ void audio_setMute(bool flag)
 
 static inline uint16_t audio_buf_size(void)
 {
-    return (int32_t)AUDIO_BUF_SAMPLE_NUM * audio.sample_size;
+    return (int32_t)AUDIO_BUF_SAMPLE_NUM * audio.sample_size * 2;
 }
 
 static int16_t audio_remaining_writable_samples(void)

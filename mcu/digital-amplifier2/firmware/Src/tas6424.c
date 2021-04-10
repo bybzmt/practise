@@ -24,6 +24,7 @@ static void MY_Read(uint8_t reg, uint8_t*data, uint16_t len)
 
 static void MY_Write(uint8_t reg, uint8_t*data, uint16_t len)
 {
+    return;
     /* HAL_StatusTypeDef flag = HAL_I2C_Mem_Write_DMA(&hi2c1, ADDR, (uint16_t)reg, 1, &data, len); */
     HAL_StatusTypeDef flag = HAL_I2C_Mem_Write(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 500);
     if (flag != HAL_OK) {
@@ -34,12 +35,6 @@ static void MY_Write(uint8_t reg, uint8_t*data, uint16_t len)
 static void MY_Write_REG(uint8_t reg, uint8_t data)
 {
     MY_Write(reg, &data, 1);
-}
-
-void tas6424_en(bool flag)
-{
-    tas6424_en_flag = flag;
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, flag);
 }
 
 static void tas6424_msp_init(void)
@@ -56,19 +51,19 @@ static void tas6424_msp_init(void)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* mute pin */
-    GPIO_InitStruct.Pin = GPIO_PIN_10;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /* GPIO_InitStruct.Pin = GPIO_PIN_10; */
+    /* GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP; */
+    /* GPIO_InitStruct.Pull = GPIO_NOPULL; */
+    /* GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; */
+    /* HAL_GPIO_Init(GPIOC, &GPIO_InitStruct); */
 
     /* fall event */
-    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    /* GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15; */
+    /* GPIO_InitStruct.Mode = GPIO_MODE_INPUT; */
     /* GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; */
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /* GPIO_InitStruct.Pull = GPIO_NOPULL; */
+    /* GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; */
+    /* HAL_GPIO_Init(GPIOC, &GPIO_InitStruct); */
     /* HAL_NVIC_EnableIRQ(EXTI15_10_IRQn); */
 }
 
@@ -111,30 +106,50 @@ void tas6424_init(void)
     tas6424_en(false);
 }
 
+void tas6424_en(bool flag)
+{
+    tas6424_en_flag = flag;
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, flag);
+}
+
+void tas6424_stop(void)
+{
+    tas6424_en_flag = 0;
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+}
+
 void tas6424_mute(bool ok)
 {
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, !ok);
+    if (ok) {
+        MY_Write_REG(0x04, 0b10100101);
+    } else {
+        MY_Write_REG(0x04, 0b00000101);
+    }
 }
 
 /* volume: 0.5db/setp 0xff +24db - 0x00 -103db */
-void tas6424_vol(uint8_t vol)
+void tas6424_volume(uint8_t vol)
 {
     uint8_t raw[] = {vol, vol, vol, vol};
     MY_Write(0x5, raw, 4);
 }
 
-void tas6424_play(uint32_t AudioFreq)
+void tas6424_play(uint32_t AudioFreq, uint8_t bit_depth)
 {
     /* Hi-Z */
     MY_Write_REG(0x04, 0b01010101);
 
-    if (tas6424_checkFatalError()) {
-        printf("tas6424 stop\n");
-        return;
+    /* if (tas6424_checkFatalError()) { */
+        /* printf("tas6424 stop\n"); */
+        /* return; */
+    /* } */
+
+    /* 44khz TDM 24bit */
+    uint8_t freq = 0b00000110;
+    if (bit_depth == 16U) {
+        freq += 0b00010000;
     }
 
-    /* 44khz TDM */
-    uint8_t freq = 0b00010100;
     switch(AudioFreq) {
         case SAI_AUDIO_FREQUENCY_48K:
             freq |= 0b01000000;
@@ -184,12 +199,12 @@ void tas6424_check(void)
         return;
     }
 
-    uint8_t p14 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14);
-    uint8_t p15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15);
+    /* uint8_t p14 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_14); */
+    /* uint8_t p15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15); */
 
-    if (p14 && p15) {
-        return;
-    }
+    /* if (p14 && p15) { */
+        /* return; */
+    /* } */
 
     tas6424_reporting();
 

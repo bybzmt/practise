@@ -10,13 +10,21 @@
 #include <stdio.h>
 
 #define AUDIO_BUF_SAMPLE_NUM 1000
-#define AUDIO_SAMPLE_SIZE (2*2)
+#define AUDIO_SAMPLE_SIZE (4*4)
 #define AUDIO_BUF_MAX_SIZE (AUDIO_SAMPLE_SIZE * AUDIO_BUF_SAMPLE_NUM)
 
 #define AUDIO_STATE_INIT   0
 #define AUDIO_STATE_SYNC   1
 #define AUDIO_STATE_RUN    2
 #define AUDIO_STATE_ERROR  4
+
+ /*
+  * Volume
+  * 0xFF: 24 dB
+  * 0xCF: 0 dB
+  * 0x01: –103 dB
+  * 0x00: MUTE
+*/
 
 typedef struct {
     uint8_t buf[AUDIO_BUF_MAX_SIZE];
@@ -27,7 +35,7 @@ typedef struct {
     volatile uint8_t state;
     uint8_t bit_depth;
     uint8_t sample_size;
-    uint8_t vol;
+    uint8_t volume;
     bool mute;
     SAI_HandleTypeDef hsai;
     DMA_HandleTypeDef hdma_tx;
@@ -35,12 +43,12 @@ typedef struct {
 
 extern Audio audio;
 
-void audio_init(uint32_t AudioFreq, uint8_t sample_size);
+void audio_init(uint32_t AudioFreq, uint8_t bit_depth);
 void audio_deInit(void);
 void audio_check(void);
 void audio_append(uint8_t* buf, uint16_t buf_len);
 void audio_append_adapt(uint8_t* buf, uint16_t buf_len);
-void audio_setVolume(uint8_t vol);
+void audio_setVolume(uint8_t volume);
 void audio_setMute(bool flag);
 
 int16_t audio_clock_samples_delta(void);

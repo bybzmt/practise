@@ -398,7 +398,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->alt_setting = 0U;
         haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
         haudio->bit_depth = 16U;
-        haudio->vol = audio.vol;
+        haudio->vol = audio.volume;
 
         device_mode_change(MODE_USB);
         audio_init(haudio->freq, haudio->bit_depth);

@@ -28,11 +28,13 @@ C_INCLUDES = Src
 
 # C sources
 C_SOURCES =Src/main.c
+C_SOURCES+=Src/debug_uart_printf.c
 C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
 C_SOURCES+=Src/audio.c
 C_SOURCES+=Src/spdif.c
 C_SOURCES+=Src/tas6424.c
+C_SOURCES+=Src/pcm5242.c
 C_SOURCES+=Src/bsp_msp_pcd.c
 C_SOURCES+=Src/bsp_msp_i2c.c
 C_SOURCES+=Src/bsp_msp_sai.c
@@ -65,6 +67,7 @@ C_HAL_FILE+=stm32f4xx_hal_gpio.c
 C_HAL_FILE+=stm32f4xx_hal_dma_ex.c
 C_HAL_FILE+=stm32f4xx_hal_dma.c
 C_HAL_FILE+=stm32f4xx_hal_iwdg.c
+C_HAL_FILE+=stm32f4xx_hal_uart.c
 C_HAL_FILE+=stm32f4xx_hal_pwr.c
 C_HAL_FILE+=stm32f4xx_hal_pwr_ex.c
 C_HAL_FILE+=stm32f4xx_hal_cortex.c

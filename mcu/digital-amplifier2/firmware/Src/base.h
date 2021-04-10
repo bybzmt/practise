@@ -27,11 +27,17 @@ extern I2C_HandleTypeDef hi2c1;
 
 void tas6424_init(void);
 void tas6424_en(bool ok);
-void tas6424_deInit(void);
-void tas6424_play(uint32_t AudioFreq);
+void tas6424_play(uint32_t AudioFreq, uint8_t bit_depth);
 void tas6424_mute(bool ok);
-void tas6424_vol(uint8_t volume);
+void tas6424_volume(uint8_t volume);
+void tas6424_stop(void);
 void tas6424_check(void);
+
+void pcm5242_init(void);
+void pcm5242_play(uint32_t AudioFreq, uint8_t bit_depth);
+void pcm5242_mute(bool ok);
+void pcm5242_volume(uint8_t volume);
+void pcm5242_stop(void);
 
 void spdif_start(void);
 void spdif_stop(void);

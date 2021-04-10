@@ -148,9 +148,9 @@ F6 "LRCK" I L 5490 1570 50
 F7 "EN" I L 5490 1355 50 
 F8 "JackIN" O L 5490 1135 50 
 $EndSheet
-Text Label 4865 1795 0    50   ~ 0
+Text Label 4880 1890 0    50   ~ 0
 SCL
-Text Label 4865 1890 0    50   ~ 0
+Text Label 4875 1795 0    50   ~ 0
 SDA
 Wire Wire Line
 	4790 1890 5490 1890
