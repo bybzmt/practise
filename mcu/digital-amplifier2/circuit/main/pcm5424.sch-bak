@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 6 10
+Sheet 6 12
 Title ""
 Date ""
 Rev ""
@@ -369,40 +369,6 @@ F 3 "~" H 9975 1000 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9975 1000 9975 1175
-$Sheet
-S 9050 4950 1300 975 
-U 5FF87CA8
-F0 "sheet5FF87CA5" 50
-F1 "AudioPower.sch" 50
-F2 "EN" I L 9050 5100 50 
-$EndSheet
-Text HLabel 8550 5100 0    50   Input ~ 0
-EN
-Wire Wire Line
-	8550 5100 9050 5100
-$Sheet
-S 9025 3100 1400 1200
-U 5FF93314
-F0 "sheet5FF9330D" 50
-F1 "TPA6120A2.sch" 50
-F2 "JackIN" I L 9025 3250 50 
-F3 "LIN+" I L 9025 3525 50 
-F4 "LIN-" I L 9025 3675 50 
-F5 "RIN+" I L 9025 3850 50 
-F6 "RIN-" I L 9025 3975 50 
-$EndSheet
-Wire Wire Line
-	8125 3525 9025 3525
-Wire Wire Line
-	8125 3675 9025 3675
-Wire Wire Line
-	9025 3850 8125 3850
-Wire Wire Line
-	8125 3975 9025 3975
-Wire Wire Line
-	9025 3250 8200 3250
-Text HLabel 8200 3250 0    50   Output ~ 0
-JackIN
 Text Label 3775 4525 0    50   ~ 0
 OUTRN
 Text Label 3775 4625 0    50   ~ 0
@@ -410,14 +376,6 @@ OUTRP
 Text Label 3775 4725 0    50   ~ 0
 OUTLN
 Text Label 3775 4825 0    50   ~ 0
-OUTLP
-Text Label 8275 3975 0    50   ~ 0
-OUTRN
-Text Label 8275 3850 0    50   ~ 0
-OUTRP
-Text Label 8275 3675 0    50   ~ 0
-OUTLN
-Text Label 8275 3525 0    50   ~ 0
 OUTLP
 Wire Wire Line
 	1700 4425 2450 4425

@@ -18,23 +18,24 @@ S 800  975  1250 3225
 U 5F047EA6
 F0 "stm32" 50
 F1 "stm32.sch" 50
-F2 "I2S1_FS" I R 2050 2425 50 
-F3 "SAI1_B_SCK" I R 2050 1450 50 
-F4 "SAI1_B_SD" I R 2050 1650 50 
-F5 "SAI1_B_FS" I R 2050 1550 50 
-F6 "I2C_SCL" I R 2050 1075 50 
-F7 "I2C_SDA" I R 2050 1175 50 
-F8 "I2S1_SCK" I R 2050 2325 50 
-F9 "I2S1_SD" I R 2050 2525 50 
-F10 "tas6424_en" I R 2050 3025 50 
-F11 "headphone_in" I R 2050 2775 50 
-F12 "headphone_en" I R 2050 2675 50 
-F13 "BT_state" I R 2050 3925 50 
-F14 "BT_en" I R 2050 4025 50 
-F15 "BT_bn" I R 2050 3725 50 
+F2 "I2S1_FS" O R 2050 1500 50 
+F3 "I2C_SCL" I R 2050 1075 50 
+F4 "I2C_SDA" I R 2050 1175 50 
+F5 "I2S1_SCK" O R 2050 1400 50 
+F6 "I2S1_SD" O R 2050 1600 50 
+F7 "headphone_in" I R 2050 1850 50 
+F8 "BT_state" I R 2050 2550 50 
+F9 "BT_en" I R 2050 2650 50 
+F10 "BT_bn" I R 2050 2450 50 
+F11 "I2S1_MCK" O R 2050 1300 50 
+F12 "SAI1_SCK_A" I R 2050 2075 50 
+F13 "SAI1_SD_A" I R 2050 2325 50 
+F14 "SAI1_FS_A" I R 2050 2200 50 
+F15 "headphone_en" O R 2050 1725 50 
+F16 "BT_state2" I R 2050 2755 50 
 $EndSheet
 $Sheet
-S 1050 5900 1250 1000
+S 690  6485 1250 1000
 U 5F16021E
 F0 "power" 50
 F1 "power.sch" 50
@@ -44,134 +45,74 @@ Wire Wire Line
 Wire Wire Line
 	2050 1175 2825 1175
 Wire Wire Line
-	2050 1450 2825 1450
+	2050 2075 2825 2075
 Wire Wire Line
-	2050 1550 2825 1550
-Wire Wire Line
-	2050 1650 2825 1650
+	2050 2200 2825 2200
 Wire Wire Line
 	2050 2325 2825 2325
 Wire Wire Line
-	2050 2425 2825 2425
+	2050 1400 2825 1400
 Wire Wire Line
-	2050 2525 2825 2525
+	2050 1500 2825 1500
+Wire Wire Line
+	2050 1600 2825 1600
 Text Label 2325 1075 0    50   ~ 0
 SCL
 Text Label 2325 1175 0    50   ~ 0
 SDA
-Text Label 2325 1450 0    50   ~ 0
-SAI1_B_CLK
-Text Label 2325 1550 0    50   ~ 0
-SAI1_B_FS
-Text Label 2325 1650 0    50   ~ 0
-SAI1_B_SD
+Text Label 2325 2200 0    50   ~ 0
+SAI1_A_FS
+Text Label 2325 2325 0    50   ~ 0
+SAI1_A_SD
 Wire Wire Line
-	2050 2675 2825 2675
+	2050 1850 2825 1850
 Wire Wire Line
-	2050 2775 2825 2775
-Wire Wire Line
-	2050 3025 2825 3025
-Text Label 2200 3025 0    50   ~ 0
-tas6424_en
-Text Label 2200 2775 0    50   ~ 0
+	2050 1725 2825 1725
+Text Label 2200 1850 0    50   ~ 0
 headphone_in
-Text Label 2200 2675 0    50   ~ 0
-headphone_en
-Text Label 4825 1355 0    50   ~ 0
-headphone_en
 $Sheet
-S 8625 925  950  1325
+S 9475 2950 950  1325
 U 5FD6457F
 F0 "Bluetooth" 50
 F1 "Bluetooth.sch" 50
-F2 "CLK" I L 8625 1250 50 
-F3 "FS" I L 8625 1350 50 
-F4 "SD" I L 8625 1450 50 
-F5 "EN" I L 8625 1575 50 
-F6 "button" I L 8625 1675 50 
-F7 "state" I L 8625 1775 50 
+F2 "CLK" I L 9475 3275 50 
+F3 "FS" I L 9475 3375 50 
+F4 "SD" I L 9475 3475 50 
+F5 "EN" I L 9475 3600 50 
+F6 "button" I L 9475 3700 50 
+F7 "state" O L 9475 3800 50 
+F8 "state2" O L 9475 3895 50 
 $EndSheet
-Wire Wire Line
-	8625 1250 8150 1250
-Wire Wire Line
-	8625 1350 8150 1350
-Wire Wire Line
-	8625 1450 8150 1450
-Wire Wire Line
-	8625 1575 8150 1575
-Wire Wire Line
-	8625 1675 8150 1675
-Wire Wire Line
-	8625 1775 8150 1775
-Text Label 2325 2325 0    50   ~ 0
+Text Label 2325 1400 0    50   ~ 0
 I2S1_SCK
-Text Label 2325 2425 0    50   ~ 0
+Text Label 2325 1500 0    50   ~ 0
 I2S1_FS
-Text Label 2325 2525 0    50   ~ 0
+Text Label 2325 1600 0    50   ~ 0
 I2S1_SD
-Text Label 8175 1250 0    50   ~ 0
+Text Label 7060 1250 0    50   ~ 0
 I2S1_SCK
-Text Label 8175 1350 0    50   ~ 0
+Text Label 7060 1350 0    50   ~ 0
 I2S1_FS
-Text Label 8175 1450 0    50   ~ 0
+Text Label 7060 1450 0    50   ~ 0
 I2S1_SD
-Text Label 8175 1575 0    50   ~ 0
+Text Label 8850 3600 0    50   ~ 0
 BT_en
-Text Label 8175 1675 0    50   ~ 0
+Text Label 8850 3700 0    50   ~ 0
 BT_bn
-Text Label 8175 1775 0    50   ~ 0
-BT_state
+Text Label 8845 3895 0    50   ~ 0
+BT_state2
 Wire Wire Line
-	2050 3725 2825 3725
+	2050 2450 2825 2450
 Wire Wire Line
-	2050 3925 2825 3925
+	2050 2550 2825 2550
 Wire Wire Line
-	2050 4025 2825 4025
-Text Label 2200 4025 0    50   ~ 0
+	2050 2650 2825 2650
+Text Label 2200 2650 0    50   ~ 0
 BT_en
-Text Label 2200 3725 0    50   ~ 0
+Text Label 2200 2450 0    50   ~ 0
 BT_bn
-Text Label 2200 3925 0    50   ~ 0
+Text Label 2200 2550 0    50   ~ 0
 BT_state
-Text Label 4840 1135 0    50   ~ 0
-headphone_in
-$Sheet
-S 5490 985  970  1115
-U 6035C8F0
-F0 "Sheet6035C8EF" 50
-F1 "file6035C8EF.sch" 50
-F2 "SDA" I L 5490 1795 50 
-F3 "SCL" I L 5490 1890 50 
-F4 "BCK" I L 5490 1485 50 
-F5 "DIN" I L 5490 1660 50 
-F6 "LRCK" I L 5490 1570 50 
-F7 "EN" I L 5490 1355 50 
-F8 "JackIN" O L 5490 1135 50 
-$EndSheet
-Text Label 4880 1890 0    50   ~ 0
-SCL
-Text Label 4875 1795 0    50   ~ 0
-SDA
-Wire Wire Line
-	4790 1890 5490 1890
-Wire Wire Line
-	4790 1795 5490 1795
-Text Label 4865 1485 0    50   ~ 0
-SAI1_B_CLK
-Text Label 4865 1660 0    50   ~ 0
-SAI1_B_SD
-Text Label 4865 1570 0    50   ~ 0
-SAI1_B_FS
-Wire Wire Line
-	4790 1660 5490 1660
-Wire Wire Line
-	4790 1570 5490 1570
-Wire Wire Line
-	4790 1485 5490 1485
-Wire Wire Line
-	4790 1355 5490 1355
-Wire Wire Line
-	5490 1135 4790 1135
 $Comp
 L Mechanical:MountingHole_Pad H1
 U 1 1 6042C575
@@ -220,78 +161,128 @@ NoConn ~ 9315 6310
 NoConn ~ 9705 6310
 NoConn ~ 10100 6305
 NoConn ~ 10485 6310
-Text Label 7500 3950 0    50   ~ 0
-SDA
-Text Label 7500 3850 0    50   ~ 0
-SCL
 $Sheet
-S 8100 3700 1050 1150
-U 605867F8
-F0 "Sheet605867F7" 50
-F1 "file605867F7.sch" 50
-F2 "SCL" I L 8100 3850 50 
-F3 "SDA" I L 8100 3950 50 
-F4 "SCLK" I L 8100 4100 50 
-F5 "FSYNC" I L 8100 4200 50 
-F6 "EN" I L 8100 4450 50 
-F7 "SDIN" I L 8100 4300 50 
+S 9600 700  800  1075
+U 6079F77B
+F0 "TPA6120A2" 50
+F1 "TPA6120A2.sch" 50
+F2 "JackIN" I R 10400 1650 50 
+F3 "LIN+" I L 9600 925 50 
+F4 "LIN-" I L 9600 1050 50 
+F5 "RIN+" I L 9600 1175 50 
+F6 "RIN-" I L 9600 1300 50 
 $EndSheet
-Text Label 7500 4450 0    50   ~ 0
-tas6424_en
-Text Label 7500 4200 0    50   ~ 0
-SAI1_B_FS
-Text Label 7500 4300 0    50   ~ 0
-SAI1_B_SD
-Text Label 7500 4100 0    50   ~ 0
-SAI1_B_CLK
+$Sheet
+S 2540 6415 1300 975 
+U 6074FC63
+F0 "headphone_power" 50
+F1 "headphone_power.sch" 50
+$EndSheet
+$Sheet
+S 7675 700  850  1100
+U 6071C2C4
+F0 "PCM1792" 50
+F1 "PCM1792.sch" 50
+F2 "SCL" I L 7675 875 50 
+F3 "SDA" I L 7675 975 50 
+F4 "SCK" I L 7675 1150 50 
+F5 "BCK" I L 7675 1250 50 
+F6 "LRCK" I L 7675 1350 50 
+F7 "DATA" I L 7675 1450 50 
+F8 "RST" I L 7675 1625 50 
+F9 "OUTLP" O R 8525 1175 50 
+F10 "OUTLN" O R 8525 1300 50 
+F11 "OUTRP" O R 8525 925 50 
+F12 "OUTRN" O R 8525 1050 50 
+$EndSheet
+$Sheet
+S 8650 700  800  1100
+U 607205FC
+F0 "OPA4134" 50
+F1 "OPA4134.sch" 50
+F2 "INA" I L 8650 925 50 
+F3 "OUTA" O R 9450 925 50 
+F4 "INC" I L 8650 1175 50 
+F5 "OUTC" O R 9450 1175 50 
+F6 "INB" I L 8650 1050 50 
+F7 "OUTB" O R 9450 1050 50 
+F8 "IND" I L 8650 1300 50 
+F9 "OUTD" O R 9450 1300 50 
+$EndSheet
 Wire Wire Line
-	8100 3850 7350 3850
+	8525 925  8650 925 
 Wire Wire Line
-	8100 3950 7350 3950
+	8525 1050 8650 1050
 Wire Wire Line
-	8100 4100 7350 4100
+	8525 1175 8650 1175
 Wire Wire Line
-	8100 4200 7350 4200
+	8525 1300 8650 1300
 Wire Wire Line
-	8100 4300 7350 4300
+	9450 925  9600 925 
 Wire Wire Line
-	8100 4450 7350 4450
-$Comp
-L Mechanical:MountingHole_Pad H6
-U 1 1 609B3984
-P 8425 5975
-F 0 "H6" H 8555 6040 50  0000 L CNN
-F 1 "m3" H 8555 5940 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 8425 5975 50  0001 C CNN
-F 3 "~" H 8425 5975 50  0001 C CNN
-	1    8425 5975
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole_Pad H5
-U 1 1 609B57AE
-P 8050 5975
-F 0 "H5" H 8180 6040 50  0000 L CNN
-F 1 "m3" H 8180 5940 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 8050 5975 50  0001 C CNN
-F 3 "~" H 8050 5975 50  0001 C CNN
-	1    8050 5975
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0101
-U 1 1 606D972F
-P 8050 6225
-F 0 "#PWR0101" H 8050 5975 50  0001 C CNN
-F 1 "GND" H 8100 6025 50  0000 C CNN
-F 2 "" H 8050 6225 50  0001 C CNN
-F 3 "" H 8050 6225 50  0001 C CNN
-	1    8050 6225
-	1    0    0    -1  
-$EndComp
+	9450 1050 9600 1050
 Wire Wire Line
-	8050 6225 8050 6075
+	9450 1175 9600 1175
 Wire Wire Line
-	8050 6075 8425 6075
-Connection ~ 8050 6075
+	9450 1300 9600 1300
+Wire Wire Line
+	10400 1650 10875 1650
+Text Label 7060 975  0    50   ~ 0
+SDA
+Text Label 7060 875  0    50   ~ 0
+SCL
+Wire Wire Line
+	6910 875  7675 875 
+Wire Wire Line
+	6910 975  7675 975 
+Text Label 8860 3275 0    50   ~ 0
+SAI1_A_SCK
+Text Label 8860 3375 0    50   ~ 0
+SAI1_A_FS
+Wire Wire Line
+	6910 1625 7675 1625
+Wire Wire Line
+	8710 3375 9475 3375
+Wire Wire Line
+	8710 3275 9475 3275
+Wire Wire Line
+	6910 1150 7675 1150
+Text Label 8860 3475 0    50   ~ 0
+SAI1_A_SD
+Wire Wire Line
+	8710 3475 9475 3475
+Wire Wire Line
+	2050 1300 2825 1300
+Text Label 2325 1300 0    50   ~ 0
+I2S1_MCK
+Wire Wire Line
+	8710 3600 9475 3600
+Wire Wire Line
+	8710 3700 9475 3700
+Wire Wire Line
+	8710 3800 9475 3800
+Wire Wire Line
+	6900 1250 7675 1250
+Wire Wire Line
+	6900 1350 7675 1350
+Wire Wire Line
+	6900 1450 7675 1450
+Text Label 7050 1150 0    50   ~ 0
+I2S1_MCK
+Text Label 2325 2075 0    50   ~ 0
+SAI1_A_SCK
+Text Label 2200 1725 0    50   ~ 0
+headphone_en
+Text Label 7050 1625 0    50   ~ 0
+headphone_en
+Text Label 10425 1650 0    50   ~ 0
+headphone_in
+Wire Wire Line
+	9475 3895 8710 3895
+Text Label 8845 3800 0    50   ~ 0
+BT_state
+Wire Wire Line
+	2050 2755 2825 2755
+Text Label 2195 2755 0    50   ~ 0
+BT_state2
 $EndSCHEMATC
