@@ -20,7 +20,12 @@
 #define MODE_SPDIF 2
 #define MODE_BT    3
 
+
+extern SAI_HandleTypeDef hsai;
+extern I2S_HandleTypeDef hi2s;
+
 extern uint8_t device_mode;
+
 void device_mode_change(uint8_t mode);
 
 extern I2C_HandleTypeDef hi2c1;
@@ -33,11 +38,11 @@ void tas6424_volume(uint8_t volume);
 void tas6424_stop(void);
 void tas6424_check(void);
 
-void pcm5242_init(void);
-void pcm5242_play(uint32_t AudioFreq, uint8_t bit_depth);
-void pcm5242_mute(bool ok);
-void pcm5242_volume(uint8_t volume);
-void pcm5242_stop(void);
+void pcm1792_init(void);
+void pcm1792_play(uint32_t AudioFreq, uint8_t bit_depth);
+void pcm1792_mute(bool ok);
+void pcm1792_volume(uint8_t volume);
+void pcm1792_stop(void);
 
 void spdif_start(void);
 void spdif_stop(void);

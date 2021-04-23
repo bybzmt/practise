@@ -49,7 +49,8 @@ static void bsp_spdif_clock_config(void)
     HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInitStruct);
 
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX;
-    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
+    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR; */
+    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
 
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {

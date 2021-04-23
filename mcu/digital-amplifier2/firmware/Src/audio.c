@@ -3,15 +3,22 @@
 #include <stdio.h>
 #include "stm32f4xx_ll_dma.h"
 
+static void audio_sai_clockConfig(uint32_t AudioFreq);
 static inline void audio_sample_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num);
 static void audio_play(void);
 static inline uint16_t audio_buf_size(void);
 static int16_t audio_remaining_writable_samples(void);
 int16_t audio_clock_samples_delta(void);
 
+Audio audio;
+
+uint8_t buf[2048];
+
 void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
 {
     printf("audio init\n");
+
+    audio_sai_clockConfig(AudioFreq);
 
     audio.freq = AudioFreq;
     audio.bit_depth = bit_depth;
@@ -19,23 +26,43 @@ void audio_init(uint32_t AudioFreq, uint8_t bit_depth)
     audio.wr_idx = AUDIO_BUF_SAMPLE_NUM / 2;
     audio.state = AUDIO_STATE_INIT;
 
-    HAL_SAI_DeInit(&audio.hsai);
+    HAL_SAI_DeInit(&hsai);
 
-    audio.hsai.Init.AudioFrequency = AudioFreq;
+    hsai.Init.AudioFrequency = AudioFreq;
+    hi2s.Init.AudioFreq = AudioFreq;
 
     if (bit_depth == 16U) {
-        audio.hsai.Init.DataSize = SAI_DATASIZE_16;
+        hsai.Init.DataSize = SAI_DATASIZE_16;
+        hi2s.Init.DataFormat = I2S_DATAFORMAT_16B;
     } else {
-        audio.hsai.Init.DataSize = SAI_DATASIZE_24;
+        hsai.Init.DataSize = SAI_DATASIZE_24;
+        hi2s.Init.DataFormat = I2S_DATAFORMAT_24B;
     }
-    audio.hsai.FrameInit.FrameLength = audio.bit_depth * 4;
-    audio.hsai.FrameInit.ActiveFrameLength = audio.bit_depth;
-    audio.hsai.SlotInit.SlotNumber = 4;
+    hsai.FrameInit.FrameLength = audio.bit_depth * 4;
+    hsai.FrameInit.ActiveFrameLength = audio.bit_depth;
+    hsai.SlotInit.SlotNumber = 4;
 
     memset(&audio.buf[0], 0, sizeof(audio.buf));
 
-    if (HAL_SAI_Init(&audio.hsai) != HAL_OK) {
+    if (HAL_SAI_Init(&hsai) != HAL_OK) {
         printf("sai init error\n");
+        return;
+    }
+    if (HAL_I2S_Init(&hi2s) != HAL_OK) {
+        printf("i2s init error\n");
+        return;
+    }
+
+    HAL_StatusTypeDef ret;
+    ret = HAL_SAI_Transmit_DMA(&hsai, (uint8_t *)&audio.buf[0], audio_buf_size()/2);
+    if (ret!= HAL_OK) {
+        printf("play err:%d\n", ret);
+        return;
+    }
+
+    ret = HAL_I2S_Transmit_DMA(&hi2s, (uint16_t *)&buf[0], 2048/2);
+    if (ret!= HAL_OK) {
+        printf("play err:%d\n", ret);
         return;
     }
 }
@@ -45,27 +72,22 @@ void audio_deInit(void)
     printf("audio deInit\n");
     audio.state = AUDIO_STATE_INIT;
     tas6424_stop();
-    HAL_SAI_DeInit(&audio.hsai);
+    HAL_SAI_DeInit(&hsai);
+    HAL_I2S_DeInit(&hi2s);
 }
 
 static void audio_play(void)
 {
     printf("play\n");
 
-    HAL_StatusTypeDef ret = HAL_SAI_Transmit_DMA(&audio.hsai, &audio.buf[0], audio_buf_size()/2);
-    if (ret!= HAL_OK) {
-        printf("play err:%d\n", ret);
-        return;
-    }
-
     tas6424_en(true);
     tas6424_volume(audio.volume);
     tas6424_mute(audio.mute);
     tas6424_play(audio.freq, audio.bit_depth);
 
-    pcm5242_volume(audio.volume);
-    pcm5242_mute(audio.mute);
-    pcm5242_play(audio.freq, audio.bit_depth);
+    pcm1792_volume(audio.volume);
+    pcm1792_mute(audio.mute);
+    pcm1792_play(audio.freq, audio.bit_depth);
 }
 
 void audio_check(void)
@@ -179,7 +201,7 @@ static int16_t audio_remaining_writable_samples(void)
         return AUDIO_BUF_SAMPLE_NUM/2;
     }
 
-    uint16_t rd_ptr = (LL_DMA_ReadReg(audio.hdma_tx.Instance, NDTR) & 0xFFFF);
+    uint16_t rd_ptr = (LL_DMA_ReadReg(hsai.hdmatx->Instance, NDTR) & 0xFFFF);
     uint16_t rd_idx = AUDIO_BUF_SAMPLE_NUM - (rd_ptr / audio.sample_size);
     uint16_t out;
 
@@ -196,3 +218,71 @@ int16_t audio_clock_samples_delta(void)
 {
     return (int16_t)audio_remaining_writable_samples() - (int16_t)(AUDIO_BUF_SAMPLE_NUM / 2);
 }
+
+static void audio_sai_clockConfig(uint32_t AudioFreq)
+{
+    RCC_PeriphCLKInitTypeDef periphCLK;
+
+    HAL_RCCEx_GetPeriphCLKConfig(&periphCLK);
+    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
+    periphCLK.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
+    /* periphCLK.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI; */
+
+    /* Set the PLL configuration according to the audio frequency */
+    if (
+            (AudioFreq == SAI_AUDIO_FREQUENCY_11K) ||
+            (AudioFreq == SAI_AUDIO_FREQUENCY_22K) ||
+            (AudioFreq == SAI_AUDIO_FREQUENCY_44K))
+    {
+        /* Configure PLLSAI prescalers */
+        /* PLLSAI_VCO: VCO_429M
+           SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 429/2 = 214.5 Mhz
+           SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
+        periphCLK.PLLI2S.PLLI2SM = 8;
+        periphCLK.PLLI2S.PLLI2SN = 429;
+        periphCLK.PLLI2S.PLLI2SQ = 2;
+        periphCLK.PLLI2S.PLLI2SR = 38;
+        periphCLK.PLLI2S.PLLI2SP = 2;
+        periphCLK.PLLI2SDivQ = 19;
+
+        /* periphCLK.PLLSAI.PLLSAIM = 8; */
+        /* periphCLK.PLLSAI.PLLSAIN = 429; */
+        /* periphCLK.PLLSAI.PLLSAIQ = 2; */
+        /* periphCLK.PLLSAI.PLLSAIP = 2; */
+        /* periphCLK.PLLSAIDivQ = 19; */
+    } else {
+        /* AUDIO_FREQUENCY_8K, AUDIO_FREQUENCY_16K, AUDIO_FREQUENCY_48K), AUDIO_FREQUENCY_96K */
+        /* SAI clock config
+           PLLSAI_VCO: VCO_344M
+           SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
+           SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
+        periphCLK.PLLI2S.PLLI2SM = 8;
+        periphCLK.PLLI2S.PLLI2SN = 344;
+        periphCLK.PLLI2S.PLLI2SQ = 7;
+        periphCLK.PLLI2S.PLLI2SP = 2;
+        periphCLK.PLLI2S.PLLI2SR = 7;
+        periphCLK.PLLI2SDivQ = 1;
+
+        /* periphCLK.PLLSAI.PLLSAIM = 8; */
+        /* periphCLK.PLLSAI.PLLSAIN = 344; */
+        /* periphCLK.PLLSAI.PLLSAIQ = 7; */
+        /* periphCLK.PLLSAI.PLLSAIP = 7; */
+        /* periphCLK.PLLSAIDivQ = 1; */
+    }
+
+    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
+    {
+        printf("Periph clock error\n");
+    }
+
+    /* 384/192 */
+    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_I2S_APB2;
+    /* periphCLK.PeriphClockSelection = RCC_PERIPHCLK_PLLI2S; */
+    periphCLK.I2sApb2ClockSelection = RCC_I2SAPB2CLKSOURCE_PLLI2S;
+
+    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
+    {
+        printf("Periph clock error\n");
+    }
+}
+

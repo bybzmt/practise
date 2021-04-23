@@ -37,8 +37,6 @@ typedef struct {
     uint8_t sample_size;
     uint8_t volume;
     bool mute;
-    SAI_HandleTypeDef hsai;
-    DMA_HandleTypeDef hdma_tx;
 } Audio;
 
 extern Audio audio;

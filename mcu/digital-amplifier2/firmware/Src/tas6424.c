@@ -6,28 +6,26 @@ static bool tas6424_en_flag;
 static void tas6424_msp_init(void);
 static bool tas6424_checkFatalError(void);
 static void tas6424_reporting(void);
+static bool i2c_err = false;
 
 static void MY_Read(uint8_t reg, uint8_t*data, uint16_t len)
 {
+    if (i2c_err) { return; }
+
     HAL_StatusTypeDef flag = HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 100);
     if (flag != HAL_OK) {
+        i2c_err = true;
         printf("tas6424 read err\n");
     }
 }
 
-/* static uint8_t MY_Read_REG(uint8_t reg) */
-/* { */
-    /* uint8_t data = 0; */
-    /* MY_Read(reg, &data, 1); */
-    /* return data; */
-/* } */
-
 static void MY_Write(uint8_t reg, uint8_t*data, uint16_t len)
 {
-    return;
-    /* HAL_StatusTypeDef flag = HAL_I2C_Mem_Write_DMA(&hi2c1, ADDR, (uint16_t)reg, 1, &data, len); */
+    if (i2c_err) { return; }
+
     HAL_StatusTypeDef flag = HAL_I2C_Mem_Write(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 500);
     if (flag != HAL_OK) {
+        i2c_err = true;
         printf("tas6424 write err\n");
     }
 }

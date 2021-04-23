@@ -8,7 +8,7 @@ TARGET = AudioAmplifier
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
 OPT = -Og
 
@@ -28,15 +28,16 @@ C_INCLUDES = Src
 
 # C sources
 C_SOURCES =Src/main.c
-C_SOURCES+=Src/debug_uart_printf.c
+# C_SOURCES+=Src/debug_uart_printf.c
 C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
 C_SOURCES+=Src/audio.c
 C_SOURCES+=Src/spdif.c
 C_SOURCES+=Src/tas6424.c
-C_SOURCES+=Src/pcm5242.c
+C_SOURCES+=Src/pcm1792.c
 C_SOURCES+=Src/bsp_msp_pcd.c
 C_SOURCES+=Src/bsp_msp_i2c.c
+C_SOURCES+=Src/bsp_msp_i2s.c
 C_SOURCES+=Src/bsp_msp_sai.c
 C_SOURCES+=Src/bsp_msp_spdifrx.c
 C_SOURCES+=Src/system_stm32f4xx.c
@@ -54,6 +55,7 @@ C_HAL_FILE+=stm32f4xx_ll_usb.c
 C_HAL_FILE+=stm32f4xx_hal_i2c.c
 C_HAL_FILE+=stm32f4xx_hal_i2c_ex.c
 C_HAL_FILE+=stm32f4xx_hal_spdifrx.c
+C_HAL_FILE+=stm32f4xx_hal_i2s.c
 C_HAL_FILE+=stm32f4xx_hal_sai.c
 C_HAL_FILE+=stm32f4xx_hal_sai_ex.c
 C_HAL_FILE+=stm32f4xx_hal_tim.c

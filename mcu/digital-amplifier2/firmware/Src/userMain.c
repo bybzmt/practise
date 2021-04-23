@@ -35,32 +35,6 @@ void device_mode_change(uint8_t mode)
     device_mode = mode;
 }
 
-static void test_write()
-{
-    uint8_t reg = 0;
-    uint8_t data = 0;
-
-    HAL_StatusTypeDef flag = HAL_I2C_Mem_Write(&hi2c1, 0b10011000, (uint16_t)reg, 1, &data, 1, 500);
-    if (flag != HAL_OK) {
-        printf("pcm5242 write err1\n");
-    }
-
-    flag = HAL_I2C_Mem_Write(&hi2c1, 0b10011010, (uint16_t)reg, 1, &data, 1, 500);
-    if (flag != HAL_OK) {
-        printf("pcm5242 write err2\n");
-    }
-
-    flag = HAL_I2C_Mem_Write(&hi2c1, 0b10011100, (uint16_t)reg, 1, &data, 1, 500);
-    if (flag != HAL_OK) {
-        printf("pcm5242 write err3\n");
-    }
-
-    flag = HAL_I2C_Mem_Write(&hi2c1, 0b10011110, (uint16_t)reg, 1, &data, 1, 500);
-    if (flag != HAL_OK) {
-        printf("pcm5242 write err4\n");
-    }
-}
-
 void UserMain()
 {
     __HAL_RCC_SYSCFG_CLK_ENABLE();
@@ -70,32 +44,28 @@ void UserMain()
         printf("i2c init err\n");
     }
 
-    for (uint8_t i=0;;i++) {
-        printf("----%d----\n", i);
-        test_write();
-        vTaskDelay(3000);
-    }
-
     IwdgHandle.Instance = IWDG;
     IwdgHandle.Init.Prescaler = IWDG_PRESCALER_128;
     IwdgHandle.Init.Reload = 40000/128*5;
     HAL_IWDG_Init(&IwdgHandle);
 
+    audio_init(SAI_AUDIO_FREQUENCY_44K, 16);
     tas6424_init();
-    pcm5242_init();
+    pcm1792_init();
+    pcm1792_mute(true);
 
-    usb_init();
-    usb_start();
+    /* usb_init(); */
+    /* usb_start(); */
 
-    printf("boot\n");
+    printf("run\n");
 
     for (;;) {
         vTaskDelay(1000);
 
-        if (device_mode == MODE_IDLE) {
-            device_mode_change(MODE_SPDIF);
-            spdif_start();
-        }
+        /* if (device_mode == MODE_IDLE) { */
+            /* device_mode_change(MODE_SPDIF); */
+            /* spdif_start(); */
+        /* } */
 
         /* tas6424_check(); */
         audio_check();
