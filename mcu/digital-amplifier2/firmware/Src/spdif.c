@@ -20,7 +20,7 @@ void spdif_stop(void)
 {
     printf("spdif_stop\n");
 
-    audio_deInit();
+    audio_stop();
 
     my_spdif_listen_stop();
 
@@ -56,12 +56,14 @@ static void spdif_start_real(void)
 
 static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
-    audio_append_adapt(&spdif_buf[0], SPDIF_BUF_SIZE/2);
+    audio_append(&spdif_buf[0], SPDIF_BUF_SIZE/2);
+    audio_clock_sync();
 }
 
 static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
-    audio_append_adapt(&spdif_buf[SPDIF_BUF_SIZE/2], SPDIF_BUF_SIZE/2);
+    audio_append(&spdif_buf[SPDIF_BUF_SIZE/2], SPDIF_BUF_SIZE/2);
+    audio_clock_sync();
 }
 
 static void my_spdif_listen(void)

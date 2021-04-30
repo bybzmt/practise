@@ -5,7 +5,7 @@
 static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai);
 static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai);
 
-SAI_HandleTypeDef hsai = {
+SAI_HandleTypeDef hsai_out = {
     .Instance = SAI1_Block_B,
     .Init = {
         /* .ClockSource   = SAI_CLKSOURCE_PLLSAI, */

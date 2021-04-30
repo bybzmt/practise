@@ -5,12 +5,12 @@
 static void my_MspDeInit(I2S_HandleTypeDef *hi2s);
 static void my_MspInit(I2S_HandleTypeDef *hi2s);
 
-I2S_HandleTypeDef hi2s = {
+I2S_HandleTypeDef hi2s1 = {
     .Instance = SPI1,
     .Init = {
         .AudioFreq = I2S_AUDIOFREQ_44K,
         .ClockSource = I2S_CLOCK_PLL,
-        .CPOL = I2S_CPOL_HIGH,
+        .CPOL = I2S_CPOL_LOW,
         .DataFormat = I2S_DATAFORMAT_16B,
         .MCLKOutput = I2S_MCLKOUTPUT_ENABLE,
         .Mode = I2S_MODE_MASTER_TX,
@@ -27,11 +27,11 @@ static DMA_HandleTypeDef hdma_tx = {
         .Direction           = DMA_MEMORY_TO_PERIPH,
         .PeriphInc           = DMA_PINC_DISABLE,
         .MemInc              = DMA_MINC_ENABLE,
-        .PeriphDataAlignment = DMA_PDATAALIGN_WORD,
-        .MemDataAlignment    = DMA_PDATAALIGN_WORD,
+        .PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD,
+        .MemDataAlignment    = DMA_PDATAALIGN_HALFWORD,
         .Mode                = DMA_CIRCULAR,
         .Priority            = DMA_PRIORITY_HIGH,
-        .FIFOMode            = DMA_FIFOMODE_DISABLE,
+        .FIFOMode            = DMA_FIFOMODE_ENABLE,
         .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
         .MemBurst            = DMA_MBURST_SINGLE,
         .PeriphBurst         = DMA_MBURST_SINGLE,
@@ -68,7 +68,9 @@ static void my_MspInit(I2S_HandleTypeDef *hi2s)
 
     /* Configure the DMA Stream */
     HAL_DMA_DeInit(&hdma_tx);
-    HAL_DMA_Init(&hdma_tx);
+    if (HAL_DMA_Init(&hdma_tx) != HAL_OK) {
+        printf("i2s dma init err\n");
+    }
 
     /* SAI DMA IRQ Channel configuration */
     HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);

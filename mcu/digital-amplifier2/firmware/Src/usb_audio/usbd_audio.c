@@ -19,16 +19,6 @@
 /* Feature Unit Config */
 #define AUDIO_CONTROL_FEATURES AUDIO_CONTROL_MUTE | AUDIO_CONTROL_VOL
 
-/* Nomial feedback data for different frequencies */
-#define AUDIO_FB_DEFAULT \
-    (USBD_AUDIO_FREQ_DEFAULT == 96000) ? (96 << 22) \
-    : (USBD_AUDIO_FREQ_DEFAULT == 48000) ? (48 << 22) \
-    : (USBD_AUDIO_FREQ_DEFAULT == 44100) ? ((44 << 22) + (1 << 22) / 10) \
-    : (48 << 22)
-
-/* Feedback is limited to +/- 1kHz */
-#define AUDIO_FB_DELTA (uint32_t)(1 << 22)
-// clang-format on
 
 static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx);
 
@@ -341,14 +331,6 @@ __ALIGN_BEGIN static uint8_t USBD_AUDIO_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIE
 volatile uint32_t tx_flag = 1;
 volatile uint32_t all_ready = 0;
 
-volatile uint32_t fb_nom = AUDIO_FB_DEFAULT;
-volatile uint32_t fb_value = AUDIO_FB_DEFAULT;
-volatile int32_t fb_raw = AUDIO_FB_DEFAULT;
-volatile uint8_t fb_data[3] = {
-    (uint8_t)((AUDIO_FB_DEFAULT & 0x0000FF00) >> 8),
-    (uint8_t)((AUDIO_FB_DEFAULT & 0x00FF0000) >> 16),
-    (uint8_t)((AUDIO_FB_DEFAULT & 0xFF000000) >> 24)};
-
 /* FNSOF is critical for frequency changing to work */
 volatile uint32_t fnsof = 0;
 
@@ -437,7 +419,7 @@ static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef* pdev,
     if (pdev->pClassData != NULL) {
 
         device_mode_change(MODE_IDLE);
-        audio_deInit();
+        audio_stop();
 
         USBD_free(pdev->pClassData);
         pdev->pClassData = NULL;
@@ -601,6 +583,44 @@ static uint8_t USBD_AUDIO_DataIn(USBD_HandleTypeDef* pdev,
     return USBD_OK;
 }
 
+static uint32_t audio_delta_fb(USBD_HandleTypeDef* pdev)
+{
+    USBD_AUDIO_HandleTypeDef* haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
+
+    uint32_t fb_value, fb_raw;
+
+    /* Calculate feedback value based on the change of writable buffer size */
+    int16_t delta;
+    delta = audio_clock_samples_delta();
+
+    float x = delta;
+    x = x * (x/(float)100);
+    x = x * x + x*0.35;
+    delta = x;
+
+    /* int16_t aa = delta > 0 ? delta : -delta; */
+    /* if (aa < 100) { */
+        /* delta = delta / 2; */
+    /* } else if (aa > 200) { */
+        /* delta = delta * 2; */
+    /* } */
+
+    fb_value = haudio->freq - delta;
+
+    /*
+     * Linux usb audio驱动中freq反馈值的范围为:
+     * (freq - freq/8) <= fb <= (freq + freq /4)
+     */
+    if (fb_value < (haudio->freq - haudio->freq/8)) {
+        fb_value = haudio->freq - haudio->freq/8;
+    } else if (fb_value > (haudio->freq + haudio->freq/4)) {
+        fb_value = haudio->freq + haudio->freq/4;
+    }
+
+    fb_raw = ((fb_value / 1000)<<14) | ((fb_value %1000)<<4);
+    return fb_raw;
+}
+
 /**
  * @brief  USBD_AUDIO_SOF
  *         handle SOF event
@@ -609,54 +629,8 @@ static uint8_t USBD_AUDIO_DataIn(USBD_HandleTypeDef* pdev,
  */
 static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
 {
-    /**
-     * 1. Must be static so that the values are kept when the function is 
-     *    again called.
-     * 2. Must be volatile so that it will not be optimized out by the compiler.
-     */
-    // static volatile uint32_t fb_value = AUDIO_FB_DEFAULT;
-    // static volatile int32_t fb_raw = AUDIO_FB_DEFAULT;
-    static volatile uint32_t sof_count = 0;
-
-    USBD_AUDIO_HandleTypeDef* haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
-    int16_t sample_size = haudio->bit_depth / 8 * 2;
-
     /* Do stuff only when playing */
     if (all_ready == 1U) {
-        sof_count += 1;
-
-        if (sof_count == 1U) {
-            sof_count = 0;
-            /* Calculate feedback value based on the change of writable buffer size */
-            /* v2 */
-            int32_t audio_buf_writable_size_dev_from_nom;
-            audio_buf_writable_size_dev_from_nom = audio_clock_samples_delta() * sample_size;
-            // fb_value += audio_buf_writable_size_dev_from_nom * 1352;
-            fb_value += audio_buf_writable_size_dev_from_nom * audio_buf_writable_size_dev_from_nom / 912673 * 128 * audio_buf_writable_size_dev_from_nom;
-
-            /* Check feedback max / min */
-            if (fb_value > fb_nom + AUDIO_FB_DELTA) {
-                fb_value = fb_raw = fb_nom + AUDIO_FB_DELTA;
-            } else if (fb_value < fb_nom - AUDIO_FB_DELTA) {
-                fb_value = fb_raw = fb_nom - AUDIO_FB_DELTA;
-            }
-
-            /* fb_value = AUDIO_FB_DEFAULT; */
-
-            /* Set 10.14 format feedback data */
-            /**
-             * Order of 3 bytes in feedback packet: { LO byte, MID byte, HI byte }
-             * 
-             * For example,
-             * 48.000(dec) => 300000(hex, 8.16) => 0C0000(hex, 10.14) => packet { 00, 00, 0C }
-             * 
-             * Note that ALSA accepts 8.16 format.
-             */
-            fb_data[0] = (fb_value & 0x0000FF00) >> 8;
-            fb_data[1] = (fb_value & 0x00FF0000) >> 16;
-            fb_data[2] = (fb_value & 0xFF000000) >> 24;
-        }
-
         /* Transmit feedback only when the last one is transmitted */
         if (tx_flag == 0U) {
             /* Get FNSOF. Use volatile for fnsof_new since its address is mapped to a hardware register. */
@@ -665,7 +639,11 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
             uint32_t volatile fnsof_new = (USBx_DEVICE->DSTS & USB_OTG_DSTS_FNSOF) >> 8;
 
             if ((fnsof & 0x1) == (fnsof_new & 0x1)) {
-                USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t*)fb_data, 3U);
+
+                uint32_t fb_raw=0;
+                fb_raw = audio_delta_fb(pdev);
+
+                USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t*)&fb_raw, 3U);
                 /* Block transmission until it's finished. */
                 tx_flag = 1U;
             }
@@ -957,7 +935,7 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
     USBD_LL_FlushEP(pdev, AUDIO_OUT_EP);
 
     device_mode_change(MODE_IDLE);
-    audio_deInit();
+    audio_stop();
 }
 
 /**
@@ -970,19 +948,6 @@ static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev)
     haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
 
     AUDIO_OUT_StopAndReset(pdev);
-
-    switch (haudio->freq) {
-        case 44100:
-            fb_raw = fb_nom = fb_value = (44 << 22) + (1 << 22) / 10;
-            break;
-        case 48000:
-            fb_raw = fb_nom = fb_value = 48 << 22;
-            break;
-        case 96000:
-            fb_raw = fb_nom = fb_value = 96 << 22;
-        default:
-            fb_raw = fb_nom = fb_value = 96 << 22;
-    }
 
     device_mode_change(MODE_USB);
     audio_init(haudio->freq, haudio->bit_depth);

@@ -20,10 +20,6 @@
 #define MODE_SPDIF 2
 #define MODE_BT    3
 
-
-extern SAI_HandleTypeDef hsai;
-extern I2S_HandleTypeDef hi2s;
-
 extern uint8_t device_mode;
 
 void device_mode_change(uint8_t mode);
@@ -47,6 +43,10 @@ void pcm1792_stop(void);
 void spdif_start(void);
 void spdif_stop(void);
 void spdif_check(void);
+
+
+void btm331_start(void);
+void btm331_stop(void);
 
 #ifdef __cplusplus
 }

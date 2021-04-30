@@ -49,30 +49,21 @@ void UserMain()
     IwdgHandle.Init.Reload = 40000/128*5;
     HAL_IWDG_Init(&IwdgHandle);
 
+    audio.volume = 0xcf - 60;
+    audio.mute = false;
     audio_init(SAI_AUDIO_FREQUENCY_44K, 16);
-    tas6424_init();
-    pcm1792_init();
-    pcm1792_mute(true);
 
-    /* usb_init(); */
-    /* usb_start(); */
+    usb_init();
+    usb_start();
+
+    /* btm331_start(); */
 
     printf("run\n");
 
     for (;;) {
-        vTaskDelay(1000);
+        vTaskDelay(100);
 
-        /* if (device_mode == MODE_IDLE) { */
-            /* device_mode_change(MODE_SPDIF); */
-            /* spdif_start(); */
-        /* } */
-
-        /* tas6424_check(); */
-        audio_check();
-
-        if ( audio.state == AUDIO_STATE_ERROR ) {
-            NVIC_SystemReset();
-        }
+        audio_tick();
 
         HAL_IWDG_Refresh(&IwdgHandle);
     }
