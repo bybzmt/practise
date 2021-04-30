@@ -39,7 +39,7 @@ static void MY_Write_REG(uint8_t reg, uint8_t data)
     }
 }
 
-static uint8_t reg_18 = 0b11000000;
+static uint8_t reg_18 = 0b10000000;
 
 void pcm1792_init(void)
 {

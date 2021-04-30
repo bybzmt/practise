@@ -49,7 +49,7 @@ void UserMain()
     IwdgHandle.Init.Reload = 40000/128*5;
     HAL_IWDG_Init(&IwdgHandle);
 
-    audio.volume = 0xcf - 60;
+    audio.volume = 0xcf - 10;
     audio.mute = false;
     audio_init(SAI_AUDIO_FREQUENCY_44K, 16);
 
@@ -62,6 +62,10 @@ void UserMain()
 
     for (;;) {
         vTaskDelay(100);
+
+       /* if (device_mode == MODE_IDLE) { */
+            /* device_mode_change(MODE_BT); */
+        /* } */
 
         audio_tick();
 

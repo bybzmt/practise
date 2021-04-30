@@ -20,7 +20,7 @@ SAI_HandleTypeDef hsai_in = {
         .AudioMode     = SAI_MODESLAVE_RX,
         .NoDivider     = SAI_MASTERDIVIDER_ENABLE,
         .Protocol      = SAI_FREE_PROTOCOL,
-        .DataSize      = SAI_DATASIZE_24,
+        .DataSize      = SAI_DATASIZE_16,
         .FirstBit      = SAI_FIRSTBIT_MSB,
         .ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE,
         .Synchro       = SAI_ASYNCHRONOUS,
@@ -28,15 +28,15 @@ SAI_HandleTypeDef hsai_in = {
         .FIFOThreshold = SAI_FIFOTHRESHOLD_1QF,
     },
     .FrameInit = {
-        .FrameLength       = 48,
-        .ActiveFrameLength = 24,
-        .FSDefinition      = SAI_FS_STARTFRAME,
+        .FrameLength       = 64,
+        .ActiveFrameLength = 32,
+        .FSDefinition      = SAI_FS_CHANNEL_IDENTIFICATION,
         .FSPolarity        = SAI_FS_ACTIVE_HIGH,
         .FSOffset          = SAI_FS_FIRSTBIT,
     },
     .SlotInit = {
         .FirstBitOffset = 1,
-        .SlotSize       = SAI_SLOTSIZE_DATASIZE,
+        .SlotSize       = SAI_SLOTSIZE_32B,
         .SlotNumber     = 2,
         .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
     },
@@ -166,7 +166,7 @@ void btm331_start(void)
         return;
     }
 
-    audio_init(SAI_AUDIO_FREQUENCY_48K, 24);
+    audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
 }
 
 void btm331_reset(void)

@@ -4,7 +4,7 @@
 #include "stm32f4xx_ll_dma.h"
 
 /* 16bit/8*2*2000 */
-#define BUF_SIZE (1024*8)
+#define BUF_SIZE (1024*16)
 
 
 extern I2S_HandleTypeDef hi2s1;
@@ -15,6 +15,7 @@ static int16_t audio_buf_size;
 static int16_t audio_w_idx;
 static uint8_t sample_bit;
 static uint8_t sample_size;
+static uint8_t audio_sample_size;
 static int16_t audio_samples_num;
 static int16_t audio_samples_delta;
 
@@ -29,18 +30,22 @@ void audio_out1_init(uint32_t AudioFreq, uint8_t bit_depth)
 {
     sample_bit = bit_depth;
     sample_size = bit_depth/8*2;
-    audio_samples_num = BUF_SIZE/sample_size;
-    audio_buf_size = sample_size * audio_samples_num;
 
     hi2s1.Init.AudioFreq = AudioFreq;
 
     if (bit_depth == 16U) {
         hi2s1.Init.DataFormat = I2S_DATAFORMAT_16B;
+        audio_sample_size = 4;
     } else if (bit_depth == 24) {
         hi2s1.Init.DataFormat = I2S_DATAFORMAT_24B;
+        audio_sample_size = 8;
     } else {
-        hi2s1.Init.DataFormat = I2S_DATAFORMAT_24B;
+        hi2s1.Init.DataFormat = I2S_DATAFORMAT_32B;
+        audio_sample_size = 8;
     }
+
+    audio_samples_num = BUF_SIZE/audio_sample_size;
+    audio_buf_size = audio_sample_size * audio_samples_num;
 
     HAL_I2S_DeInit(&hi2s1);
 
@@ -79,7 +84,7 @@ static void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
 
     if (sample_bit==16) {
         for (int i=0; i<sample_num; i++) {
-            oft2 = ((idx+i) % audio_samples_num) * sample_size;
+            oft2 = ((idx+i) % audio_samples_num) * audio_sample_size;
             oft = 4 * i;
             /* 调换左右声道 */
             audio_buf[oft2+2] = buf[oft];
@@ -89,18 +94,19 @@ static void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
         }
     } else if (sample_bit==24) {
         for (int i=0; i<sample_num; i++) {
-            oft2 = ((idx+i) % audio_samples_num) * 6;
+            oft2 = ((idx+i) % audio_samples_num) * audio_sample_size;
             oft = 6 * i;
-            audio_buf[oft2+0] = buf[oft+0];
-            audio_buf[oft2+1] = buf[oft+1];
-            audio_buf[oft2+2] = buf[oft+2];
-            audio_buf[oft2+4] = buf[oft+3];
-            audio_buf[oft2+5] = buf[oft+4];
-            audio_buf[oft2+6] = buf[oft+5];
+            audio_buf[oft2+1] = buf[oft+0];
+            audio_buf[oft2+2] = buf[oft+1];
+            audio_buf[oft2+3] = buf[oft+2];
+
+            audio_buf[oft2+5] = buf[oft+3];
+            audio_buf[oft2+6] = buf[oft+4];
+            audio_buf[oft2+7] = buf[oft+5];
         }
     } else {
         for (int i=0; i<sample_num; i++) {
-            oft2 = ((idx+i) % audio_samples_num) * 8;
+            oft2 = ((idx+i) % audio_samples_num) * audio_sample_size;
             oft = 8 * i;
             audio_buf[oft2+0] = buf[oft];
             audio_buf[oft2+1] = buf[oft+1];
@@ -152,7 +158,7 @@ void audio_out1_clock_sync(void)
 static uint16_t audio_rd_idx(void)
 {
     uint16_t rd_ptr = (LL_DMA_ReadReg(hi2s1.hdmatx->Instance, NDTR) & 0xFFFF);
-    uint16_t rd_idx = audio_samples_num - (rd_ptr / 2);
+    uint16_t rd_idx = audio_samples_num - (rd_ptr * 2 / audio_sample_size);
     return rd_idx;
 }
 
