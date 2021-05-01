@@ -17,8 +17,8 @@ static void MY_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd);
 static void MY_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd);
 
 PCD_HandleTypeDef hpcd = {
-  .MspInitCallback = MY_PCD_MspInit,
-  .MspDeInitCallback = MY_PCD_MspDeInit,
+    .MspInitCallback = MY_PCD_MspInit,
+    .MspDeInitCallback = MY_PCD_MspDeInit,
 };
 
 static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
@@ -66,7 +66,7 @@ static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
     HAL_Delay(10);
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
 
     printf("pcd initd\n");
 }
@@ -74,11 +74,14 @@ static void MY_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 static void MY_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
 {
     printf("pcd deInit\n");
+
+    HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+
     /* Disable USB FS Clock */
     __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
 
     //usb上拉电阻
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
 }
 
 static void bsp_usb_clock_config(void)

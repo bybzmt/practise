@@ -337,6 +337,8 @@ volatile uint32_t fnsof = 0;
 /**
  * @}
  */
+static USBD_AUDIO_HandleTypeDef classdata = {0};
+
 
 /** @defgroup USBD_AUDIO_Private_Functions
  * @{
@@ -371,7 +373,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
     tx_flag = 1U;
 
     /* Allocate Audio structure */
-    pdev->pClassData = USBD_malloc(sizeof(USBD_AUDIO_HandleTypeDef));
+    pdev->pClassData = &classdata;
 
     if (pdev->pClassData == NULL) {
         return USBD_FAIL;
@@ -382,7 +384,6 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->bit_depth = 16U;
         haudio->vol = audio.volume;
 
-        device_mode_change(MODE_USB);
         audio_init(haudio->freq, haudio->bit_depth);
 
         USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer, AUDIO_OUT_PACKET_24B);
@@ -418,10 +419,8 @@ static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef* pdev,
     /* DeInit physical Interface components */
     if (pdev->pClassData != NULL) {
 
-        device_mode_change(MODE_IDLE);
         audio_stop();
 
-        USBD_free(pdev->pClassData);
         pdev->pClassData = NULL;
     }
 
@@ -934,7 +933,6 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
     USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
     USBD_LL_FlushEP(pdev, AUDIO_OUT_EP);
 
-    device_mode_change(MODE_IDLE);
     audio_stop();
 }
 
@@ -949,7 +947,6 @@ static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev)
 
     AUDIO_OUT_StopAndReset(pdev);
 
-    device_mode_change(MODE_USB);
     audio_init(haudio->freq, haudio->bit_depth);
 
     tx_flag = 0U;

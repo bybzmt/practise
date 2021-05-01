@@ -17,7 +17,6 @@ void audio_init(uint32_t audioFreq, uint8_t bit_depth)
     audio_sai_clockConfig(audioFreq);
 
     audio_out1_init(audioFreq, bit_depth);
-    /* audio_out2_init(audioFreq, bit_depth); */
 
     audio.state = AUDIO_STATE_START;
     audio.sync++;

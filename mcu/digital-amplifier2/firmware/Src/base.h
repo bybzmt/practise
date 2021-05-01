@@ -20,11 +20,14 @@
 #define MODE_SPDIF 2
 #define MODE_BT    3
 
-extern uint8_t device_mode;
+extern SAI_HandleTypeDef hsai_out;
+extern I2C_HandleTypeDef hi2c1;
 
+void button_click(void);
 void device_mode_change(uint8_t mode);
 
-extern I2C_HandleTypeDef hi2c1;
+void led_on(bool flag);
+void button_init(void);
 
 void tas6424_init(void);
 void tas6424_en(bool ok);
@@ -44,7 +47,7 @@ void spdif_start(void);
 void spdif_stop(void);
 void spdif_check(void);
 
-
+void btm331_init(void);
 void btm331_start(void);
 void btm331_stop(void);
 

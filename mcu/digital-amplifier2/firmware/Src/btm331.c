@@ -147,8 +147,6 @@ void btm331_init(void)
 
 void btm331_start(void)
 {
-    btm331_init();
-
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 
     if (HAL_SAI_Init(&hsai_in) != HAL_OK) {
@@ -179,10 +177,12 @@ void btm331_reset(void)
 
 void btm331_stop(void)
 {
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
+    HAL_SAI_DMAStop(&hsai_in);
+    HAL_SAI_DeInit(&hsai_in);
 
     audio_stop();
-    HAL_SAI_DeInit(&hsai_in);
+
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 }
 
 static void _dma_half_cplt(SAI_HandleTypeDef *hsai)

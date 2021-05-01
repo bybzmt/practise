@@ -31,6 +31,7 @@ C_SOURCES =Src/main.c
 # C_SOURCES+=Src/debug_uart_printf.c
 C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
+C_SOURCES+=Src/button.c
 C_SOURCES+=Src/audio.c
 C_SOURCES+=Src/audio_out1.c
 C_SOURCES+=Src/audio_out2.c

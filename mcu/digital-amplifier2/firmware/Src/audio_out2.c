@@ -6,8 +6,6 @@
 /* 16bit/8*4*1000 */
 #define BUF_SIZE 8000
 
-extern SAI_HandleTypeDef hsai_out;
-
 static uint8_t audio_buf[BUF_SIZE];
 static uint8_t audio_state;
 static int16_t audio_buf_size;
@@ -37,8 +35,6 @@ void audio_out2_init(uint32_t AudioFreq, uint8_t bit_depth)
     } else {
         hsai_out.Init.DataSize = SAI_DATASIZE_24;
     }
-    hsai_out.FrameInit.FrameLength = bit_depth * 8;
-    hsai_out.FrameInit.ActiveFrameLength = bit_depth;
 
     HAL_SAI_DeInit(&hsai_out);
     if (HAL_SAI_Init(&hsai_out) != HAL_OK) {
@@ -46,15 +42,15 @@ void audio_out2_init(uint32_t AudioFreq, uint8_t bit_depth)
         return;
     }
 
-    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_COMPLETE_CB_ID, _dma_half_cplt);
-    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_HALFCOMPLETE_CB_ID, _dma_half_cplt);
+    /* HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_COMPLETE_CB_ID, _dma_half_cplt); */
+    /* HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_HALFCOMPLETE_CB_ID, _dma_half_cplt); */
 
-    HAL_StatusTypeDef ret;
-    ret = HAL_SAI_Transmit_DMA(&hsai_out, (uint8_t *)&audio_buf[0], audio_buf_size/2);
-    if (ret!= HAL_OK) {
-        printf("play err:%d\n", ret);
-        return;
-    }
+    /* HAL_StatusTypeDef ret; */
+    /* ret = HAL_SAI_Transmit_DMA(&hsai_out, (uint8_t *)&audio_buf[0], audio_buf_size/2); */
+    /* if (ret!= HAL_OK) { */
+        /* printf("play err:%d\n", ret); */
+        /* return; */
+    /* } */
 }
 
 void audio_out2_reset(void)
@@ -72,11 +68,6 @@ void audio_out2_check(void)
 
 static void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
 {
-    for (int i=0; i<sample_num; i++) {
-        uint16_t oft = sample_size * i;
-        uint16_t oft2 = (sample_size * (idx+i) * 2) % audio_buf_size;
-        memcpy(&audio_buf[oft2], &buf[oft], sample_size);
-    }
 }
 
 void audio_out2_append(uint8_t* buf, uint16_t buf_len)
@@ -146,7 +137,7 @@ int16_t audio_out2_clock_delta(void)
 static void _dma_half_cplt(SAI_HandleTypeDef *hsai)
 {
     if (audio_state == AUDIO_STATE_SET) {
-        audio_out2_reset();
+        /* audio_out2_reset(); */
         return;
     }
 

@@ -22,16 +22,17 @@ SAI_HandleTypeDef hsai_out = {
     },
     .FrameInit = {
         .FrameLength       = 256,
-        .ActiveFrameLength = 16,
+        .ActiveFrameLength = 32,
         .FSDefinition      = SAI_FS_STARTFRAME,
         .FSPolarity        = SAI_FS_ACTIVE_LOW,
         .FSOffset          = SAI_FS_FIRSTBIT,
     },
     .SlotInit = {
         .FirstBitOffset = 1,
-        .SlotSize       = SAI_SLOTSIZE_DATASIZE,
+        .SlotSize       = SAI_SLOTSIZE_32B,
         .SlotNumber     = 8,
-        .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_2 | SAI_SLOTACTIVE_3,
+        /* .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_2 | SAI_SLOTACTIVE_3, */
+        .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
     },
     .MspInitCallback    = MY_SAI_OUT_MspInit,
     .MspDeInitCallback  = MY_SAI_OUT_MspDeInit,
