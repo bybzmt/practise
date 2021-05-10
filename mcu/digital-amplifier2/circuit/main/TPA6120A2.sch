@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 7 10
+Sheet 7 12
 Title ""
 Date ""
 Rev ""
@@ -239,38 +239,6 @@ Wire Wire Line
 	2775 4075 3025 4075
 Wire Wire Line
 	4325 2575 4750 2575
-$Comp
-L digital-amplifier2-rescue:TPA6120A2DWP-ti-digital-amplifier2-rescue U?
-U 1 1 600C7C24
-P 4750 2575
-AR Path="/5F115848/600C7C24" Ref="U?"  Part="1" 
-AR Path="/5F9D81B7/5FF93314/600C7C24" Ref="U?"  Part="1" 
-AR Path="/600C7C24" Ref="U?"  Part="1" 
-AR Path="/6035C8F0/5FF93314/600C7C24" Ref="U?"  Part="1" 
-AR Path="/6079F77B/600C7C24" Ref="U7"  Part="1" 
-F 0 "U7" H 5550 3062 60  0000 C CNN
-F 1 "TPA6120A2DWP" H 5550 2956 60  0000 C CNN
-F 2 "ti:TPA6120A2DWP" H 5550 2915 60  0001 C CNN
-F 3 "" H 4750 2575 60  0000 C CNN
-	1    4750 2575
-	1    0    0    -1  
-$EndComp
-$Comp
-L digital-amplifier2-rescue:TPA6120A2DWP-ti-digital-amplifier2-rescue U?
-U 2 1 600CA436
-P 8850 4075
-AR Path="/5F115848/600CA436" Ref="U?"  Part="2" 
-AR Path="/5F9D81B7/5FF93314/600CA436" Ref="U?"  Part="2" 
-AR Path="/600CA436" Ref="U?"  Part="2" 
-AR Path="/6035C8F0/5FF93314/600CA436" Ref="U?"  Part="2" 
-AR Path="/6079F77B/600CA436" Ref="U7"  Part="2" 
-F 0 "U7" H 10178 3378 60  0000 L CNN
-F 1 "TPA6120A2DWP" H 10178 3272 60  0000 L CNN
-F 2 "ti:TPA6120A2DWP" H 9650 4415 60  0001 C CNN
-F 3 "" H 8850 4075 60  0000 C CNN
-	2    8850 4075
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8850 4075 8700 4075
 Wire Wire Line
@@ -408,7 +376,6 @@ Wire Wire Line
 	3425 1925 6350 1925
 Wire Wire Line
 	6350 1925 6350 2475
-Connection ~ 6350 2475
 Wire Wire Line
 	3875 1675 2700 1675
 Wire Wire Line
@@ -903,6 +870,29 @@ F 1 "AudioJack3_Switch" H 9100 2000 50  0000 C CNN
 F 2 "Connector_Audio:Jack_6.35mm_Neutrik_NMJ6HFD2-AU_Horizontal" H 9075 1625 50  0001 C CNN
 F 3 "~" H 9075 1625 50  0001 C CNN
 	1    9075 1625
+	1    0    0    -1  
+$EndComp
+$Comp
+L ti:TPA6120A2 U7
+U 1 1 60C26CC9
+P 4750 2575
+F 0 "U7" H 5575 3100 60  0000 C CNN
+F 1 "TPA6120A2" H 5575 3000 60  0000 C CNN
+F 2 "ti:TPA6120A2DWP" H 5550 2915 60  0001 C CNN
+F 3 "" H 4750 2575 60  0000 C CNN
+	1    4750 2575
+	1    0    0    -1  
+$EndComp
+Connection ~ 6350 2475
+$Comp
+L ti:TPA6120A2 U7
+U 2 1 60C2A547
+P 8850 4075
+F 0 "U7" H 10225 3400 60  0000 L CNN
+F 1 "TPA6120A2" H 10225 3300 60  0000 L CNN
+F 2 "ti:TPA6120A2DWP" H 9650 4415 60  0001 C CNN
+F 3 "" H 8850 4075 60  0000 C CNN
+	2    8850 4075
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC

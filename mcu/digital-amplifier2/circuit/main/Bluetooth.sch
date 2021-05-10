@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 6 10
+Sheet 6 12
 Title ""
 Date ""
 Rev ""
@@ -269,7 +269,6 @@ Connection ~ 4900 2175
 Wire Wire Line
 	4900 2175 4900 2375
 NoConn ~ 2850 3875
-NoConn ~ 3550 2375
 $Comp
 L Device:Antenna_Shield AE1
 U 1 1 6041BD6E
@@ -293,4 +292,17 @@ Text HLabel 2100 3275 0    50   Output ~ 0
 state2
 Wire Wire Line
 	2100 3275 2850 3275
+Wire Wire Line
+	3550 2375 3550 2000
+$Comp
+L Connector:TestPoint TP6
+U 1 1 609C4FDA
+P 3550 2000
+F 0 "TP6" H 3650 2150 50  0000 L CNN
+F 1 "SPDIF" H 3650 2050 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 3750 2000 50  0001 C CNN
+F 3 "~" H 3750 2000 50  0001 C CNN
+	1    3550 2000
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

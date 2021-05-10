@@ -1,4 +1,4 @@
-393397761602614
+399898899985614
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -83122,8 +83122,36 @@ TPA6120A2DWP
 
 
 0
+27
 21
-21
+ti
+TPS7A3001DGNR
+
+
+0
+9
+9
+ti
+TPS7A4901DGNR
+
+
+0
+9
+9
+ti
+TPS60241DGKR
+
+
+0
+8
+8
+ti
+TPS61085DGKR
+
+
+0
+8
+8
 ti
 TPS65131TRGERQ1
 

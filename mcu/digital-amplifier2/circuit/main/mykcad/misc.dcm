@@ -6,6 +6,16 @@ K linear negative voltage regulator low-noise
 F https://www.analog.com/media/en/technical-documentation/data-sheets/lt3045-1.pdf
 $ENDCMP
 #
+$CMP MP1541
+D 22V 1.3MHz Boost Converter
+K Boost
+$ENDCMP
+#
+$CMP MP2451
+D 36V 2MHz, 0.6A Step-Down Converter
+K buck
+$ENDCMP
+#
 $CMP SJR-BTM331
 D Bluetooth 5.0 modules
 K SJR-BTM331

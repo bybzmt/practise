@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 10
+Sheet 1 12
 Title ""
 Date ""
 Rev ""
@@ -173,7 +173,7 @@ F5 "RIN+" I L 9600 1175 50
 F6 "RIN-" I L 9600 1300 50 
 $EndSheet
 $Sheet
-S 2540 6415 1300 975 
+S 4350 6525 1300 975 
 U 6074FC63
 F0 "headphone_power" 50
 F1 "headphone_power.sch" 50
@@ -189,11 +189,10 @@ F4 "SCK" I L 7675 1150 50
 F5 "BCK" I L 7675 1250 50 
 F6 "LRCK" I L 7675 1350 50 
 F7 "DATA" I L 7675 1450 50 
-F8 "RST" I L 7675 1625 50 
-F9 "OUTLP" O R 8525 1175 50 
-F10 "OUTLN" O R 8525 1300 50 
-F11 "OUTRP" O R 8525 925 50 
-F12 "OUTRN" O R 8525 1050 50 
+F8 "OUTLP" O R 8525 1175 50 
+F9 "OUTLN" O R 8525 1300 50 
+F10 "OUTRP" O R 8525 925 50 
+F11 "OUTRN" O R 8525 1050 50 
 $EndSheet
 $Sheet
 S 8650 700  800  1100
@@ -240,8 +239,6 @@ SAI1_A_SCK
 Text Label 8860 3375 0    50   ~ 0
 SAI1_A_FS
 Wire Wire Line
-	6910 1625 7675 1625
-Wire Wire Line
 	8710 3375 9475 3375
 Wire Wire Line
 	8710 3275 9475 3275
@@ -272,9 +269,7 @@ I2S1_MCK
 Text Label 2325 2075 0    50   ~ 0
 SAI1_A_SCK
 Text Label 2200 1725 0    50   ~ 0
-headphone_en
-Text Label 7050 1625 0    50   ~ 0
-headphone_en
+dac_power_en
 Text Label 10425 1650 0    50   ~ 0
 headphone_in
 Wire Wire Line
@@ -285,4 +280,21 @@ Wire Wire Line
 	2050 2755 2825 2755
 Text Label 2195 2755 0    50   ~ 0
 BT_state2
+$Sheet
+S 7600 5050 1000 950 
+U 60973CA0
+F0 "power7v" 50
+F1 "power7v.sch" 50
+F2 "EN" I L 7600 5325 50 
+$EndSheet
+$Sheet
+S 2725 6500 1125 950 
+U 6099BEE5
+F0 "power±15v" 50
+F1 "power±15v.sch" 50
+$EndSheet
+Wire Wire Line
+	6835 5325 7600 5325
+Text Label 6950 5325 0    50   ~ 0
+dac_power_en
 $EndSCHEMATC

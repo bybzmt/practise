@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 10
+Sheet 2 12
 Title ""
 Date ""
 Rev ""
@@ -257,8 +257,6 @@ SWDIO
 Text Label 1525 2700 0    50   ~ 0
 SWCLK
 Wire Wire Line
-	7200 1200 7200 850 
-Wire Wire Line
 	6000 2800 6500 2800
 Text Label 6075 2800 0    50   ~ 0
 USB_CO
@@ -302,7 +300,6 @@ Wire Wire Line
 	5975 4200 6500 4200
 Wire Wire Line
 	8450 2400 7900 2400
-NoConn ~ 6500 3200
 NoConn ~ 6500 3600
 NoConn ~ 6500 3800
 NoConn ~ 7900 3900
@@ -528,8 +525,6 @@ Text Label 8050 3500 0    50   ~ 0
 NJTRST
 Text Label 1525 2475 0    50   ~ 0
 NJTRST
-Text Label 1525 2600 0    50   ~ 0
-NRST
 Wire Wire Line
 	7900 2900 8450 2900
 Text Label 8125 2900 0    50   ~ 0
@@ -538,8 +533,6 @@ Text Label 1525 3000 0    50   ~ 0
 JTDI
 Wire Wire Line
 	1375 2475 1875 2475
-Wire Wire Line
-	1375 2600 1875 2600
 Wire Wire Line
 	1375 2900 1875 2900
 Wire Wire Line
@@ -646,22 +639,7 @@ $EndComp
 Wire Wire Line
 	3200 1375 3525 1375
 Connection ~ 3525 1375
-$Comp
-L power:PWR_FLAG #FLG?
-U 1 1 609A6176
-P 3525 1175
-AR Path="/5F047EA6/5FD62F96/609A6176" Ref="#FLG?"  Part="1" 
-AR Path="/5F047EA6/609A6176" Ref="#FLG02"  Part="1" 
-F 0 "#FLG02" H 3525 1250 50  0001 C CNN
-F 1 "PWR_FLAG" H 3525 1349 50  0000 C CNN
-F 2 "" H 3525 1175 50  0001 C CNN
-F 3 "~" H 3525 1175 50  0001 C CNN
-	1    3525 1175
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3525 1375 3525 1175
-Text Label 3925 1375 0    50   ~ 0
+Text Label 4050 1375 0    50   ~ 0
 vdd1
 $Comp
 L power:+3.3V #PWR?
@@ -683,7 +661,7 @@ Wire Wire Line
 Wire Wire Line
 	3525 1800 3525 2250
 Wire Wire Line
-	3525 1375 4325 1375
+	3525 1375 3950 1375
 $Comp
 L power:+3.3V #PWR08
 U 1 1 609B580F
@@ -763,9 +741,6 @@ Wire Wire Line
 	2925 6625 2925 6325
 Text Label 2925 6525 1    50   ~ 0
 vdd1
-Wire Wire Line
-	7500 1200 7400 1200
-Connection ~ 7400 1200
 Wire Wire Line
 	4575 7000 4575 7150
 Wire Wire Line
@@ -852,11 +827,10 @@ U 60B6BD44
 F0 "jtag" 50
 F1 "jtag.sch" 50
 F2 "JTRST" I R 1375 2475 50 
-F3 "NRST" I R 1375 2600 50 
-F4 "SWCLK" I R 1375 2700 50 
-F5 "SWDIO" I R 1375 2800 50 
-F6 "JTDO" I R 1375 2900 50 
-F7 "JTDI" I R 1375 3000 50 
+F3 "SWCLK" I R 1375 2700 50 
+F4 "SWDIO" I R 1375 2800 50 
+F5 "JTDO" I R 1375 2900 50 
+F6 "JTDI" I R 1375 3000 50 
 $EndSheet
 Wire Wire Line
 	7900 4500 8450 4500
@@ -885,5 +859,70 @@ Wire Wire Line
 	5970 4400 6500 4400
 Text HLabel 5970 4400 0    50   Input ~ 0
 BT_state
-NoConn ~ 6500 3700
+$Comp
+L Connector:TestPoint TP5
+U 1 1 609BAB36
+P 5150 3700
+F 0 "TP5" V 5400 3750 50  0000 C CNN
+F 1 "SPDIF" V 5300 3750 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 5350 3700 50  0001 C CNN
+F 3 "~" H 5350 3700 50  0001 C CNN
+	1    5150 3700
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5150 3700 6500 3700
+Wire Wire Line
+	6500 3200 5775 3200
+Text GLabel 5775 3200 0    50   Output ~ 0
+hp_power_en
+Connection ~ 7400 1200
+Wire Wire Line
+	7500 1200 7400 1200
+Wire Wire Line
+	7200 1200 7200 850 
+$Comp
+L power:+3.3VA #PWR0103
+U 1 1 60996264
+P 3525 925
+F 0 "#PWR0103" H 3525 775 50  0001 C CNN
+F 1 "+3.3VA" H 3575 1125 50  0000 C CNN
+F 2 "" H 3525 925 50  0001 C CNN
+F 3 "" H 3525 925 50  0001 C CNN
+	1    3525 925 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small R41
+U 1 1 60983FFD
+P 3525 1150
+F 0 "R41" H 3450 1100 50  0000 R CNN
+F 1 "0Ω" H 3450 1150 50  0000 R CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 3525 1150 50  0001 C CNN
+F 3 "~" H 3525 1150 50  0001 C CNN
+	1    3525 1150
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3525 925  3525 1050
+Wire Wire Line
+	3525 1250 3525 1375
+$Comp
+L power:PWR_FLAG #FLG?
+U 1 1 6098799E
+P 3950 1050
+AR Path="/5F16021E/6098799E" Ref="#FLG?"  Part="1" 
+AR Path="/5F047EA6/6098799E" Ref="#FLG0104"  Part="1" 
+F 0 "#FLG0104" H 3950 1125 50  0001 C CNN
+F 1 "PWR_FLAG" H 3950 1224 50  0000 C CNN
+F 2 "" H 3950 1050 50  0001 C CNN
+F 3 "~" H 3950 1050 50  0001 C CNN
+	1    3950 1050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 1050 3950 1375
+Connection ~ 3950 1375
+Wire Wire Line
+	3950 1375 4325 1375
 $EndSCHEMATC

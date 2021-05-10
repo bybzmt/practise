@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 10
+Sheet 4 12
 Title ""
 Date ""
 Rev ""
@@ -13,200 +13,72 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Wire Wire Line
-	5550 3285 6050 3285
-Wire Wire Line
-	4850 3985 4850 4260
 $Comp
-L power:GND #PWR?
-U 1 1 60B71AEB
-P 4850 4260
-AR Path="/5F047EA6/60B71AEB" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71AEB" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71AEB" Ref="#PWR024"  Part="1" 
-F 0 "#PWR024" H 4850 4010 50  0001 C CNN
-F 1 "GND" H 4855 4087 50  0000 C CNN
-F 2 "" H 4850 4260 50  0001 C CNN
-F 3 "" H 4850 4260 50  0001 C CNN
-	1    4850 4260
+L Connector:Conn_01x04_Female J5
+U 1 1 609FAD53
+P 5200 3375
+F 0 "J5" H 5075 2925 50  0000 C CNN
+F 1 "swd" H 5075 3025 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 5200 3375 50  0001 C CNN
+F 3 "~" H 5200 3375 50  0001 C CNN
+	1    5200 3375
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5525 3475 5400 3475
+Wire Wire Line
+	5525 3575 5525 3475
+$Comp
+L Connector:TestPoint TP4
+U 1 1 609F5D6E
+P 6950 3525
+F 0 "TP4" V 7175 3550 50  0000 C CNN
+F 1 "TestPoint" V 7075 3550 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 7150 3525 50  0001 C CNN
+F 3 "~" H 7150 3525 50  0001 C CNN
+	1    6950 3525
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP3
+U 1 1 609F5742
+P 6950 3075
+F 0 "TP3" V 7175 3125 50  0000 C CNN
+F 1 "TestPoint" V 7075 3125 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 7150 3075 50  0001 C CNN
+F 3 "~" H 7150 3075 50  0001 C CNN
+	1    6950 3075
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR0121
+U 1 1 609F501D
+P 5525 3575
+F 0 "#PWR0121" H 5525 3325 50  0001 C CNN
+F 1 "GND" H 5575 3350 50  0000 C CNN
+F 2 "" H 5525 3575 50  0001 C CNN
+F 3 "" H 5525 3575 50  0001 C CNN
+	1    5525 3575
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5550 3085 6050 3085
-Wire Wire Line
-	5550 3185 6050 3185
-$Comp
-L Connector:Conn_ARM_JTAG_SWD_20 J?
-U 1 1 60B71AF3
-P 4950 3185
-AR Path="/5F047EA6/60B71AF3" Ref="J?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71AF3" Ref="J?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71AF3" Ref="J5"  Part="1" 
-F 0 "J5" H 4420 3231 50  0000 R CNN
-F 1 "Conn_ARM_JTAG_SWD_20" H 4420 3140 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical" H 5400 2135 50  0001 L TNN
-F 3 "http://infocenter.arm.com/help/topic/com.arm.doc.dui0499b/DUI0499B_system_design_reference.pdf" V 4600 1935 50  0001 C CNN
-	1    4950 3185
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Small R?
-U 1 1 60B71AF9
-P 5750 4110
-AR Path="/5F047EA6/60B71AF9" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71AF9" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71AF9" Ref="R15"  Part="1" 
-F 0 "R15" H 5809 4156 50  0000 L CNN
-F 1 "9.53k" H 5809 4065 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 5750 4110 50  0001 C CNN
-F 3 "~" H 5750 4110 50  0001 C CNN
-	1    5750 4110
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Small R?
-U 1 1 60B71AFF
-P 6025 4110
-AR Path="/5F047EA6/60B71AFF" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71AFF" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71AFF" Ref="R16"  Part="1" 
-F 0 "R16" H 6084 4156 50  0000 L CNN
-F 1 "9.53k" H 6084 4065 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 6025 4110 50  0001 C CNN
-F 3 "~" H 6025 4110 50  0001 C CNN
-	1    6025 4110
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Small R?
-U 1 1 60B71B05
-P 6300 4110
-AR Path="/5F047EA6/60B71B05" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71B05" Ref="R?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71B05" Ref="R17"  Part="1" 
-F 0 "R17" H 6359 4156 50  0000 L CNN
-F 1 "9.53k" H 6359 4065 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 6300 4110 50  0001 C CNN
-F 3 "~" H 6300 4110 50  0001 C CNN
-	1    6300 4110
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5750 4210 5750 4310
-Wire Wire Line
-	5750 4310 6025 4310
-Wire Wire Line
-	6025 4310 6025 4210
-Wire Wire Line
-	6025 4310 6300 4310
-Wire Wire Line
-	6300 4310 6300 4210
-Connection ~ 6025 4310
-Wire Wire Line
-	6025 4310 6025 4410
-$Comp
-L power:GND #PWR?
-U 1 1 60B71B12
-P 6025 4410
-AR Path="/5F047EA6/60B71B12" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71B12" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71B12" Ref="#PWR025"  Part="1" 
-F 0 "#PWR025" H 6025 4160 50  0001 C CNN
-F 1 "GND" H 6030 4237 50  0000 C CNN
-F 2 "" H 6025 4410 50  0001 C CNN
-F 3 "" H 6025 4410 50  0001 C CNN
-	1    6025 4410
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5550 3685 5750 3685
-Wire Wire Line
-	5750 3685 5750 4010
-Wire Wire Line
-	5550 3585 6025 3585
-Wire Wire Line
-	6025 3585 6025 4010
-Wire Wire Line
-	5550 2985 5625 2985
-Wire Wire Line
-	5625 2985 5625 3485
-Wire Wire Line
-	5625 3485 6300 3485
-Wire Wire Line
-	6300 3485 6300 4010
-Wire Wire Line
-	5550 3385 6050 3385
-$Comp
-L power:+3.3V #PWR?
-U 1 1 60B71B21
-P 4850 2135
-AR Path="/5F047EA6/60B71B21" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71B21" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71B21" Ref="#PWR023"  Part="1" 
-F 0 "#PWR023" H 4850 1985 50  0001 C CNN
-F 1 "+3.3V" H 4865 2308 50  0000 C CNN
-F 2 "" H 4850 2135 50  0001 C CNN
-F 3 "" H 4850 2135 50  0001 C CNN
-	1    4850 2135
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4850 2135 4850 2235
-Wire Wire Line
-	4950 2385 4950 2235
-Wire Wire Line
-	4950 2235 4850 2235
-Connection ~ 4850 2235
-Wire Wire Line
-	4850 2235 4850 2385
-$Comp
-L Device:C_Small C?
-U 1 1 60B71B2C
-P 4400 2235
-AR Path="/5F047EA6/60B71B2C" Ref="C?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71B2C" Ref="C?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71B2C" Ref="C15"  Part="1" 
-F 0 "C15" V 4171 2235 50  0000 C CNN
-F 1 "100nf" V 4262 2235 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4400 2235 50  0001 C CNN
-F 3 "~" H 4400 2235 50  0001 C CNN
-	1    4400 2235
-	0    1    1    0   
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 60B71B32
-P 4125 2435
-AR Path="/5F047EA6/60B71B32" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/5FD62F96/60B71B32" Ref="#PWR?"  Part="1" 
-AR Path="/5F047EA6/60B6BD44/60B71B32" Ref="#PWR022"  Part="1" 
-F 0 "#PWR022" H 4125 2185 50  0001 C CNN
-F 1 "GND" H 4130 2262 50  0000 C CNN
-F 2 "" H 4125 2435 50  0001 C CNN
-F 3 "" H 4125 2435 50  0001 C CNN
-	1    4125 2435
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4125 2435 4125 2235
-Wire Wire Line
-	4125 2235 4300 2235
-Wire Wire Line
-	4500 2235 4850 2235
-Text HLabel 6050 2685 2    50   Input ~ 0
-JTRST
-Text HLabel 6050 2785 2    50   Input ~ 0
-NRST
-Text HLabel 6050 3085 2    50   Input ~ 0
-SWCLK
-Text HLabel 6050 3185 2    50   Input ~ 0
-SWDIO
-Text HLabel 6050 3285 2    50   Input ~ 0
-JTDO
-Text HLabel 6050 3385 2    50   Input ~ 0
+Text HLabel 7325 3075 2    50   Input ~ 0
 JTDI
 Wire Wire Line
-	5550 2785 6050 2785
+	7325 3075 6950 3075
 Wire Wire Line
-	5550 2685 6050 2685
+	5775 3175 5400 3175
+Wire Wire Line
+	5775 3275 5400 3275
+Wire Wire Line
+	5775 3375 5400 3375
+Wire Wire Line
+	7325 3525 6950 3525
+Text HLabel 5775 3175 2    50   Input ~ 0
+JTDO
+Text HLabel 5775 3275 2    50   Input ~ 0
+SWDIO
+Text HLabel 5775 3375 2    50   Input ~ 0
+SWCLK
+Text HLabel 7325 3525 2    50   Input ~ 0
+JTRST
 $EndSCHEMATC
