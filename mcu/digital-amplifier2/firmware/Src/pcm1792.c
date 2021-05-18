@@ -51,9 +51,14 @@ void pcm1792_init(void)
     GPIO_InitStruct.Pin = GPIO_PIN_15;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-    vTaskDelay(100);
+    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* 5v 电源 */
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+    vTaskDelay(100);
+    /* ±15v 电源 */
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, 1);
     vTaskDelay(100);
 }
 
@@ -101,5 +106,6 @@ void pcm1792_volume(uint8_t vol)
 void pcm1792_stop(void)
 {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, 0);
 }
 

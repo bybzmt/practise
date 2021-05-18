@@ -36,3 +36,8 @@ void EXTI0_IRQHandler(void)
     button_click();
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+
+
+void button_server(void* params)
+{
+}
