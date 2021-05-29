@@ -775,6 +775,4 @@ Wire Wire Line
 	7900 3200 8425 3200
 Text Label 8100 3100 0    50   ~ 0
 led1
-Text Label 8100 3200 0    50   ~ 0
-led2
 $EndSCHEMATC

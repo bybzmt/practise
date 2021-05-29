@@ -1,4 +1,4 @@
-399898899985614
+403142321884614
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -83083,6 +83083,13 @@ Capacitor_5.5V_4F_H
 2
 2
 misc
+Jack_3.5mm_4pin
+Headphones with microphone connector, 3.5mm, 4 pins (http://www.qingpu-electronics.com/en/products/WQP-PJ320E-177.html)
+3.5mm jack mic microphone phones headphones 4pins audio plug
+0
+8
+4
+misc
 MSD1278
 
 
@@ -83096,6 +83103,13 @@ SJR-BTM331
 0
 54
 54
+misc
+Transformer_diy_01
+
+
+0
+10
+10
 misc
 sw_3p
 
