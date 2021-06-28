@@ -1,14 +1,16 @@
+#include <stdint.h>
 #include "base.h"
-#include <string.h>
-#include <stdio.h>
+#include "msp_sai_out.h"
+#include "msp_clock.h"
+#include "stm32f4xx_ll_dma.h"
 
-static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai);
-static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai);
+static void msp_sai_dma_irq(void);
+static void msp_sai_mspDeInit(SAI_HandleTypeDef *hsai);
+static void msp_sai_mspInit(SAI_HandleTypeDef *hsai);
 
 SAI_HandleTypeDef hsai_out = {
     .Instance = SAI1_Block_B,
     .Init = {
-        /* .ClockSource   = SAI_CLKSOURCE_PLLSAI, */
         .ClockSource   = SAI_CLKSOURCE_PLLI2S,
         .AudioMode     = SAI_MODEMASTER_TX,
         .NoDivider     = SAI_MASTERDIVIDER_ENABLE,
@@ -21,7 +23,7 @@ SAI_HandleTypeDef hsai_out = {
         .FIFOThreshold = SAI_FIFOTHRESHOLD_1QF,
     },
     .FrameInit = {
-        .FrameLength       = 256,
+        .FrameLength       = 64,
         .ActiveFrameLength = 32,
         .FSDefinition      = SAI_FS_STARTFRAME,
         .FSPolarity        = SAI_FS_ACTIVE_LOW,
@@ -31,33 +33,34 @@ SAI_HandleTypeDef hsai_out = {
         .FirstBitOffset = 1,
         .SlotSize       = SAI_SLOTSIZE_32B,
         .SlotNumber     = 8,
-        /* .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_2 | SAI_SLOTACTIVE_3, */
         .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
     },
-    .MspInitCallback    = MY_SAI_OUT_MspInit,
-    .MspDeInitCallback  = MY_SAI_OUT_MspDeInit,
+    .MspInitCallback    = msp_sai_mspInit,
+    .MspDeInitCallback  = msp_sai_mspDeInit,
 };
 
 static DMA_HandleTypeDef hdma_tx = {
-        .Instance = DMA2_Stream5,
-        .Init = {
-            .Channel             = DMA_CHANNEL_0,
-            .Direction           = DMA_MEMORY_TO_PERIPH,
-            .PeriphInc           = DMA_PINC_DISABLE,
-            .MemInc              = DMA_MINC_ENABLE,
-            .PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD,
-            .MemDataAlignment    = DMA_MDATAALIGN_HALFWORD,
-            .Mode                = DMA_CIRCULAR,
-            .Priority            = DMA_PRIORITY_HIGH,
-            .FIFOMode            = DMA_FIFOMODE_ENABLE,
-            .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
-            .MemBurst            = DMA_MBURST_SINGLE,
-            .PeriphBurst         = DMA_PBURST_SINGLE,
-        },
+    .Instance = DMA2_Stream5,
+    .Init = {
+        .Channel             = DMA_CHANNEL_0,
+        .Direction           = DMA_MEMORY_TO_PERIPH,
+        .PeriphInc           = DMA_PINC_DISABLE,
+        .MemInc              = DMA_MINC_ENABLE,
+        .PeriphDataAlignment = DMA_PDATAALIGN_WORD,
+        .MemDataAlignment    = DMA_MDATAALIGN_WORD,
+        .Mode                = DMA_CIRCULAR,
+        .Priority            = DMA_PRIORITY_HIGH,
+        .FIFOMode            = DMA_FIFOMODE_ENABLE,
+        .FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL,
+        .MemBurst            = DMA_MBURST_SINGLE,
+        .PeriphBurst         = DMA_PBURST_SINGLE,
+    },
 };
 
-static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai)
+static void msp_sai_mspInit(SAI_HandleTypeDef *hsai)
 {
+    msp_clock_sai_config(hsai->Init.AudioFrequency);
+
     __HAL_RCC_SAI1_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -86,21 +89,23 @@ static void MY_SAI_OUT_MspInit(SAI_HandleTypeDef *hsai)
     /* Enable the DMA clock */
     __HAL_RCC_DMA2_CLK_ENABLE();
 
-    /* Associate the DMA handle */
-    __HAL_LINKDMA(hsai, hdmatx, hdma_tx);
-
     /* Deinitialize the Stream for new transfer */
     HAL_DMA_DeInit(&hdma_tx);
-
     /* Configure the DMA Stream */
     HAL_DMA_Init(&hdma_tx);
 
+    /* Associate the DMA handle */
+    __HAL_LINKDMA(hsai, hdmatx, hdma_tx);
+
     /* SAI DMA IRQ Channel configuration */
     HAL_NVIC_SetPriority(DMA2_Stream5_IRQn, 6, 0);
+
+    NVIC_SetVector(DMA2_Stream5_IRQn, (uint32_t)&msp_sai_dma_irq);
+
     HAL_NVIC_EnableIRQ(DMA2_Stream5_IRQn);
 }
 
-static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai)
+static void msp_sai_mspDeInit(SAI_HandleTypeDef *hsai)
 {
     __HAL_SAI_DISABLE(hsai);
 
@@ -116,14 +121,39 @@ static void MY_SAI_OUT_MspDeInit(SAI_HandleTypeDef *hsai)
     __HAL_RCC_SAI1_CLK_DISABLE();
 }
 
+uint16_t msp_sai_dma_remaining(void)
+{
+    uint16_t ptr = (LL_DMA_ReadReg(hsai_out.hdmatx->Instance, NDTR) & 0xFFFF);
+    return ptr;
+}
+
 /***************** 中断 *********************/
 
-void DMA2_Stream5_IRQHandler(void)
+static void msp_sai_dma_irq(void)
 {
     HAL_DMA_IRQHandler(&hdma_tx);
 }
 
-/* void SAI1_IRQHandler(void) {} */
+/* --------------------- */
 
+void msp_sai_out_init(uint32_t AudioFreq, uint8_t bit_depth)
+{
+    hsai_out.Init.AudioFrequency = AudioFreq;
 
+    if (bit_depth == 16U) {
+        hsai_out.Init.DataSize = SAI_DATASIZE_16;
+    } else {
+        hsai_out.Init.DataSize = SAI_DATASIZE_24;
+    }
 
+    if (HAL_SAI_Init(&hsai_out) != HAL_OK) {
+        printf("sai out init error\n");
+        return;
+    }
+}
+
+void msp_sai_out_deInit(void)
+{
+    HAL_SAI_DMAStop(&hsai_out);
+    HAL_SAI_DeInit(&hsai_out);
+}

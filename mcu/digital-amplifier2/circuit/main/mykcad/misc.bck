@@ -16,49 +16,17 @@ D 36V 2MHz, 0.6A Step-Down Converter
 K buck
 $ENDCMP
 #
-$CMP P0544NL
-D SMT Gate Drive Transformer, 1:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/SPM2007_61.pdf
-$ENDCMP
-#
-$CMP PA0297NL
-D SMT Gate Drive Transformer, 2:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/SPM2007_61.pdf
-$ENDCMP
-#
-$CMP PA0510NL
-D SMT Gate Drive Transformer, 2.5:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/SPM2007_61.pdf
-$ENDCMP
-#
-$CMP PA2002NL
-D SMT Gate Drive Transformer, 1:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/P663.pdf
-$ENDCMP
-#
-$CMP PA2008NL
-D SMT Gate Drive Transformer, 2:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/P663.pdf
-$ENDCMP
-#
-$CMP PA2009NL
-D SMT Gate Drive Transformer, 2.5:1:1
-K pulse
-F https://productfinder.pulseeng.com/products/datasheets/P663.pdf
-$ENDCMP
-#
 $CMP SJR-BTM331
 D Bluetooth 5.0 modules
 K SJR-BTM331
 $ENDCMP
 #
 $CMP Transformer_diy_01
-D SMT Gate Drive Transformer, 1:1:3:3
+D Transformer, 1:1:3:3
+$ENDCMP
+#
+$CMP Transformer_diy_02
+D Transformer, 1:4:4
 $ENDCMP
 #
 #End Doc Library

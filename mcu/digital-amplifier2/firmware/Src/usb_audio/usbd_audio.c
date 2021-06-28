@@ -1,7 +1,7 @@
+#include "usbd_core.h"
+#include "usbd_desc.h"
 #include "usbd_audio.h"
-#include "usbd_ctlreq.h"
-
-#include "base.h"
+#include "audio.h"
 
 // clang-format off
 #define AUDIO_SAMPLE_FREQ(frq) (uint8_t)(frq), (uint8_t)((frq >> 8)), (uint8_t)((frq >> 16))
@@ -382,11 +382,11 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->alt_setting = 0U;
         haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
         haudio->bit_depth = 16U;
-        haudio->vol = audio.volume;
+        haudio->vol = audio.vol;
 
         audio_init(haudio->freq, haudio->bit_depth);
 
-        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer, AUDIO_OUT_PACKET_24B);
+        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, audio.input_buf, AUDIO_OUT_PACKET_24B);
     }
     return USBD_OK;
 }
@@ -590,7 +590,7 @@ static uint32_t audio_delta_fb(USBD_HandleTypeDef* pdev)
 
     /* Calculate feedback value based on the change of writable buffer size */
     int16_t delta;
-    delta = audio_clock_samples_delta();
+    delta = audio_clock_delta();
 
     float x = delta;
     x = x * (x/(float)100);
@@ -724,12 +724,9 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,
             curr_length = 0U;
         }
 
-        USBD_AUDIO_HandleTypeDef* haudio;
-        haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
+        audio_append(audio.input_buf, curr_length);
 
-        audio_append(haudio->buffer, curr_length);
-
-        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, haudio->buffer, AUDIO_OUT_PACKET_24B);
+        USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, audio.input_buf, AUDIO_OUT_PACKET_24B);
     }
 
     return USBD_OK;

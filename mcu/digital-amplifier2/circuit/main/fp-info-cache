@@ -1,4 +1,4 @@
-403142321884614
+411262793053614
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -83090,6 +83090,13 @@ Headphones with microphone connector, 3.5mm, 4 pins (http://www.qingpu-electroni
 8
 4
 misc
+Jack_6.35mm_Neutrik_NMJ6HFD2-AU_Horizontal
+M Series, 6.35mm (1/4in) stereo jack, switched, full threaded nose, straight PCB pins, gold plated contacts, https://www.neutrik.com/en/product/nmj6hfd2-au
+neutrik jack m
+0
+6
+6
+misc
 MSD1278
 
 
@@ -83108,8 +83115,22 @@ Transformer_diy_01
 
 
 0
-10
-10
+8
+8
+misc
+Transformer_diy_02
+
+
+0
+6
+6
+misc
+ec11_horizontal
+
+
+0
+7
+6
 misc
 sw_3p
 
@@ -83117,6 +83138,20 @@ sw_3p
 0
 3
 3
+misc
+swd_fixture_2.54
+Through hole straight pin header, 2x03, 2.54mm pitch, double rows
+Through hole pin header THT 2x03 2.54mm double row
+0
+6
+6
+misc
+swd_pcb_2.54
+Through hole straight pin header, 2x03, 2.54mm pitch, double rows
+jack
+0
+6
+6
 ti
 PCM5242RHBR
 

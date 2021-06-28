@@ -25,33 +25,41 @@ STM32Cube_DIR = lib/STM32Cube_FW_F4_V1.25.0
 
 # C includes
 C_INCLUDES = Src
+C_INCLUDES+= Src/base
+C_INCLUDES+= Src/bsp
+C_INCLUDES+= Src/msp
 
 # C sources
-C_SOURCES =Src/main.c
-# C_SOURCES+=Src/debug_uart_printf.c
+C_SOURCES =Src/base/main.c
+C_SOURCES+=Src/base/vectorTable.c
+C_SOURCES+=Src/base/system_stm32f4xx.c
+
+C_SOURCES+=Src/audio.c
+C_SOURCES+=Src/inputTasks.c
+C_SOURCES+=Src/btnTask.c
+C_SOURCES+=Src/oled.c
+
 C_SOURCES+=Src/userMain.c
 C_SOURCES+=Src/stm32f4xx_it.c
-C_SOURCES+=Src/button.c
-C_SOURCES+=Src/audio.c
-C_SOURCES+=Src/audio_out1.c
-C_SOURCES+=Src/audio_out2.c
-C_SOURCES+=Src/btm331.c
-C_SOURCES+=Src/spdif.c
-C_SOURCES+=Src/tas6424.c
-C_SOURCES+=Src/pcm1792.c
-C_SOURCES+=Src/bsp_msp_pcd.c
-C_SOURCES+=Src/bsp_msp_i2c.c
-C_SOURCES+=Src/bsp_msp_i2s.c
-C_SOURCES+=Src/bsp_msp_sai.c
-C_SOURCES+=Src/bsp_msp_spdifrx.c
-C_SOURCES+=Src/system_stm32f4xx.c
+C_SOURCES+=Src/msp/msp_clock.c
+C_SOURCES+=Src/msp/msp_i2c.c
+C_SOURCES+=Src/msp/msp_iwdg.c
+C_SOURCES+=Src/msp/msp_pcd.c
+C_SOURCES+=Src/msp/msp_sai_in.c
+C_SOURCES+=Src/msp/msp_sai_out.c
+C_SOURCES+=Src/msp/msp_spdifrx.c
 
-# C_INCLUDES+=Src/ssd1306
-# C_SOURCES+=Src/bsp_ssd1306.c
-# C_SOURCES+=Src/ssd1306/ssd1306.c
-# C_SOURCES+=Src/ssd1306/ssd1306_fonts.c
-# C_SOURCES+=Src/ssd1306/ssd1306_lowLevel.c
-# C_SOURCES+=Src/ssd1306/ssd1306_tests.c
+C_SOURCES+=Src/bsp/bsp_ec11.c
+C_SOURCES+=Src/bsp/bsp_btm331_sai.c
+C_SOURCES+=Src/bsp/bsp_spdifrx.c
+C_SOURCES+=Src/bsp/bsp_pcm1792.c
+C_SOURCES+=Src/bsp/bsp_tas5805.c
+
+C_INCLUDES+=Src/ssd1306
+C_SOURCES+=Src/ssd1306/ssd1306.c
+C_SOURCES+=Src/ssd1306/ssd1306_fonts.c
+C_SOURCES+=Src/ssd1306/ssd1306_lowLevel.c
+C_SOURCES+=Src/ssd1306/ssd1306_tests.c
 
 C_HAL_FILE = stm32f4xx_hal_pcd.c
 C_HAL_FILE+=stm32f4xx_hal_pcd_ex.c

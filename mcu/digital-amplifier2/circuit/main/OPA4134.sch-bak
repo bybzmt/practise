@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 10 9
+Sheet 6 12
 Title ""
 Date ""
 Rev ""
@@ -14,10 +14,10 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Amplifier_Operational:OPA4134 U13
+L Amplifier_Operational:OPA4134 U6
 U 1 1 607A847E
 P 5450 1300
-F 0 "U13" H 5475 1725 50  0000 C CNN
+F 0 "U6" H 5475 1725 50  0000 C CNN
 F 1 "OPA4134" H 5475 1625 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 5400 1400 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 5500 1500 50  0001 C CNN
@@ -25,10 +25,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 5500 1500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Amplifier_Operational:OPA4134 U13
+L Amplifier_Operational:OPA4134 U6
 U 2 1 607A919E
 P 2075 1375
-F 0 "U13" H 2100 1800 50  0000 C CNN
+F 0 "U6" H 2100 1800 50  0000 C CNN
 F 1 "OPA4134" H 2100 1700 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 2025 1475 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 2125 1575 50  0001 C CNN
@@ -36,10 +36,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 2125 1575 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Amplifier_Operational:OPA4134 U13
+L Amplifier_Operational:OPA4134 U6
 U 3 1 607A9D8C
 P 2050 4400
-F 0 "U13" H 2050 4800 50  0000 C CNN
+F 0 "U6" H 2050 4800 50  0000 C CNN
 F 1 "OPA4134" H 2050 4700 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 2000 4500 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 2100 4600 50  0001 C CNN
@@ -47,10 +47,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 2100 4600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Amplifier_Operational:OPA4134 U13
+L Amplifier_Operational:OPA4134 U6
 U 4 1 607AAA4B
 P 5550 4400
-F 0 "U13" H 5550 4825 50  0000 C CNN
+F 0 "U6" H 5550 4825 50  0000 C CNN
 F 1 "OPA4134" H 5550 4725 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 5500 4500 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 5600 4600 50  0001 C CNN
@@ -58,10 +58,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 5600 4600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Amplifier_Operational:OPA4134 U13
+L Amplifier_Operational:OPA4134 U6
 U 5 1 607ABD0C
 P 9700 1750
-F 0 "U13" V 9350 1750 50  0000 C CNN
+F 0 "U6" V 9350 1750 50  0000 C CNN
 F 1 "OPA4134" V 9450 1750 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 9650 1850 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 9750 1950 50  0001 C CNN
@@ -69,10 +69,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/opa134.pdf" H 9750 1950 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND #PWR075
+L power:GND #PWR042
 U 1 1 607B9C16
 P 1500 2575
-F 0 "#PWR075" H 1500 2325 50  0001 C CNN
+F 0 "#PWR042" H 1500 2325 50  0001 C CNN
 F 1 "GND" H 1525 2375 50  0000 C CNN
 F 2 "" H 1500 2575 50  0001 C CNN
 F 3 "" H 1500 2575 50  0001 C CNN
@@ -81,30 +81,30 @@ F 3 "" H 1500 2575 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1775 1475 1700 1475
-Text HLabel 1175 1475 0    50   Input ~ 0
+Text HLabel 4550 1400 0    50   Input ~ 0
 INA
 Wire Wire Line
 	2375 1375 2450 1375
-Text HLabel 2925 1375 2    50   Output ~ 0
+Text HLabel 6300 1300 2    50   Output ~ 0
 OUTA
 $Comp
-L Device:C_Small C63
+L Device:C_Small C48
 U 1 1 607BE947
 P 2025 1925
-F 0 "C63" V 1750 1950 50  0000 C CNN
+F 0 "C48" V 1750 1950 50  0000 C CNN
 F 1 "2.7nf" V 1850 1950 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 2025 1925 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2025 1925 50  0001 C CNN
 F 3 "~" H 2025 1925 50  0001 C CNN
 	1    2025 1925
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R52
+L Device:R_Small R27
 U 1 1 607BF810
 P 2025 2350
-F 0 "R52" V 1775 2375 50  0000 C CNN
+F 0 "R27" V 1775 2375 50  0000 C CNN
 F 1 "1k" V 1875 2375 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 2025 2350 50  0001 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 2025 2350 50  0001 C CNN
 F 3 "~" H 2025 2350 50  0001 C CNN
 	1    2025 2350
 	0    1    1    0   
@@ -138,10 +138,10 @@ Wire Wire Line
 Wire Wire Line
 	1500 1275 1500 2575
 $Comp
-L Device:C_Small C68
+L Device:C_Small C53
 U 1 1 607CA79E
 P 10000 1875
-F 0 "C68" H 10100 1925 50  0000 L CNN
+F 0 "C53" H 10100 1925 50  0000 L CNN
 F 1 "10uf" H 10100 1875 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 10000 1875 50  0001 C CNN
 F 3 "~" H 10000 1875 50  0001 C CNN
@@ -149,21 +149,21 @@ F 3 "~" H 10000 1875 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C_Small C69
+L Device:C_Small C54
 U 1 1 607CAA70
 P 10400 1875
-F 0 "C69" H 10500 1925 50  0000 L CNN
+F 0 "C54" H 10500 1925 50  0000 L CNN
 F 1 "100nf" H 10500 1875 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 10400 1875 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 10400 1875 50  0001 C CNN
 F 3 "~" H 10400 1875 50  0001 C CNN
 	1    10400 1875
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C_Small C66
+L Device:C_Small C51
 U 1 1 607CAFDB
 P 8975 1875
-F 0 "C66" H 9100 1950 50  0000 L CNN
+F 0 "C51" H 9100 1950 50  0000 L CNN
 F 1 "10uf" H 9100 1850 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 8975 1875 50  0001 C CNN
 F 3 "~" H 8975 1875 50  0001 C CNN
@@ -171,12 +171,12 @@ F 3 "~" H 8975 1875 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C_Small C67
+L Device:C_Small C52
 U 1 1 607CB5DB
 P 9400 1875
-F 0 "C67" H 9525 1925 50  0000 L CNN
+F 0 "C52" H 9525 1925 50  0000 L CNN
 F 1 "100nf" H 9525 1875 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 9400 1875 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 9400 1875 50  0001 C CNN
 F 3 "~" H 9400 1875 50  0001 C CNN
 	1    9400 1875
 	1    0    0    -1  
@@ -217,10 +217,10 @@ Connection ~ 9725 2100
 Wire Wire Line
 	9725 2100 10000 2100
 $Comp
-L power:GND #PWR079
+L power:GND #PWR046
 U 1 1 607D789F
 P 9725 2275
-F 0 "#PWR079" H 9725 2025 50  0001 C CNN
+F 0 "#PWR046" H 9725 2025 50  0001 C CNN
 F 1 "GND" H 9775 2075 50  0000 C CNN
 F 2 "" H 9725 2275 50  0001 C CNN
 F 3 "" H 9725 2275 50  0001 C CNN
@@ -228,10 +228,10 @@ F 3 "" H 9725 2275 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR074
+L power:GND #PWR041
 U 1 1 607E3273
 P 1475 5600
-F 0 "#PWR074" H 1475 5350 50  0001 C CNN
+F 0 "#PWR041" H 1475 5350 50  0001 C CNN
 F 1 "GND" H 1500 5400 50  0000 C CNN
 F 2 "" H 1475 5600 50  0001 C CNN
 F 3 "" H 1475 5600 50  0001 C CNN
@@ -247,23 +247,23 @@ Wire Wire Line
 Text HLabel 2900 4400 2    50   Output ~ 0
 OUTC
 $Comp
-L Device:C_Small C62
+L Device:C_Small C47
 U 1 1 607E327D
 P 2000 4950
-F 0 "C62" V 1725 4975 50  0000 C CNN
+F 0 "C47" V 1725 4975 50  0000 C CNN
 F 1 "2.7nf" V 1825 4975 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 2000 4950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2000 4950 50  0001 C CNN
 F 3 "~" H 2000 4950 50  0001 C CNN
 	1    2000 4950
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R51
+L Device:R_Small R26
 U 1 1 607E3283
 P 2000 5375
-F 0 "R51" V 1750 5400 50  0000 C CNN
+F 0 "R26" V 1750 5400 50  0000 C CNN
 F 1 "1k" V 1850 5400 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 2000 5375 50  0001 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 2000 5375 50  0001 C CNN
 F 3 "~" H 2000 5375 50  0001 C CNN
 	1    2000 5375
 	0    1    1    0   
@@ -297,10 +297,10 @@ Wire Wire Line
 Wire Wire Line
 	1475 4300 1475 5600
 $Comp
-L power:GND #PWR076
+L power:GND #PWR043
 U 1 1 607E6017
 P 4875 2500
-F 0 "#PWR076" H 4875 2250 50  0001 C CNN
+F 0 "#PWR043" H 4875 2250 50  0001 C CNN
 F 1 "GND" H 4900 2300 50  0000 C CNN
 F 2 "" H 4875 2500 50  0001 C CNN
 F 3 "" H 4875 2500 50  0001 C CNN
@@ -309,30 +309,30 @@ F 3 "" H 4875 2500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5150 1400 5075 1400
-Text HLabel 4550 1400 0    50   Input ~ 0
+Text HLabel 1175 1475 0    50   Input ~ 0
 INB
 Wire Wire Line
 	5750 1300 5825 1300
-Text HLabel 6300 1300 2    50   Output ~ 0
+Text HLabel 2925 1375 2    50   Output ~ 0
 OUTB
 $Comp
-L Device:C_Small C64
+L Device:C_Small C49
 U 1 1 607E6021
 P 5400 1850
-F 0 "C64" V 5125 1875 50  0000 C CNN
+F 0 "C49" V 5125 1875 50  0000 C CNN
 F 1 "2.7nf" V 5225 1875 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 5400 1850 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 5400 1850 50  0001 C CNN
 F 3 "~" H 5400 1850 50  0001 C CNN
 	1    5400 1850
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R53
+L Device:R_Small R28
 U 1 1 607E6027
 P 5400 2275
-F 0 "R53" V 5150 2300 50  0000 C CNN
+F 0 "R28" V 5150 2300 50  0000 C CNN
 F 1 "1k" V 5250 2300 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 5400 2275 50  0001 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5400 2275 50  0001 C CNN
 F 3 "~" H 5400 2275 50  0001 C CNN
 	1    5400 2275
 	0    1    1    0   
@@ -366,10 +366,10 @@ Wire Wire Line
 Wire Wire Line
 	4875 1200 4875 2500
 $Comp
-L power:GND #PWR077
+L power:GND #PWR044
 U 1 1 607EA69C
 P 4975 5600
-F 0 "#PWR077" H 4975 5350 50  0001 C CNN
+F 0 "#PWR044" H 4975 5350 50  0001 C CNN
 F 1 "GND" H 5000 5400 50  0000 C CNN
 F 2 "" H 4975 5600 50  0001 C CNN
 F 3 "" H 4975 5600 50  0001 C CNN
@@ -385,23 +385,23 @@ Wire Wire Line
 Text HLabel 6400 4400 2    50   Output ~ 0
 OUTD
 $Comp
-L Device:C_Small C65
+L Device:C_Small C50
 U 1 1 607EA6A6
 P 5500 4950
-F 0 "C65" V 5225 4975 50  0000 C CNN
+F 0 "C50" V 5225 4975 50  0000 C CNN
 F 1 "2.7nf" V 5325 4975 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 5500 4950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 5500 4950 50  0001 C CNN
 F 3 "~" H 5500 4950 50  0001 C CNN
 	1    5500 4950
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R54
+L Device:R_Small R29
 U 1 1 607EA6AC
 P 5500 5375
-F 0 "R54" V 5250 5400 50  0000 C CNN
+F 0 "R29" V 5250 5400 50  0000 C CNN
 F 1 "1k" V 5350 5400 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 5500 5375 50  0001 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5500 5375 50  0001 C CNN
 F 3 "~" H 5500 5375 50  0001 C CNN
 	1    5500 5375
 	0    1    1    0   
@@ -439,10 +439,10 @@ Wire Wire Line
 Wire Wire Line
 	10400 1325 10400 1650
 $Comp
-L power:+12V #PWR080
+L power:+12V #PWR047
 U 1 1 60816499
 P 10400 1325
-F 0 "#PWR080" H 10400 1175 50  0001 C CNN
+F 0 "#PWR047" H 10400 1175 50  0001 C CNN
 F 1 "+12V" H 10425 1550 50  0000 C CNN
 F 2 "" H 10400 1325 50  0001 C CNN
 F 3 "" H 10400 1325 50  0001 C CNN
@@ -450,10 +450,10 @@ F 3 "" H 10400 1325 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:-12V #PWR078
+L power:-12V #PWR045
 U 1 1 60817906
 P 8975 1325
-F 0 "#PWR078" H 8975 1425 50  0001 C CNN
+F 0 "#PWR045" H 8975 1425 50  0001 C CNN
 F 1 "-12V" H 9000 1550 50  0000 C CNN
 F 2 "" H 8975 1325 50  0001 C CNN
 F 3 "" H 8975 1325 50  0001 C CNN

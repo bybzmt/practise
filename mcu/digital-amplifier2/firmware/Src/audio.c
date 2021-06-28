@@ -1,9 +1,10 @@
+#include "base.h"
 #include "audio.h"
-#include <string.h>
-#include <stdio.h>
+#include "msp_sai_out.h"
 
-static void audio_sai_clockConfig(uint32_t AudioFreq);
-int16_t audio_clock_samples_delta(void);
+static uint16_t audio_rd_idx(void);
+static void audio_sai_init(uint32_t AudioFreq, uint8_t bit_depth);
+static void audio_dma_cplt_cb(SAI_HandleTypeDef *hsai);
 
 Audio audio = {0};
 
@@ -13,174 +14,209 @@ void audio_init(uint32_t audioFreq, uint8_t bit_depth)
 
     audio.freq = audioFreq;
     audio.bit_depth = bit_depth;
+    audio.sample_size = bit_depth/8*2;
 
-    audio_sai_clockConfig(audioFreq);
+    audio_sai_init(audioFreq, bit_depth);
+}
 
-    audio_out1_init(audioFreq, bit_depth);
+void audio_play(void)
+{
+    audio.out_dev_en = 1;
+    audio.mute = false;
 
-    audio.state = AUDIO_STATE_START;
-    audio.sync++;
+    audio_notify_dev();
 }
 
 void audio_stop(void)
 {
-    /* printf("audio deinit\n"); */
+    audio.out_dev_en = 0;
 
-    audio_out1_reset();
-    /* audio_out2_reset(); */
-
-    audio.state = AUDIO_STATE_STOP;
-    audio.sync++;
+    audio_notify_dev();
 }
 
-static void device_init(void)
+void audio_notify_dev(void)
 {
-    /* tas6424_init(); */
-    /* tas6424_en(true); */
-    /* tas6424_volume(audio.volume); */
-    /* tas6424_mute(audio.mute); */
-    /* tas6424_play(audio.freq, audio.bit_depth); */
+    uint32_t data = 0;
+    data |= audio.input_mode << 24;
 
-    pcm1792_init();
-    pcm1792_volume(audio.volume);
-    pcm1792_mute(audio.mute);
-    pcm1792_play(audio.freq, audio.bit_depth);
-}
-
-static void device_set(void)
-{
-    /* tas6424_volume(audio.volume); */
-    /* tas6424_mute(audio.mute); */
-    pcm1792_volume(audio.volume);
-    pcm1792_mute(audio.mute);
-}
-
-static void device_stop(void)
-{
-    /* tas6424_stop(); */
-    pcm1792_stop();
-}
-
-void audio_tick(void)
-{
-    if (audio.sync > 0) {
-        audio.sync--;
-        return;
+    if ((audio.set_out1==1 && !audio.zero_off) || audio.set_out1==2) {
+        data |= 1 << 20;
+    }
+    if ((audio.set_out2==1 && !audio.zero_off) || audio.set_out2==2) {
+        data |= 1 << 16;
     }
 
-    if (audio.state == AUDIO_STATE_START) {
-        audio.state = AUDIO_STATE_RUN;
-        device_init();
+    switch (audio.freq)
+    {
+        case SAI_AUDIO_FREQUENCY_44K:  data |= 0<<12; break;
+        case SAI_AUDIO_FREQUENCY_48K:  data |= 1<<12; break;
+        case SAI_AUDIO_FREQUENCY_96K:  data |= 2<<12; break;
+        case SAI_AUDIO_FREQUENCY_192K: data |= 3<<12; break;
     }
 
-    if (audio.state == AUDIO_STATE_SET) {
-        audio.state = AUDIO_STATE_RUN;
-        device_set();
+    switch (audio.bit_depth)
+    {
+        case 16:  data |= 0<<8; break;
+        case 24:  data |= 1<<8; break;
+        case 32:  data |= 2<<8; break;
     }
 
-    if (audio.state == AUDIO_STATE_STOP) {
-        audio.state = AUDIO_STATE_INIT;
-        device_stop();
+    data |= audio.vol;
+
+    if (__get_IPSR()) {
+        xTaskNotifyFromISR(audio.out_task_hd, data, eSetValueWithOverwrite, NULL);
+    } else {
+        xTaskNotify(audio.out_task_hd, data, eSetValueWithOverwrite);
     }
 }
 
 void audio_append(uint8_t* buf, uint16_t buf_len)
 {
-    audio_out1_append(buf, buf_len);
-    /* audio_out2_append(buf, buf_len); */
+    if (audio.state == AUDIO_STATE_INIT) {
+        audio.w_idx = audio_rd_idx();
+        audio.w_idx += AUDIO_BUF_SAMPLE_NUM / 2;
+        audio.w_idx %= AUDIO_BUF_SAMPLE_NUM;
+        audio.state = AUDIO_STATE_RUN;
+    } else if (audio.state == AUDIO_STATE_SYNC) {
+        audio.state = AUDIO_STATE_RUN;
+    }
+
+    uint16_t sample_num = buf_len / audio.sample_size;
+
+    audio_copy(audio.w_idx, buf, sample_num);
+
+    audio.w_idx += sample_num;
+    audio.w_idx %= AUDIO_BUF_SAMPLE_NUM;
 }
 
 void audio_clock_sync(void)
 {
-    audio_out1_clock_sync();
-    /* audio_out2_clock_sync(); */
+    int16_t delta = audio_clock_delta();
+
+    if (delta > 1) {
+        audio.w_idx++;
+        audio.w_idx %= AUDIO_BUF_SAMPLE_NUM;
+    }
+    else if (delta < -1) {
+        if (audio.w_idx == 0) {
+            audio.w_idx = AUDIO_BUF_SAMPLE_NUM -1;
+        } else {
+            audio.w_idx--;
+        }
+    }
 }
 
-void audio_setVolume(uint8_t vol)
+void audio_setVolume(volume_t vol)
 {
-    audio.volume = vol;
-    audio.state = AUDIO_STATE_SET;
-    audio.sync++;
+    audio.vol = vol;
+    audio_notify_dev();
 }
 
 void audio_setMute(bool flag)
 {
     audio.mute = flag;
-    audio.state = AUDIO_STATE_SET;
-    audio.sync++;
+    audio_notify_dev();
 }
 
-int16_t audio_clock_samples_delta(void)
+/* 当前读取指针的位置 */
+static uint16_t audio_rd_idx(void)
 {
-    return audio_out1_clock_delta();
+    uint16_t remaining = msp_sai_dma_remaining();
+    uint16_t rd_idx = AUDIO_BUF_SAMPLE_NUM - (remaining / 2 / 4);
+    return rd_idx;
 }
 
-static void audio_sai_clockConfig(uint32_t AudioFreq)
+int16_t audio_clock_delta(void)
 {
-    RCC_PeriphCLKInitTypeDef periphCLK;
+    if (audio.state != AUDIO_STATE_RUN) {
+        return 0;
+    }
 
-    HAL_RCCEx_GetPeriphCLKConfig(&periphCLK);
-    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
-    periphCLK.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLI2S;
-    /* periphCLK.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI; */
+    uint16_t rd_idx = audio_rd_idx();
 
-    /* Set the PLL configuration according to the audio frequency */
-    if (
-            (AudioFreq == SAI_AUDIO_FREQUENCY_11K) ||
-            (AudioFreq == SAI_AUDIO_FREQUENCY_22K) ||
-            (AudioFreq == SAI_AUDIO_FREQUENCY_44K))
-    {
-        /* Configure PLLSAI prescalers */
-        /* PLLSAI_VCO: VCO_429M
-           SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 429/2 = 214.5 Mhz
-           SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 214.5/19 = 11.289 Mhz */
-        periphCLK.PLLI2S.PLLI2SM = 8;
-        periphCLK.PLLI2S.PLLI2SN = 429;
-        periphCLK.PLLI2S.PLLI2SQ = 2;
-        periphCLK.PLLI2S.PLLI2SR = 18;
-        periphCLK.PLLI2S.PLLI2SP = 2;
-        periphCLK.PLLI2SDivQ = 19;
+    /* 剩余可写空间 */
+    int16_t cap;
 
-        /* periphCLK.PLLSAI.PLLSAIM = 8; */
-        /* periphCLK.PLLSAI.PLLSAIN = 429; */
-        /* periphCLK.PLLSAI.PLLSAIQ = 2; */
-        /* periphCLK.PLLSAI.PLLSAIP = 2; */
-        /* periphCLK.PLLSAIDivQ = 19; */
+    if (audio.w_idx <= rd_idx) {
+        cap = rd_idx - audio.w_idx;
     } else {
-        /* AUDIO_FREQUENCY_8K, AUDIO_FREQUENCY_16K, AUDIO_FREQUENCY_48K), AUDIO_FREQUENCY_96K */
-        /* SAI clock config
-           PLLSAI_VCO: VCO_344M
-           SAI_CLK(first level) = PLLSAI_VCO/PLLSAIQ = 344/7 = 49.142 Mhz
-           SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ = 49.142/1 = 49.142 Mhz */
-        periphCLK.PLLI2S.PLLI2SM = 8;
-        periphCLK.PLLI2S.PLLI2SN = 344;
-        periphCLK.PLLI2S.PLLI2SQ = 7;
-        periphCLK.PLLI2S.PLLI2SP = 2;
-        periphCLK.PLLI2S.PLLI2SR = 7;
-        periphCLK.PLLI2SDivQ = 1;
-
-        /* periphCLK.PLLSAI.PLLSAIM = 8; */
-        /* periphCLK.PLLSAI.PLLSAIN = 344; */
-        /* periphCLK.PLLSAI.PLLSAIQ = 7; */
-        /* periphCLK.PLLSAI.PLLSAIP = 7; */
-        /* periphCLK.PLLSAIDivQ = 1; */
+        cap = AUDIO_BUF_SAMPLE_NUM - (audio.w_idx - rd_idx);
     }
 
-    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
-    {
-        printf("Periph clock error\n");
+    /* 大于0则写入慢了 小于0则 写入快了 */
+    int16_t delta = cap - (int16_t)(AUDIO_BUF_SAMPLE_NUM / 2);
+
+    return delta;
+}
+
+void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
+{
+    uint16_t oft, oft2;
+
+    if (audio.bit_depth==16) {
+        for (int i=0; i<sample_num; i++) {
+            oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
+            oft = 4 * i;
+            /* 调换左右声道 */
+            audio.out_buf[oft2+2] = buf[oft];
+            audio.out_buf[oft2+3] = buf[oft+1];
+            audio.out_buf[oft2+0] = buf[oft+2];
+            audio.out_buf[oft2+1] = buf[oft+3];
+        }
+    } else if (audio.bit_depth==24) {
+        for (int i=0; i<sample_num; i++) {
+            oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
+            oft = 6 * i;
+            audio.out_buf[oft2+1] = buf[oft+0];
+            audio.out_buf[oft2+2] = buf[oft+1];
+            audio.out_buf[oft2+3] = buf[oft+2];
+
+            audio.out_buf[oft2+5] = buf[oft+3];
+            audio.out_buf[oft2+6] = buf[oft+4];
+            audio.out_buf[oft2+7] = buf[oft+5];
+        }
+    } else {
+        for (int i=0; i<sample_num; i++) {
+            oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
+            oft = 8 * i;
+            audio.out_buf[oft2+0] = buf[oft];
+            audio.out_buf[oft2+1] = buf[oft+1];
+            audio.out_buf[oft2+2] = buf[oft+2];
+            audio.out_buf[oft2+3] = buf[oft+3];
+            audio.out_buf[oft2+4] = buf[oft+4];
+            audio.out_buf[oft2+5] = buf[oft+5];
+            audio.out_buf[oft2+6] = buf[oft+6];
+            audio.out_buf[oft2+7] = buf[oft+7];
+        }
+    }
+}
+
+static void audio_dma_cplt_cb(SAI_HandleTypeDef *hsai)
+{
+    if (audio.state == AUDIO_STATE_SYNC) {
+        memset(audio.out_buf, 0, sizeof(audio.out_buf));
+        audio.state = AUDIO_STATE_ERROR;
+        return;
     }
 
-    return;
+    if (audio.state == AUDIO_STATE_RUN) {
+        audio.state = AUDIO_STATE_SYNC;
+    }
+}
 
-    /* 384/192 */
-    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_I2S_APB2;
-    /* periphCLK.PeriphClockSelection = RCC_PERIPHCLK_PLLI2S; */
-    periphCLK.I2sApb2ClockSelection = RCC_I2SAPB2CLKSOURCE_PLLI2S;
+static void audio_sai_init(uint32_t AudioFreq, uint8_t bit_depth)
+{
+    msp_sai_out_deInit();
 
-    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
-    {
-        printf("Periph clock error\n");
+    msp_sai_out_init(AudioFreq, bit_depth);
+
+    HAL_SAI_RegisterCallback(&hsai_out, HAL_SAI_TX_COMPLETE_CB_ID, audio_dma_cplt_cb);
+
+    HAL_StatusTypeDef ret;
+    ret = HAL_SAI_Transmit_DMA(&hsai_out, &audio.out_buf[0], AUDIO_OUT_BUF_SIZE/4);
+    if (ret!= HAL_OK) {
+        printf("sai out dma err\n");
+        return;
     }
 }
 

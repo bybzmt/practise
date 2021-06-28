@@ -6,34 +6,6 @@ static bool tas6424_en_flag;
 static void tas6424_msp_init(void);
 static bool tas6424_checkFatalError(void);
 static void tas6424_reporting(void);
-static bool i2c_err = false;
-
-static void MY_Read(uint8_t reg, uint8_t*data, uint16_t len)
-{
-    if (i2c_err) { return; }
-
-    HAL_StatusTypeDef flag = HAL_I2C_Mem_Read(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 100);
-    if (flag != HAL_OK) {
-        i2c_err = true;
-        printf("tas6424 read err\n");
-    }
-}
-
-static void MY_Write(uint8_t reg, uint8_t*data, uint16_t len)
-{
-    if (i2c_err) { return; }
-
-    HAL_StatusTypeDef flag = HAL_I2C_Mem_Write(&hi2c1, ADDR, (uint16_t)reg, 1, data, len, 500);
-    if (flag != HAL_OK) {
-        i2c_err = true;
-        printf("tas6424 write err\n");
-    }
-}
-
-static void MY_Write_REG(uint8_t reg, uint8_t data)
-{
-    MY_Write(reg, &data, 1);
-}
 
 static void tas6424_msp_init(void)
 {
@@ -65,7 +37,7 @@ static void tas6424_msp_init(void)
     /* HAL_NVIC_EnableIRQ(EXTI15_10_IRQn); */
 }
 
-void tas6424_init(void)
+void bsp_tas6424_init(void)
 {
     tas6424_msp_init();
 
@@ -74,18 +46,18 @@ void tas6424_init(void)
     vTaskDelay(6);
 
     /* reset device */
-    MY_Write_REG(0x00, 0x80);
+    i2c_write_reg(ADDR, 0x00, 0x80);
     vTaskDelay(5);
-    MY_Write_REG(0x21, 0x80);
+    i2c_write_reg(ADDR, 0x21, 0x80);
     vTaskDelay(5);
 
     /* Automatic diagnostics when leaving Hi-Z and after channel fault */
-    MY_Write_REG(0x09, 0x00);
+    i2c_write_reg(ADDR, 0x09, 0x00);
     /* shorted-load threshold: 1.0Ω */
-    MY_Write_REG(0x0a, 0b00010001);
-    MY_Write_REG(0x0b, 0b00010001);
+    i2c_write_reg(ADDR, 0x0a, 0b00010001);
+    i2c_write_reg(ADDR, 0x0b, 0b00010001);
     /* All Channel State: DC load diagnostics */
-    MY_Write_REG(0x04, 0xff);
+    i2c_write_reg(ADDR, 0x04, 0xff);
 
     /* Set Channels BTL or PBTL mode */
     /*
@@ -95,47 +67,47 @@ void tas6424_init(void)
      * Volume update rate is 1 step /8 FSYNC
      * 21-V peak output voltage
      */
-    MY_Write_REG(0x01, 0b00111110);
+    i2c_write_reg(ADDR, 0x01, 0b00111110);
 
     /* Hi-Z */
-    MY_Write_REG(0x04, 0b01010101);
+    i2c_write_reg(ADDR, 0x04, 0b01010101);
 
     vTaskDelay(1);
     tas6424_en(false);
 }
 
-void tas6424_en(bool flag)
+void bsp_tas6424_en(bool flag)
 {
     tas6424_en_flag = flag;
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, flag);
 }
 
-void tas6424_stop(void)
+void bsp_tas6424_stop(void)
 {
     tas6424_en_flag = 0;
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
 }
 
-void tas6424_mute(bool ok)
+void bsp_tas6424_mute(bool ok)
 {
     if (ok) {
-        MY_Write_REG(0x04, 0b10100101);
+        i2c_write_reg(ADDR, 0x04, 0b10100101);
     } else {
-        MY_Write_REG(0x04, 0b00000101);
+        i2c_write_reg(ADDR, 0x04, 0b00000101);
     }
 }
 
 /* volume: 0.5db/setp 0xff +24db - 0x00 -103db */
-void tas6424_volume(uint8_t vol)
+void bsp_tas6424_volume(uint8_t vol)
 {
     uint8_t raw[] = {vol, vol, vol, vol};
-    MY_Write(0x5, raw, 4);
+    i2c_write(ADDR, 0x5, raw, 4);
 }
 
-void tas6424_play(uint32_t AudioFreq, uint8_t bit_depth)
+void bsp_tas6424_play(uint32_t AudioFreq, uint8_t bit_depth)
 {
     /* Hi-Z */
-    MY_Write_REG(0x04, 0b01010101);
+    i2c_write_reg(ADDR, 0x04, 0b01010101);
 
     /* if (tas6424_checkFatalError()) { */
         /* printf("tas6424 stop\n"); */
@@ -159,17 +131,17 @@ void tas6424_play(uint32_t AudioFreq, uint8_t bit_depth)
             break;
     }
 
-    MY_Write_REG(0x03, freq);
+    i2c_write_reg(ADDR, 0x03, freq);
 
     /* play */
-    MY_Write_REG(0x04, 0b00000101);
+    i2c_write_reg(ADDR, 0x04, 0b00000101);
 }
 
 static bool tas6424_checkFatalError(void)
 {
     uint8_t data[2]={0};
 
-    MY_Read(0x0C, (uint8_t*)&data, 2);
+    i2c_read(ADDR, 0x0C, (uint8_t*)&data, 2);
 
     if ((data[0] & 0b11011101) || (data[1] & 0b11011101)) {
         printf("diagnostic: 0x%X 0x%X\n", data[0], data[1]);
@@ -207,19 +179,19 @@ void tas6424_check(void)
     tas6424_reporting();
 
     /* Hi-Z */
-    MY_Write_REG(0x04, 0b01010101);
+    i2c_write_reg(ADDR, 0x04, 0b01010101);
 
     /* clear fault and play */
-    MY_Write_REG(0x21, 0x80);
+    i2c_write_reg(ADDR, 0x21, 0x80);
     vTaskDelay(5);
-    MY_Write_REG(0x04, 0b00000101);
+    i2c_write_reg(ADDR, 0x04, 0b00000101);
 }
 
 static void tas6424_reporting(void)
 {
     uint8_t data[5]={0};
 
-    MY_Read(0x0F, &data[0], 5);
+    i2c_read(ADDR, 0x0F, &data[0], 5);
 
     char *fmt= "CH%d STATE: %s\n";
     printf(fmt, 1, chanel_state[(data[0]>>6) & 3]);
@@ -262,7 +234,7 @@ static void tas6424_reporting(void)
     printf(fmt, 3, c_yes_no[(data[4]>>1) & 1]);
     printf(fmt, 4, c_yes_no[(data[4]>>0) & 1]);
 
-    MY_Read(0x0C, (uint8_t*)&data, 2);
+    i2c_read(ADDR, 0x0C, (uint8_t*)&data, 2);
 
     printf("CH1 short-to-GND detected: %s\n",     c_yes_no[(data[0]>>7) & 1]);
     printf("CH1 short-to-power detected: %s\n",   c_yes_no[(data[0]>>6) & 1]);

@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 9
+Sheet 1 12
 Title ""
 Date ""
 Rev ""
@@ -28,27 +28,26 @@ F8 "SAI_FS_B" O R 3325 1600 50
 F9 "BT_SPDIF" I L 2075 2325 50 
 F10 "SAI_MCK" O R 3325 1825 50 
 F11 "Jack_in" I R 3325 1350 50 
-F12 "HP_EN" O R 3325 1225 50 
-F13 "BT_Music" I L 2075 2225 50 
-F14 "BT_Connected" I L 2075 2125 50 
-F15 "ec11_sw" I L 2075 2800 50 
-F16 "ec11_a" I L 2075 2900 50 
-F17 "ec11_b" I L 2075 3000 50 
-F18 "SAI_FS_A" O R 3325 2250 50 
-F19 "USB_DM" I L 2075 1600 50 
-F20 "USB_DP" I L 2075 1500 50 
-F21 "SWDIO" I L 2075 1100 50 
-F22 "SWCLK" I L 2075 1000 50 
-F23 "SWO_TDO" O L 2075 1200 50 
-F24 "EXT_EN" I R 3325 2025 50 
-F25 "EXT_IRQ" I R 3325 2125 50 
-F26 "SPDIF" I L 2075 1800 50 
-F27 "SAI_SD_A" O R 3325 2450 50 
-F28 "USB_CO" I L 2075 1400 50 
-F29 "NRST" I L 2075 900 50 
-F30 "SAI_SCK_A" O R 3325 2350 50 
-F31 "BT_prev" O L 2075 2625 50 
-F32 "BT_next" O L 2075 2525 50 
+F12 "BT_Connected" I L 2075 2125 50 
+F13 "ec11_sw" I L 2075 2800 50 
+F14 "ec11_a" I L 2075 2900 50 
+F15 "ec11_b" I L 2075 3000 50 
+F16 "SAI_FS_A" O R 3325 2250 50 
+F17 "USB_DM" I L 2075 1600 50 
+F18 "USB_DP" I L 2075 1500 50 
+F19 "SWDIO" I L 2075 1100 50 
+F20 "SWCLK" I L 2075 1000 50 
+F21 "SWO_TDO" O L 2075 1200 50 
+F22 "EXT_EN" I R 3325 2025 50 
+F23 "SPDIF" I L 2075 1800 50 
+F24 "SAI_SD_A" O R 3325 2450 50 
+F25 "USB_EN" I L 2075 1400 50 
+F26 "NRST" I L 2075 900 50 
+F27 "SAI_SCK_A" O R 3325 2350 50 
+F28 "BT_prev" O L 2075 2625 50 
+F29 "BT_next" O L 2075 2525 50 
+F30 "HP_EN" O R 3325 1225 50 
+F31 "OLED_EN" O R 3325 2600 50 
 $EndSheet
 $Sheet
 S 690  6485 1250 1000
@@ -76,20 +75,14 @@ Text Label 3525 1725 0    50   ~ 0
 SAI_SD
 Wire Wire Line
 	3325 1350 4100 1350
-Wire Wire Line
-	3325 1225 4100 1225
 Text Label 3525 1350 0    50   ~ 0
 jack_in
 Text Label 8925 4725 0    50   ~ 0
 BT_en
-Text Label 8925 5025 0    50   ~ 0
-BT_music
 Wire Wire Line
 	1300 2025 2075 2025
 Wire Wire Line
 	1300 2125 2075 2125
-Wire Wire Line
-	1300 2225 2075 2225
 Text Label 1450 2025 0    50   ~ 0
 BT_en
 $Sheet
@@ -119,6 +112,7 @@ F8 "OUTLP" O R 8525 1175 50
 F9 "OUTLN" O R 8525 1300 50 
 F10 "OUTRP" O R 8525 925 50 
 F11 "OUTRN" O R 8525 1050 50 
+F12 "EN" I L 7675 1575 50 
 $EndSheet
 $Sheet
 S 8650 700  800  1100
@@ -151,10 +145,6 @@ Wire Wire Line
 Wire Wire Line
 	9450 1300 9600 1300
 Wire Wire Line
-	6910 875  7675 875 
-Wire Wire Line
-	6910 975  7675 975 
-Wire Wire Line
 	8785 4500 9550 4500
 Wire Wire Line
 	8785 4400 9550 4400
@@ -166,22 +156,12 @@ Wire Wire Line
 	8785 4825 9550 4825
 Wire Wire Line
 	8785 4925 9550 4925
-Wire Wire Line
-	5150 6475 5925 6475
-Wire Wire Line
-	5150 6575 5925 6575
-Wire Wire Line
-	5150 6675 5925 6675
 Text Label 3525 1475 0    50   ~ 0
 SAI_SCK
-Text Label 3525 1225 0    50   ~ 0
-hp_en
 Text Label 3625 6550 0    50   ~ 0
 jack_in
 Text Label 8925 4925 0    50   ~ 0
 BT_connected
-Text Label 9050 2375 0    50   ~ 0
-hp_en
 $Sheet
 S 9550 4075 950  1325
 U 5FD6457F
@@ -189,38 +169,30 @@ F0 "Bluetooth" 50
 F1 "Bluetooth.sch" 50
 F2 "EN" I L 9550 4725 50 
 F3 "bt_state" O L 9550 4925 50 
-F4 "music_state" O L 9550 5025 50 
-F5 "SPDIF" O L 9550 4825 50 
-F6 "play" I L 9550 4600 50 
-F7 "next" I L 9550 4500 50 
-F8 "prev" I L 9550 4400 50 
+F4 "SPDIF" O L 9550 4825 50 
+F5 "play" I L 9550 4600 50 
+F6 "next" I L 9550 4500 50 
+F7 "prev" I L 9550 4400 50 
+F8 "SCK" I L 9550 5250 50 
+F9 "FS" I L 9550 5150 50 
+F10 "SD" I L 9550 5050 50 
 $EndSheet
-Wire Wire Line
-	9550 5025 8775 5025
 Text Label 8925 4600 0    50   ~ 0
 BT_play
 Text Label 8925 4500 0    50   ~ 0
 BT_next
 Text Label 8925 4400 0    50   ~ 0
 BT_prev
-Text Label 5300 6575 0    50   ~ 0
-SAI_SCK
-Text Label 5300 6475 0    50   ~ 0
-SAI_FS
-Text Label 5300 6375 0    50   ~ 0
-SAI_SD
 Wire Wire Line
 	3325 1825 4100 1825
 Text Label 3525 1825 0    50   ~ 0
-SAI_MCK
-Text Label 5300 6675 0    50   ~ 0
 SAI_MCK
 Text Label 5300 5800 0    50   ~ 0
 USB_DP
 Text Label 5300 5900 0    50   ~ 0
 USB_DM
 Text Label 5300 6025 0    50   ~ 0
-USB_CO
+USB_EN
 Text Label 5300 6150 0    50   ~ 0
 SPDIF_RX
 Wire Wire Line
@@ -231,14 +203,6 @@ Wire Wire Line
 	7125 1350 7675 1350
 Wire Wire Line
 	7125 1450 7675 1450
-Text Label 7275 1450 0    50   ~ 0
-SAI_MCK
-Text Label 7275 1150 0    50   ~ 0
-SAI_SD_A
-Text Label 7275 1250 0    50   ~ 0
-SAI_FS_A
-Text Label 7275 1350 0    50   ~ 0
-SAI_SCK_A
 Wire Wire Line
 	3525 6675 4075 6675
 Wire Wire Line
@@ -258,26 +222,22 @@ F0 "connector" 50
 F1 "connector.sch" 50
 F2 "USBD+" I R 5150 5800 50 
 F3 "USBD-" I R 5150 5900 50 
-F4 "USB_CONNECT" I R 5150 6025 50 
+F4 "USB_EN" I R 5150 6025 50 
 F5 "SPDIF" I R 5150 6150 50 
-F6 "I2C_SCL" I L 4075 5800 50 
-F7 "I2C_SDA" I L 4075 5900 50 
-F8 "SAI_MCK" I R 5150 6675 50 
-F9 "SAI_SCK" I R 5150 6575 50 
-F10 "SAI_FS" I R 5150 6475 50 
-F11 "SAI_SD" I R 5150 6375 50 
-F12 "EC11_SW" I L 4075 6675 50 
-F13 "EC11_A" I L 4075 6775 50 
-F14 "EC11_B" I L 4075 6875 50 
-F15 "JackIN" O L 4075 6550 50 
-F16 "ROUT" I R 5150 7100 50 
-F17 "LOUT" I R 5150 7200 50 
-F18 "SWDIO" B L 4075 6075 50 
-F19 "SWCLK" O L 4075 6175 50 
-F20 "NRST" O L 4075 6375 50 
-F21 "SWO" I L 4075 6275 50 
-F22 "EXT_EN" I R 5150 6850 50 
-F23 "EXT_IRQ" O R 5150 6950 50 
+F6 "EC11_SW" I L 4075 6675 50 
+F7 "EC11_A" I L 4075 6775 50 
+F8 "EC11_B" I L 4075 6875 50 
+F9 "JackIN" O L 4075 6550 50 
+F10 "ROUT" I R 5150 7100 50 
+F11 "LOUT" I R 5150 7200 50 
+F12 "SWDIO" B L 4075 6075 50 
+F13 "SWCLK" O L 4075 6175 50 
+F14 "NRST" O L 4075 6375 50 
+F15 "SWO" I L 4075 6275 50 
+F16 "OUT_A+" I R 5150 6350 50 
+F17 "OUT_A-" I R 5150 6475 50 
+F18 "OUT_B+" I R 5150 6625 50 
+F19 "OUT_B-" I R 5150 6750 50 
 $EndSheet
 Wire Wire Line
 	10400 925  10800 925 
@@ -298,14 +258,6 @@ Wire Wire Line
 Wire Wire Line
 	4075 6075 3525 6075
 Wire Wire Line
-	4075 5900 3525 5900
-Wire Wire Line
-	4075 5800 3525 5800
-Wire Wire Line
-	5150 6850 5700 6850
-Wire Wire Line
-	5150 6950 5700 6950
-Wire Wire Line
 	5150 7100 5700 7100
 Wire Wire Line
 	5150 7200 5700 7200
@@ -317,22 +269,12 @@ Wire Wire Line
 	5150 5900 5700 5900
 Wire Wire Line
 	5150 5800 5700 5800
-Text Label 3625 5800 0    50   ~ 0
-I2C_SCL
-Text Label 3625 5900 0    50   ~ 0
+Text Label 7275 975  0    50   ~ 0
 I2C_SDA
-Text Label 7050 975  0    50   ~ 0
-I2C_SDA
-Text Label 7050 875  0    50   ~ 0
+Text Label 7275 875  0    50   ~ 0
 I2C_SCL
 Wire Wire Line
 	3325 2025 4100 2025
-Wire Wire Line
-	3325 2125 4100 2125
-Text Label 3525 2125 0    50   ~ 0
-ext_irq
-Text Label 3525 2025 0    50   ~ 0
-ext_en
 Wire Wire Line
 	2075 900  1300 900 
 Wire Wire Line
@@ -358,7 +300,7 @@ swdio
 Text Label 1475 1200 0    50   ~ 0
 swo_tdo
 Text Label 1475 1400 0    50   ~ 0
-USB_CO
+USB_EN
 Text Label 1475 1500 0    50   ~ 0
 USB_DP
 Text Label 1475 1600 0    50   ~ 0
@@ -389,19 +331,15 @@ Text Label 1450 2900 0    50   ~ 0
 ec11_a
 Text Label 1450 3000 0    50   ~ 0
 ec11_b
-Wire Wire Line
-	9600 2375 8825 2375
 $Sheet
-S 9600 2175 800  750 
+S 7675 2250 800  750 
 U 6074FC63
 F0 "hp_power" 50
 F1 "hp_power.sch" 50
-F2 "EN" I L 9600 2375 50 
+F2 "EN" I L 7675 2400 50 
 $EndSheet
 Text Label 1450 2125 0    50   ~ 0
 BT_connected
-Text Label 1450 2225 0    50   ~ 0
-BT_music
 Text Label 8925 4825 0    50   ~ 0
 BT_spdif
 Text Label 1450 2325 0    50   ~ 0
@@ -414,10 +352,6 @@ Text Label 3625 6275 0    50   ~ 0
 swo_tdo
 Text Label 3625 6375 0    50   ~ 0
 nrst
-Text Label 5300 6850 0    50   ~ 0
-ext_en
-Text Label 5300 6950 0    50   ~ 0
-ext_irq
 Text Label 5300 7100 0    50   ~ 0
 ROUT
 Text Label 5300 7200 0    50   ~ 0
@@ -437,5 +371,144 @@ Wire Wire Line
 Text Label 1475 1800 0    50   ~ 0
 SPDIF_RX
 Wire Wire Line
-	5150 6375 5925 6375
+	7675 2400 7250 2400
+Wire Wire Line
+	3325 1225 4100 1225
+Text Label 3525 1225 0    50   ~ 0
+hp_en
+Text Label 7325 2400 0    50   ~ 0
+hp_en
+Wire Wire Line
+	7125 975  7675 975 
+Wire Wire Line
+	7125 875  7675 875 
+$Sheet
+S 9600 2275 800  725 
+U 60C533A9
+F0 "hp_ldo" 50
+F1 "hp_ldo.sch" 50
+$EndSheet
+Wire Wire Line
+	7675 1575 7125 1575
+Text Label 7275 1575 0    50   ~ 0
+hp_en
+Text Label 7275 1450 0    50   ~ 0
+SAI_MCK
+Text Label 7275 1150 0    50   ~ 0
+SAI_SD
+Text Label 7275 1250 0    50   ~ 0
+SAI_FS
+Text Label 7275 1350 0    50   ~ 0
+SAI_SCK
+Wire Wire Line
+	9000 5050 9550 5050
+Wire Wire Line
+	9000 5150 9550 5150
+Wire Wire Line
+	9000 5250 9550 5250
+Text Label 9150 5050 0    50   ~ 0
+SAI_SD_A
+Text Label 9150 5150 0    50   ~ 0
+SAI_FS_A
+Text Label 9150 5250 0    50   ~ 0
+SAI_SCK_A
+$Sheet
+S 750  4725 1050 850 
+U 60D8F47E
+F0 "oled_096" 50
+F1 "oled_096.sch" 50
+F2 "SCL" I R 1800 4950 50 
+F3 "SDA" I R 1800 5050 50 
+F4 "EN" I R 1800 5175 50 
+$EndSheet
+$Sheet
+S 5375 3875 1125 875 
+U 60E6F685
+F0 "TAS5805M" 50
+F1 "TAS5805M.sch" 50
+F2 "SDA" I L 5375 4125 50 
+F3 "SCL" I L 5375 4225 50 
+F4 "FS" I L 5375 4425 50 
+F5 "SCK" I L 5375 4325 50 
+F6 "EN" I L 5375 4025 50 
+F7 "OUT_A+" O R 6500 4025 50 
+F8 "OUT_A-" O R 6500 4150 50 
+F9 "OUT_B+" O R 6500 4300 50 
+F10 "OUT_B-" O R 6500 4425 50 
+F11 "SD" I L 5375 4525 50 
+$EndSheet
+Wire Wire Line
+	5375 4025 4900 4025
+Wire Wire Line
+	5375 4125 4900 4125
+Wire Wire Line
+	5375 4225 4900 4225
+Wire Wire Line
+	5375 4325 4900 4325
+Wire Wire Line
+	5375 4425 4900 4425
+Wire Wire Line
+	5375 4525 4900 4525
+Wire Wire Line
+	6500 4025 6950 4025
+Wire Wire Line
+	6500 4150 6950 4150
+Wire Wire Line
+	6500 4300 6950 4300
+Wire Wire Line
+	6500 4425 6950 4425
+Text Label 6625 4025 0    50   ~ 0
+out_a+
+Text Label 6625 4150 0    50   ~ 0
+out_a-
+Text Label 6625 4300 0    50   ~ 0
+out_b+
+Text Label 6625 4425 0    50   ~ 0
+out_b-
+Text Label 4950 4025 0    50   ~ 0
+5805_en
+Text Label 4950 4125 0    50   ~ 0
+I2C_SDA
+Text Label 4950 4225 0    50   ~ 0
+I2C_SCL
+Text Label 4950 4425 0    50   ~ 0
+SAI_FS
+Text Label 4950 4325 0    50   ~ 0
+SAI_SCK
+Text Label 4950 4525 0    50   ~ 0
+SAI_SD
+Wire Wire Line
+	5150 6350 5600 6350
+Wire Wire Line
+	5150 6475 5600 6475
+Wire Wire Line
+	5150 6625 5600 6625
+Wire Wire Line
+	5150 6750 5600 6750
+Text Label 5275 6350 0    50   ~ 0
+out_a+
+Text Label 5275 6475 0    50   ~ 0
+out_a-
+Text Label 5275 6625 0    50   ~ 0
+out_b+
+Text Label 5275 6750 0    50   ~ 0
+out_b-
+Text Label 3525 2025 0    50   ~ 0
+5805_en
+Wire Wire Line
+	1800 4950 2200 4950
+Wire Wire Line
+	1800 5050 2200 5050
+Wire Wire Line
+	1800 5175 2200 5175
+Text Label 1875 5175 0    50   ~ 0
+oled_en
+Text Label 1875 4950 0    50   ~ 0
+I2C_SCL
+Text Label 1875 5050 0    50   ~ 0
+I2C_SDA
+Wire Wire Line
+	3325 2600 4100 2600
+Text Label 3525 2600 0    50   ~ 0
+oled_en
 $EndSCHEMATC

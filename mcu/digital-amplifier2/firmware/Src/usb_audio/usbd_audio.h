@@ -215,7 +215,6 @@ USBD_AUDIO_ControlTypeDef;
 typedef struct
 {
   uint32_t                  alt_setting;
-  uint8_t                  buffer[AUDIO_OUT_PACKET_24B];
   AUDIO_OffsetTypeDef       offset;
   uint8_t                   rd_enable;
   uint16_t                  rd_ptr;

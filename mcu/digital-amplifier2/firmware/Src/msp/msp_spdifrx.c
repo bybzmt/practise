@@ -1,19 +1,19 @@
 #include "base.h"
+#include "msp_spdifrx.h"
+#include "msp_clock.h"
 
-static void bsp_spdif_clock_config(void);
-static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif);
-static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif);
+static void msp_spdifrx_mspInit(SPDIFRX_HandleTypeDef *hspdif);
+static void msp_spdifrx_mspDeInit(SPDIFRX_HandleTypeDef *hspdif);
+static void msp_dma1_stream1_irq(void);
+static void msp_spdif_rx_irq(void);
 
 SPDIFRX_HandleTypeDef SpdifrxHandle = {
     .Instance = SPDIFRX,
     .Init = {
         .InputSelection = SPDIFRX_INPUT_IN3,
         .Retries = SPDIFRX_MAXRETRIES_NONE,
-        /* .Retries = SPDIFRX_MAXRETRIES_15, */
-        /* .WaitForActivity = SPDIFRX_WAITFORACTIVITY_ON, */
         .WaitForActivity = SPDIFRX_WAITFORACTIVITY_OFF,
         .ChannelSelection = SPDIFRX_CHANNEL_A,
-        /* .DataFormat = SPDIFRX_DATAFORMAT_LSB, */
         .DataFormat = SPDIFRX_DATAFORMAT_32BITS,
         .StereoMode = SPDIFRX_STEREOMODE_ENABLE,
         .PreambleTypeMask = SPDIFRX_PREAMBLETYPEMASK_OFF,
@@ -21,11 +21,11 @@ SPDIFRX_HandleTypeDef SpdifrxHandle = {
         .ValidityBitMask = SPDIFRX_VALIDITYMASK_OFF,
         .ParityErrorMask = SPDIFRX_PARITYERRORMASK_OFF,
     },
-    .MspInitCallback = my_spdif_MspInit,
-    .MspDeInitCallback = my_spdif_MspDeInit,
+    .MspInitCallback = msp_spdifrx_mspInit,
+    .MspDeInitCallback = msp_spdifrx_mspDeInit,
 };
 
-DMA_HandleTypeDef SpdifrxDmaHandle = {
+static DMA_HandleTypeDef SpdifrxDmaHandle = {
     .Instance = DMA1_Stream1,
     .Init = {
         .Channel             = DMA_CHANNEL_0,
@@ -43,39 +43,14 @@ DMA_HandleTypeDef SpdifrxDmaHandle = {
     },
 };
 
-static void bsp_spdif_clock_config(void)
-{
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-    HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInitStruct);
 
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX;
-    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR; */
-    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
-
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-    {
-        printf("spdif clock error\n");
-    }
-}
-
-static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
+static void msp_spdifrx_mspInit(SPDIFRX_HandleTypeDef *hspdif)
 {
     printf("spdifrx init\n");
 
-    bsp_spdif_clock_config();
+    msp_clock_spdif_config();
 
     __HAL_RCC_SPDIFRX_CLK_ENABLE();
-
-    /* Configure SPDIFRX_IN pin */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.Pin       = GPIO_PIN_5;
-    GPIO_InitStructure.Mode      = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.Pull      = GPIO_NOPULL;
-    GPIO_InitStructure.Speed     = GPIO_SPEED_FREQ_MEDIUM;
-    GPIO_InitStructure.Alternate = GPIO_AF8_SPDIFRX;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /* Enable DMA1 clock */
     __HAL_RCC_DMA1_CLK_ENABLE();
@@ -92,11 +67,13 @@ static void my_spdif_MspInit(SPDIFRX_HandleTypeDef *hspdif)
     /* NVIC configuration for DMA transfer complete interrupt (SPDIFRX) */
     HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   0, 0);
     HAL_NVIC_SetPriority(SPDIF_RX_IRQn,   0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-    HAL_NVIC_EnableIRQ(SPDIF_RX_IRQn);
+    NVIC_SetVector(DMA1_Stream1_IRQn, (uint32_t)&msp_dma1_stream1_irq);
+    NVIC_SetVector(SPDIF_RX_IRQn, (uint32_t)&msp_spdif_rx_irq);
+    NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+    NVIC_EnableIRQ(SPDIF_RX_IRQn);
 }
 
-static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
+static void msp_spdifrx_mspDeInit(SPDIFRX_HandleTypeDef *hspdif)
 {
     printf("spdifrx deInit\n");
 
@@ -105,12 +82,12 @@ static void my_spdif_MspDeInit(SPDIFRX_HandleTypeDef *hspdif)
     HAL_NVIC_DisableIRQ(SPDIF_RX_IRQn);
 }
 
-void DMA1_Stream1_IRQHandler(void)
+static void msp_dma1_stream1_irq(void)
 {
     HAL_DMA_IRQHandler(&SpdifrxDmaHandle);
 }
 
-void SPDIF_RX_IRQHandler(void)
+static void msp_spdif_rx_irq(void)
 {
     HAL_SPDIFRX_IRQHandler(&SpdifrxHandle);
 }

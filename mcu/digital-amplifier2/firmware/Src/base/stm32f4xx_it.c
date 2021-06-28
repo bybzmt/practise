@@ -1,4 +1,5 @@
 #include "stm32f4xx_it.h"
+#include "base.h"
 
 void NMI_Handler(void)
 {

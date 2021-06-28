@@ -5,51 +5,20 @@
  extern "C" {
 #endif
 
-#include "cmsis_os.h"
 #include <stdbool.h>
+#include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
-
-// #include "usbd_core.h"
-#include "usbd_desc.h"
-#include "usbd_audio.h"
-
 #include "audio.h"
+#include "vectorTable.h"
 
-#define MODE_IDLE  0
-#define MODE_USB   1
-#define MODE_SPDIF 2
-#define MODE_BT    3
+void task_usb_input();
+void task_spdif_input();
+void task_bt_input();
+void task_btn_service();
+void task_dev_setter();
 
-extern SAI_HandleTypeDef hsai_out;
-extern I2C_HandleTypeDef hi2c1;
-
-void button_click(void);
-void device_mode_change(uint8_t mode);
-
-void led_on(bool flag);
-void button_init(void);
-
-void tas6424_init(void);
-void tas6424_en(bool ok);
-void tas6424_play(uint32_t AudioFreq, uint8_t bit_depth);
-void tas6424_mute(bool ok);
-void tas6424_volume(uint8_t volume);
-void tas6424_stop(void);
-void tas6424_check(void);
-
-void pcm1792_init(void);
-void pcm1792_play(uint32_t AudioFreq, uint8_t bit_depth);
-void pcm1792_mute(bool ok);
-void pcm1792_volume(uint8_t volume);
-void pcm1792_stop(void);
-
-void spdif_start(void);
-void spdif_stop(void);
-void spdif_check(void);
-
-void btm331_init(void);
-void btm331_start(void);
-void btm331_stop(void);
+void oled_mode1(uint8_t focus);
+void oled_mode2(uint8_t focus);
 
 #ifdef __cplusplus
 }

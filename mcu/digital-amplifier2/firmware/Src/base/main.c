@@ -24,9 +24,13 @@ int main(void)
     /* Configure the system clock to 180 MHz */
     SystemClock_Config();
 
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
+
     xTaskCreate(TaskInit, "init", 2048, NULL, 1, NULL);
 
     vTaskStartScheduler();
+
+    printf("end\n");
 
     while (1);
 }
