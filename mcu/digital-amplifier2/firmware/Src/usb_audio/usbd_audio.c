@@ -385,6 +385,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->vol = audio.vol;
 
         audio_init(haudio->freq, haudio->bit_depth);
+        audio_play();
 
         USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, audio.input_buf, AUDIO_OUT_PACKET_24B);
     }
@@ -945,6 +946,7 @@ static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev)
     AUDIO_OUT_StopAndReset(pdev);
 
     audio_init(haudio->freq, haudio->bit_depth);
+    audio_play();
 
     tx_flag = 0U;
     all_ready = 1U;

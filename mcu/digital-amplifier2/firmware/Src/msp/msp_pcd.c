@@ -55,7 +55,7 @@ static void msp_pcd_MspInit(PCD_HandleTypeDef *hpcd)
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
 
     /* Set USBFS Interrupt priority */
-    HAL_NVIC_SetPriority(OTG_FS_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(OTG_FS_IRQn, 6, 0);
 
     NVIC_SetVector(OTG_FS_IRQn, (uint32_t)&msp_pcd_irq);
 
@@ -169,3 +169,8 @@ static void msp_pcd_irq(void)
 {
     HAL_PCD_IRQHandler(&hpcd);
 }
+
+/* void OTG_FS_IRQHandler(void) */
+/* { */
+    /* msp_pcd_irq(); */
+/* } */

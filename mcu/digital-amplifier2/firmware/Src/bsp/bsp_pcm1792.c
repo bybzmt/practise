@@ -43,8 +43,15 @@ void bsp_pcm1792_volume(uint8_t vol)
     msp_i2c_write(ADDR, 16, d, 2);
 }
 
+void bsp_pcm1792_stop(void)
+{
+    bsp_pcm1792_volume(0);
+}
+
 void bsp_pcm1792_init(void)
 {
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
     //初始化引脚
     GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
@@ -53,6 +60,8 @@ void bsp_pcm1792_init(void)
     GPIO_InitStruct.Pin = GPIO_PIN_15;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+
+    vTaskDelay(20);
 }
 
 void bsp_pcm1792_deInit(void)

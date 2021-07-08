@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 12
+Sheet 1 11
 Title ""
 Date ""
 Rev ""
@@ -104,8 +104,8 @@ F0 "PCM1792" 50
 F1 "PCM1792.sch" 50
 F2 "SCL" I L 7675 875 50 
 F3 "SDA" I L 7675 975 50 
-F4 "SCK" I L 7675 1150 50 
-F5 "BCK" I L 7675 1250 50 
+F4 "MCK" I L 7675 1150 50 
+F5 "SCK" I L 7675 1250 50 
 F6 "LRCK" I L 7675 1350 50 
 F7 "DATA" I L 7675 1450 50 
 F8 "OUTLP" O R 8525 1175 50 
@@ -382,23 +382,17 @@ Wire Wire Line
 	7125 975  7675 975 
 Wire Wire Line
 	7125 875  7675 875 
-$Sheet
-S 9600 2275 800  725 
-U 60C533A9
-F0 "hp_ldo" 50
-F1 "hp_ldo.sch" 50
-$EndSheet
 Wire Wire Line
 	7675 1575 7125 1575
 Text Label 7275 1575 0    50   ~ 0
 hp_en
-Text Label 7275 1450 0    50   ~ 0
-SAI_MCK
 Text Label 7275 1150 0    50   ~ 0
+SAI_MCK
+Text Label 7275 1450 0    50   ~ 0
 SAI_SD
-Text Label 7275 1250 0    50   ~ 0
-SAI_FS
 Text Label 7275 1350 0    50   ~ 0
+SAI_FS
+Text Label 7275 1250 0    50   ~ 0
 SAI_SCK
 Wire Wire Line
 	9000 5050 9550 5050

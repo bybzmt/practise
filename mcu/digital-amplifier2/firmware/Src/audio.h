@@ -48,8 +48,7 @@ typedef struct {
     uint8_t sample_size;
 
     bool out_dev_en;
-    bool zero_off;
-    uint8_t zero_data;
+    uint8_t all_zero;
 
     TaskHandle_t input_task_hd;
     TaskHandle_t out_task_hd;

@@ -37,6 +37,7 @@ C_SOURCES+=Src/base/system_stm32f4xx.c
 C_SOURCES+=Src/audio.c
 C_SOURCES+=Src/inputTasks.c
 C_SOURCES+=Src/btnTask.c
+C_SOURCES+=Src/devTask.c
 C_SOURCES+=Src/oled.c
 
 C_SOURCES+=Src/userMain.c

@@ -6,6 +6,9 @@
 void audio_changeVolume(int8_t num);
 
 static uint8_t btn_mode = 0;
+static uint16_t btn_tick = 1000;
+static bool btn_timeout = 0;
+
 static QueueHandle_t btn_que;
 
 enum evt {
@@ -13,6 +16,7 @@ enum evt {
     evt_right,
     evt_sw_down,
     evt_sw_up,
+    evt_entry,
 };
 
 static void btn_left_irq (void)
@@ -39,95 +43,96 @@ static void btn_up_irq (void)
     xQueueSendFromISR(btn_que, &data, NULL);
 }
 
+static void btn_mode1(uint8_t evt);
+static void btn_mode2(uint8_t evt);
+static void btn_mode3(uint8_t evt);
+
 /* 默认状态，调整音量 */
-static void btn_mode0(uint8_t evt, uint8_t *fast)
+static void btn_mode1(uint8_t evt)
 {
     switch (evt)
     {
+        case evt_entry:
+            btn_tick = 1000;
+            btn_mode = 1;
+            audio_setMute(0);
+            oled_mode1(audio.input_mode);
+            break;
+
         case evt_left:
-            audio_changeVolume(*fast ? -5 : -1);
+            btn_tick = 100;
+            audio_changeVolume(btn_timeout ? -1 : -5);
             oled_mode1(audio.input_mode);
-            *fast = 1;
             break;
+
         case evt_right:
-            audio_changeVolume(*fast ? 5 : 1);
+            btn_tick = 100;
+            audio_changeVolume(btn_timeout ? 1 : 5);
             oled_mode1(audio.input_mode);
-            *fast = 1;
             break;
+
         case evt_sw_down:
-            *fast = 0;
+            btn_tick = 1000;
             break;
+
         case evt_sw_up:
-            if (fast) {
-                btn_mode = 1;
-                audio_setMute(1);
-                oled_mode1(audio.input_mode);
+            if (btn_timeout) {
+                btn_mode3(evt_entry);
             } else {
-                oled_mode2(0);
-                btn_mode = 2;
+                btn_mode2(evt_entry);
             }
             break;
     }
-
 }
 
 /* 调整输入源 */
-static void btn_mode1(uint8_t evt, uint8_t *fast)
+static void btn_mode2(uint8_t evt)
 {
     switch (evt)
     {
+        case evt_entry:
+            btn_mode = 2;
+            audio_setMute(1);
+            oled_mode1(audio.input_mode);
+            break;
+
         case evt_left:
             audio.input_mode = cut_and_mod(audio.input_mode, 1, 3);
             oled_mode1(audio.input_mode);
             audio_notify_dev();
             break;
+
         case evt_right:
             audio.input_mode = (audio.input_mode+1) % 3;
             oled_mode1(audio.input_mode);
             audio_notify_dev();
             break;
-        case evt_sw_up:
-            btn_mode = 0;
-            audio_setMute(0);
-            oled_mode1(audio.input_mode);
-            break;
-    }
-}
 
-/* 静音调整音量 */
-static void btn_mode2(uint8_t evt, uint8_t *fast)
-{
-    switch (evt)
-    {
-        case evt_left:
-            audio_changeVolume(*fast ? -5 : -1);
-            oled_mode1(3);
-            *fast = 1;
-            break;
-        case evt_right:
-            audio_changeVolume(*fast ? 5 : 1);
-            oled_mode2(3);
-            *fast = 1;
-            break;
         case evt_sw_up:
-            btn_mode = 0;
-            audio_setMute(0);
-            oled_mode1(audio.input_mode);
+            btn_mode1(evt_entry);
             break;
     }
 }
 
 /* 调整设置 */
-static void btn_mode3(uint8_t evt, uint8_t *fast)
+static void btn_mode3(uint8_t evt)
 {
     static int8_t focus = 0;
 
     switch (evt)
     {
+        case evt_entry:
+            btn_mode = 3;
+            oled_mode2(focus);
+
+            focus = 0;
+            break;
+
         case evt_left:
             focus = cut_and_mod(focus, 1, 7);
             oled_mode2(focus);
             break;
+
         case evt_right:
             focus = (focus+1) % 7;
             oled_mode2(focus);
@@ -156,17 +161,16 @@ static void btn_mode3(uint8_t evt, uint8_t *fast)
                     break;
             }
 
-            btn_mode = 0;
-            audio_setMute(0);
-            oled_mode1(audio.input_mode);
+            btn_mode1(evt_entry);
             break;
     }
 }
 
 void task_btn_service()
 {
+    printf("task btn running\n");
+
     uint8_t evt = 0;
-    uint8_t fast = 0;
 
     ec11_rotate_left = btn_left_irq;
     ec11_rotate_right = btn_right_irq;
@@ -175,16 +179,25 @@ void task_btn_service()
 
     btn_que = xQueueCreate(10, 1);
 
+    bsp_ec11_init();
+    oled_init();
+
+    btn_mode1(evt_entry);
+
     for (;;) {
-        if (xQueueReceive(btn_que, &evt, fast ? 50 : 1000)) {
+        if (xQueueReceive(btn_que, &evt, btn_tick)) {
+            printf("mode:%d evt:%d\n", btn_mode, evt);
+
             switch (btn_mode) {
-                case 0: btn_mode0(evt, &fast); break;
-                case 1: btn_mode1(evt, &fast); break;
-                case 2: btn_mode2(evt, &fast); break;
-                case 3: btn_mode3(evt, &fast); break;
+                case 1: btn_mode1(evt); break;
+                case 2: btn_mode2(evt); break;
+                case 3: btn_mode3(evt); break;
             }
+
+            btn_timeout = 0;
         } else {
-            fast = 0;
+            btn_timeout = 1;
+            btn_tick = 1000;
         }
     }
 }

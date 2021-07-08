@@ -21,15 +21,19 @@ void audio_init(uint32_t audioFreq, uint8_t bit_depth)
 
 void audio_play(void)
 {
-    audio.out_dev_en = 1;
-    audio.mute = false;
+    audio.state = AUDIO_STATE_INIT;
+
+    audio.out_dev_en = true;
+    audio.all_zero = 0;
 
     audio_notify_dev();
 }
 
 void audio_stop(void)
 {
-    audio.out_dev_en = 0;
+    memset(audio.out_buf, 0, sizeof(audio.out_buf));
+
+    audio.out_dev_en = false;
 
     audio_notify_dev();
 }
@@ -39,11 +43,13 @@ void audio_notify_dev(void)
     uint32_t data = 0;
     data |= audio.input_mode << 24;
 
-    if ((audio.set_out1==1 && !audio.zero_off) || audio.set_out1==2) {
-        data |= 1 << 20;
-    }
-    if ((audio.set_out2==1 && !audio.zero_off) || audio.set_out2==2) {
-        data |= 1 << 16;
+    if (audio.out_dev_en) {
+        if ((audio.set_out1==1 && audio.all_zero != 255) || audio.set_out1==2) {
+            data |= 1 << 20;
+        }
+        if ((audio.set_out2==1 && audio.all_zero != 255) || audio.set_out2==2) {
+            data |= 1 << 16;
+        }
     }
 
     switch (audio.freq)
@@ -61,7 +67,9 @@ void audio_notify_dev(void)
         case 32:  data |= 2<<8; break;
     }
 
-    data |= audio.vol;
+    if (!audio.mute) {
+        data |= audio.vol;
+    }
 
     if (__get_IPSR()) {
         xTaskNotifyFromISR(audio.out_task_hd, data, eSetValueWithOverwrite, NULL);
@@ -79,6 +87,30 @@ void audio_append(uint8_t* buf, uint16_t buf_len)
         audio.state = AUDIO_STATE_RUN;
     } else if (audio.state == AUDIO_STATE_SYNC) {
         audio.state = AUDIO_STATE_RUN;
+    }
+
+    bool all_zero = true;
+    for (int i=0; i<buf_len; i++) {
+        if (buf[i]) {
+            all_zero = false;
+            break;
+        }
+    }
+
+    if (all_zero) {
+        if (audio.all_zero < 250) {
+            audio.all_zero++;
+        } else if (audio.all_zero < 255) {
+            audio.all_zero = 255;
+            audio_notify_dev();
+        }
+    } else {
+        if (audio.all_zero == 255) {
+            audio.all_zero = 0;
+            audio_notify_dev();
+        } else {
+            audio.all_zero = 0;
+        }
     }
 
     uint16_t sample_num = buf_len / audio.sample_size;
@@ -121,17 +153,13 @@ void audio_setMute(bool flag)
 /* 当前读取指针的位置 */
 static uint16_t audio_rd_idx(void)
 {
-    uint16_t remaining = msp_sai_dma_remaining();
-    uint16_t rd_idx = AUDIO_BUF_SAMPLE_NUM - (remaining / 2 / 4);
+    uint16_t remaining = msp_sai_out_dma_remaining();
+    uint16_t rd_idx = AUDIO_BUF_SAMPLE_NUM - (remaining / 2);
     return rd_idx;
 }
 
 int16_t audio_clock_delta(void)
 {
-    if (audio.state != AUDIO_STATE_RUN) {
-        return 0;
-    }
-
     uint16_t rd_idx = audio_rd_idx();
 
     /* 剩余可写空间 */
@@ -158,22 +186,22 @@ void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
             oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
             oft = 4 * i;
             /* 调换左右声道 */
-            audio.out_buf[oft2+2] = buf[oft];
-            audio.out_buf[oft2+3] = buf[oft+1];
-            audio.out_buf[oft2+0] = buf[oft+2];
-            audio.out_buf[oft2+1] = buf[oft+3];
+            audio.out_buf[oft2+0] = buf[oft];
+            audio.out_buf[oft2+1] = buf[oft+1];
+            audio.out_buf[oft2+4] = buf[oft+2];
+            audio.out_buf[oft2+5] = buf[oft+3];
         }
     } else if (audio.bit_depth==24) {
         for (int i=0; i<sample_num; i++) {
             oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
             oft = 6 * i;
-            audio.out_buf[oft2+1] = buf[oft+0];
-            audio.out_buf[oft2+2] = buf[oft+1];
-            audio.out_buf[oft2+3] = buf[oft+2];
+            audio.out_buf[oft2+0] = buf[oft+0];
+            audio.out_buf[oft2+1] = buf[oft+1];
+            audio.out_buf[oft2+2] = buf[oft+2];
 
-            audio.out_buf[oft2+5] = buf[oft+3];
-            audio.out_buf[oft2+6] = buf[oft+4];
-            audio.out_buf[oft2+7] = buf[oft+5];
+            audio.out_buf[oft2+4] = buf[oft+3];
+            audio.out_buf[oft2+5] = buf[oft+4];
+            audio.out_buf[oft2+6] = buf[oft+5];
         }
     } else {
         for (int i=0; i<sample_num; i++) {

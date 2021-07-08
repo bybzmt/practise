@@ -15,17 +15,31 @@ void msp_clock_usb_config(void)
 
 void msp_clock_spdif_config(void)
 {
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-    HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInitStruct);
+    RCC_PeriphCLKInitTypeDef periphCLK = {0};
+    HAL_RCCEx_GetPeriphCLKConfig(&periphCLK);
 
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX;
-    /* PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR; */
-    PeriphClkInitStruct.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP;
+    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_SPDIFRX;
+    periphCLK.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLR;
+    /* periphCLK.SpdifClockSelection = RCC_SPDIFRXCLKSOURCE_PLLI2SP; */
 
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
     {
         printf("spdif clock error\n");
     }
+
+    return;
+
+    /* 384/192 */
+    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_I2S_APB2;
+    /* periphCLK.PeriphClockSelection = RCC_PERIPHCLK_PLLI2S; */
+    periphCLK.I2sApb2ClockSelection = RCC_I2SAPB2CLKSOURCE_PLLI2S;
+
+    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
+    {
+        printf("Periph clock error\n");
+    }
+
+
 }
 
 void msp_clock_sai_config(uint32_t AudioFreq)
@@ -77,18 +91,6 @@ void msp_clock_sai_config(uint32_t AudioFreq)
         /* periphCLK.PLLSAI.PLLSAIP = 7; */
         /* periphCLK.PLLSAIDivQ = 1; */
     }
-
-    if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
-    {
-        printf("Periph clock error\n");
-    }
-
-    return;
-
-    /* 384/192 */
-    periphCLK.PeriphClockSelection = RCC_PERIPHCLK_I2S_APB2;
-    /* periphCLK.PeriphClockSelection = RCC_PERIPHCLK_PLLI2S; */
-    periphCLK.I2sApb2ClockSelection = RCC_I2SAPB2CLKSOURCE_PLLI2S;
 
     if (HAL_RCCEx_PeriphCLKConfig(&periphCLK) != HAL_OK)
     {

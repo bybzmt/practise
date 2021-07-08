@@ -15,7 +15,7 @@ SAI_HandleTypeDef hsai_out = {
         .AudioMode     = SAI_MODEMASTER_TX,
         .NoDivider     = SAI_MASTERDIVIDER_ENABLE,
         .Protocol      = SAI_FREE_PROTOCOL,
-        .DataSize      = SAI_DATASIZE_16,
+        .DataSize      = SAI_DATASIZE_24,
         .FirstBit      = SAI_FIRSTBIT_MSB,
         .ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE,
         .Synchro       = SAI_ASYNCHRONOUS,
@@ -25,14 +25,14 @@ SAI_HandleTypeDef hsai_out = {
     .FrameInit = {
         .FrameLength       = 64,
         .ActiveFrameLength = 32,
-        .FSDefinition      = SAI_FS_STARTFRAME,
+        .FSDefinition      = SAI_FS_CHANNEL_IDENTIFICATION,
         .FSPolarity        = SAI_FS_ACTIVE_LOW,
         .FSOffset          = SAI_FS_FIRSTBIT,
     },
     .SlotInit = {
         .FirstBitOffset = 1,
         .SlotSize       = SAI_SLOTSIZE_32B,
-        .SlotNumber     = 8,
+        .SlotNumber     = 2,
         .SlotActive     = SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1,
     },
     .MspInitCallback    = msp_sai_mspInit,
@@ -121,7 +121,7 @@ static void msp_sai_mspDeInit(SAI_HandleTypeDef *hsai)
     __HAL_RCC_SAI1_CLK_DISABLE();
 }
 
-uint16_t msp_sai_dma_remaining(void)
+uint16_t msp_sai_out_dma_remaining(void)
 {
     uint16_t ptr = (LL_DMA_ReadReg(hsai_out.hdmatx->Instance, NDTR) & 0xFFFF);
     return ptr;
@@ -133,6 +133,11 @@ static void msp_sai_dma_irq(void)
 {
     HAL_DMA_IRQHandler(&hdma_tx);
 }
+
+/* void DMA2_Stream5_IRQHandler(void) */
+/* { */
+    /* msp_sai_dma_irq(); */
+/* } */
 
 /* --------------------- */
 

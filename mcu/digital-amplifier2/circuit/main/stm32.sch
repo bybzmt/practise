@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 12
+Sheet 2 11
 Title ""
 Date ""
 Rev ""
@@ -241,7 +241,6 @@ Wire Wire Line
 	5975 4200 6500 4200
 Wire Wire Line
 	8450 2400 7900 2400
-NoConn ~ 6500 3600
 NoConn ~ 6500 3800
 NoConn ~ 7900 3900
 NoConn ~ 7900 3600
@@ -876,4 +875,36 @@ SCL
 Text Label 8250 3800 2    50   ~ 0
 SDA
 NoConn ~ 6500 4400
+Wire Wire Line
+	6500 3600 5975 3600
+Text Label 6050 3600 0    50   ~ 0
+v24
+$Comp
+L power:+2V5 #PWR026
+U 1 1 6106070C
+P 2950 5350
+F 0 "#PWR026" H 2950 5200 50  0001 C CNN
+F 1 "+2V5" V 3000 5500 50  0000 L CNN
+F 2 "" H 2950 5350 50  0001 C CNN
+F 3 "" H 2950 5350 50  0001 C CNN
+	1    2950 5350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R_Small R9
+U 1 1 61060EB0
+P 3275 5350
+F 0 "R9" V 3025 5375 50  0000 C CNN
+F 1 "100k" V 3125 5375 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 3275 5350 50  0001 C CNN
+F 3 "~" H 3275 5350 50  0001 C CNN
+	1    3275 5350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3175 5350 2950 5350
+Wire Wire Line
+	3375 5350 3800 5350
+Text Label 3575 5350 0    50   ~ 0
+v24
 $EndSCHEMATC

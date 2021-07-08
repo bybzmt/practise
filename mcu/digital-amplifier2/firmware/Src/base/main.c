@@ -1,4 +1,5 @@
 #include "base.h"
+#include "vectorTable.h"
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -17,6 +18,8 @@ int main(void)
     initialise_monitor_handles();
     printf("boot\n");
 #endif
+
+    vectorTable_to_ram();
 
     /* STM32F469xx HAL library initialization */
     HAL_Init();

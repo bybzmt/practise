@@ -3,13 +3,13 @@
 #include "vectorTable.h"
 
 #define VECTORTABLE_SIZE        (256)          /* size Cortex-M3 vector table */
-#define VECTORTABLE_ALIGNMENT   (0x100ul)      /* 16 Cortex + 32 ARMCM3 = 48 words */
+#define VECTORTABLE_ALIGNMENT   (0x200ul)      /* 16 Cortex + 32 ARMCM3 = 48 words */
                                                /* next power of 2 = 256            */
 /* externals from startup_stm32f446xx.s */
 extern uint32_t g_pfnVectors[];
 
 /* new vector table in RAM */
-static uint32_t vectorTable[VECTORTABLE_SIZE] __attribute__(( aligned (VECTORTABLE_ALIGNMENT) ));
+static uint32_t vectorTable[VECTORTABLE_SIZE] __attribute__(( aligned (VECTORTABLE_ALIGNMENT) )) = {0};
 
 void vectorTable_to_ram(void)
 {
@@ -20,5 +20,6 @@ void vectorTable_to_ram(void)
     __disable_irq();
     SCB->VTOR = (uint32_t)&vectorTable;
     __DSB();
+    __ISB();
     __enable_irq();
 }

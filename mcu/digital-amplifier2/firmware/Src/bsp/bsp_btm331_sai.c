@@ -37,19 +37,19 @@ void bsp_btm331_init(void)
 
 void bsp_btm331_sai_start(void)
 {
-    msp_sai_in_init(SAI_AUDIO_FREQUENCY_48K, 16);
+    msp_sai_in_init(SAI_AUDIO_FREQUENCY_48K, 24);
 
     HAL_SAI_RegisterCallback(&hsai_in, HAL_SAI_RX_HALFCOMPLETE_CB_ID, _dma_half_cplt);
     HAL_SAI_RegisterCallback(&hsai_in, HAL_SAI_RX_COMPLETE_CB_ID, _dma_cplt);
 
     HAL_StatusTypeDef ret;
-    ret = HAL_SAI_Receive_DMA(&hsai_in, &audio.input_buf[0], AUDIO_INPUT_BUF_SIZE/2);
+    ret = HAL_SAI_Receive_DMA(&hsai_in, &audio.input_buf[0], AUDIO_INPUT_BUF_SIZE/4);
     if (ret!= HAL_OK) {
         printf("sai in dma err\n");
         return;
     }
 
-    audio_init(SAI_AUDIO_FREQUENCY_48K, 16);
+    audio_init(SAI_AUDIO_FREQUENCY_48K, 32);
     audio_play();
 }
 

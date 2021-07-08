@@ -46,7 +46,7 @@ static DMA_HandleTypeDef SpdifrxDmaHandle = {
 
 static void msp_spdifrx_mspInit(SPDIFRX_HandleTypeDef *hspdif)
 {
-    printf("spdifrx init\n");
+    printf("spdifrx msp init\n");
 
     msp_clock_spdif_config();
 
@@ -65,8 +65,8 @@ static void msp_spdifrx_mspInit(SPDIFRX_HandleTypeDef *hspdif)
     }
 
     /* NVIC configuration for DMA transfer complete interrupt (SPDIFRX) */
-    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   0, 0);
-    HAL_NVIC_SetPriority(SPDIF_RX_IRQn,   0, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,   6, 0);
+    HAL_NVIC_SetPriority(SPDIF_RX_IRQn,   6, 0);
     NVIC_SetVector(DMA1_Stream1_IRQn, (uint32_t)&msp_dma1_stream1_irq);
     NVIC_SetVector(SPDIF_RX_IRQn, (uint32_t)&msp_spdif_rx_irq);
     NVIC_EnableIRQ(DMA1_Stream1_IRQn);
@@ -75,7 +75,7 @@ static void msp_spdifrx_mspInit(SPDIFRX_HandleTypeDef *hspdif)
 
 static void msp_spdifrx_mspDeInit(SPDIFRX_HandleTypeDef *hspdif)
 {
-    printf("spdifrx deInit\n");
+    printf("spdifrx msp deInit\n");
 
     __HAL_RCC_SPDIFRX_CLK_DISABLE();
     HAL_NVIC_DisableIRQ(DMA1_Stream1_IRQn);
