@@ -99,11 +99,11 @@ void task_dev_setter()
                 close_tick2 = 1;
             }
 
+            btn_evt_vol_change();
+
             old_audioFreq = audioFreq;
             old_bit_depth = bit_depth;
         } else {
-            msp_iwdg_feed();
-
             if (close_tick1 > 0) {
                 close_tick1++;
                 if (close_tick1 > 30) {

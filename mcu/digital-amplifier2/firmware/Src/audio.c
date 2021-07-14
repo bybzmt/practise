@@ -44,11 +44,14 @@ void audio_notify_dev(void)
     data |= audio.input_mode << 24;
 
     if (audio.out_dev_en) {
-        if ((audio.set_out1==1 && audio.all_zero != 255) || audio.set_out1==2) {
-            data |= 1 << 20;
-        }
-        if ((audio.set_out2==1 && audio.all_zero != 255) || audio.set_out2==2) {
-            data |= 1 << 16;
+        /* 非自动关闭 或 自动关闭下有数据 */
+        if (!audio.set_auto_off || (audio.set_auto_off && audio.all_zero != 65535)) {
+            if (audio.set_out1) {
+                data |= 1 << 20;
+            }
+            if (audio.set_out2) {
+                data |= 1 << 16;
+            }
         }
     }
 
@@ -98,14 +101,14 @@ void audio_append(uint8_t* buf, uint16_t buf_len)
     }
 
     if (all_zero) {
-        if (audio.all_zero < 250) {
+        if (audio.all_zero < 3000) {
             audio.all_zero++;
-        } else if (audio.all_zero < 255) {
-            audio.all_zero = 255;
+        } else if (audio.all_zero < 65535) {
+            audio.all_zero = 65535;
             audio_notify_dev();
         }
     } else {
-        if (audio.all_zero == 255) {
+        if (audio.all_zero == 65535) {
             audio.all_zero = 0;
             audio_notify_dev();
         } else {

@@ -2,6 +2,8 @@
 #include "ssd1306.h"
 #include "ssd1306_tests.h"
 
+#define VOLUME_TO_DB(v) (((int16_t)v - 207) / 2)
+
 static void _oled_show_fs(char *str)
 {
     ssd1306_FillRectangle(0, 0, 7*5, 10, Black);
@@ -26,9 +28,21 @@ static void _oled_show_vol()
         ssd1306_FillRectangle(100, 53, 7*4, 10, Black);
     }
 
-    char buf[5];
+    char buf[6];
+    int16_t db = VOLUME_TO_DB(audio.vol);
 
-    sprintf(buf, "%d", audio.vol);
+    ssd1306_SetCursor(50, 26);
+    if (db < 0) {
+        sprintf(buf, "%d", -db);
+        ssd1306_Char(2D, 7, 10, White);
+
+        printf("vol: -%ddB\n", -db);
+    } else {
+        sprintf(buf, "%d", db);
+        ssd1306_Char(2B, 7, 10, White);
+
+        printf("vol: %ddB\n", db);
+    }
 
     ssd1306_FillRectangle(50+7+1, 20, 16*3+7*2+1, 26, Black);
     ssd1306_SetCursor(50+7+1, 20);
@@ -36,7 +50,8 @@ static void _oled_show_vol()
 
     uint8_t len = strlen(buf);
     ssd1306_SetCursor(50+7+2 + (len*16), 36);
-    ssd1306_Char(25, 7, 10, White);
+    ssd1306_Char(d, 7, 10, White);
+    ssd1306_Char(B, 7, 10, White);
 }
 
 static void _oled_show_input()
@@ -51,7 +66,6 @@ static void _oled_show_input()
 
 void oled_init(void)
 {
-    return;
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef  gpio;
@@ -69,7 +83,6 @@ void oled_init(void)
 
 void oled_mode1(uint8_t focus)
 {
-    return;
     _oled_show_input();
     _oled_show_vol();
     _oled_show_fs("48");

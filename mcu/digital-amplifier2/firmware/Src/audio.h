@@ -40,15 +40,17 @@ typedef struct {
     volume_t vol;
     bool mute;
 
-    uint8_t set_out1;
-    uint8_t set_out2;
+    bool set_out1;
+    bool set_out2;
+    bool set_auto_switch;
+    bool set_auto_off;
 
     uint16_t w_idx;
     uint8_t state;
     uint8_t sample_size;
 
     bool out_dev_en;
-    uint8_t all_zero;
+    uint16_t all_zero;
 
     TaskHandle_t input_task_hd;
     TaskHandle_t out_task_hd;

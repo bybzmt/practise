@@ -17,6 +17,7 @@ enum evt {
     evt_sw_down,
     evt_sw_up,
     evt_entry,
+    evt_vol,
 };
 
 static void btn_left_irq (void)
@@ -60,14 +61,16 @@ static void btn_mode1(uint8_t evt)
             break;
 
         case evt_left:
-            btn_tick = 100;
-            audio_changeVolume(btn_timeout ? -1 : -5);
+            /* btn_tick = 100; */
+            /* audio_changeVolume(btn_timeout ? -1 : -5); */
+            audio_changeVolume(-2);
             oled_mode1(audio.input_mode);
             break;
 
         case evt_right:
-            btn_tick = 100;
-            audio_changeVolume(btn_timeout ? 1 : 5);
+            /* btn_tick = 100; */
+            /* audio_changeVolume(btn_timeout ? 1 : 5); */
+            audio_changeVolume(2);
             oled_mode1(audio.input_mode);
             break;
 
@@ -81,6 +84,10 @@ static void btn_mode1(uint8_t evt)
             } else {
                 btn_mode2(evt_entry);
             }
+            break;
+
+        case evt_vol:
+            oled_mode1(audio.input_mode);
             break;
     }
 }
@@ -110,6 +117,10 @@ static void btn_mode2(uint8_t evt)
 
         case evt_sw_up:
             btn_mode1(evt_entry);
+            break;
+
+        case evt_vol:
+            oled_mode1(audio.input_mode);
             break;
     }
 }
@@ -170,6 +181,14 @@ void task_btn_service()
 {
     printf("task btn running\n");
 
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    GPIO_InitTypeDef gpio_init;
+    gpio_init.Speed = GPIO_SPEED_FREQ_LOW,
+    gpio_init.Mode  = GPIO_MODE_INPUT,
+    gpio_init.Pull  = GPIO_NOPULL,
+    gpio_init.Pin   = GPIO_PIN_4;
+    HAL_GPIO_Init(GPIOA, &gpio_init);
+
     uint8_t evt = 0;
 
     ec11_rotate_left = btn_left_irq;
@@ -177,7 +196,7 @@ void task_btn_service()
     ec11_sw_down = btn_down_irq;
     ec11_sw_up = btn_up_irq;
 
-    btn_que = xQueueCreate(10, 1);
+    btn_que = xQueueCreate(20, 1);
 
     bsp_ec11_init();
     oled_init();
@@ -186,7 +205,7 @@ void task_btn_service()
 
     for (;;) {
         if (xQueueReceive(btn_que, &evt, btn_tick)) {
-            printf("mode:%d evt:%d\n", btn_mode, evt);
+            /* printf("mode:%d evt:%d\n", btn_mode, evt); */
 
             switch (btn_mode) {
                 case 1: btn_mode1(evt); break;
@@ -198,6 +217,22 @@ void task_btn_service()
         } else {
             btn_timeout = 1;
             btn_tick = 1000;
+
+            if (audio.set_auto_switch) {
+                if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)) {
+                    if (audio.set_out1 != 1 || audio.set_out2 != 0) {
+                        audio.set_out1 = 1;
+                        audio.set_out2 = 0;
+                        audio_notify_dev();
+                    }
+                } else {
+                    if (audio.set_out1 != 0 || audio.set_out2 != 1) {
+                        audio.set_out1 = 0;
+                        audio.set_out2 = 1;
+                        audio_notify_dev();
+                    }
+                }
+            }
         }
     }
 }
@@ -205,13 +240,13 @@ void task_btn_service()
 void audio_changeVolume(int8_t num)
 {
     if (num > 0) {
-        if ((int16_t)audio.vol + num > 255) {
+        if ((int16_t)audio.vol + num >= 255) {
             audio.vol = 255;
         } else {
             audio.vol += num;
         }
     } else {
-        if ((int16_t)audio.vol - num < 0) {
+        if ((int16_t)audio.vol - num <= 0) {
             audio.vol = 0;
         } else {
             audio.vol += num;
@@ -221,3 +256,8 @@ void audio_changeVolume(int8_t num)
     audio_notify_dev();
 }
 
+void btn_evt_vol_change(void)
+{
+    uint8_t data = evt_vol;
+    xQueueSend(btn_que, &data, 10);
+}
