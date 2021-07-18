@@ -14,17 +14,6 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L MCU_ST_STM32F4:STM32F446RETx U1
-U 1 1 5F047F96
-P 7200 2900
-F 0 "U1" H 7200 1014 50  0000 C CNN
-F 1 "STM32F446RETx" H 7200 923 50  0000 C CNN
-F 2 "Package_QFP:LQFP-64_10x10mm_P0.5mm" H 6600 1200 50  0001 R CNN
-F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00141306.pdf" H 7200 2900 50  0001 C CNN
-	1    7200 2900
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR011
 U 1 1 5F04DC2A
 P 7000 5150
@@ -37,21 +26,7 @@ F 3 "" H 7000 5150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	7000 4700 7000 5150
-Wire Wire Line
-	7000 4700 7100 4700
-Connection ~ 7000 4700
-Wire Wire Line
-	7100 4700 7200 4700
-Connection ~ 7100 4700
-Connection ~ 7200 4700
-Wire Wire Line
-	7100 1200 7200 1200
 Connection ~ 7200 1200
-Wire Wire Line
-	7200 1200 7300 1200
-Connection ~ 7300 1200
-Wire Wire Line
-	7300 1200 7400 1200
 Wire Wire Line
 	6500 1400 6000 1400
 $Comp
@@ -198,11 +173,6 @@ Wire Wire Line
 	7900 2800 8450 2800
 Text Label 6050 1400 0    50   ~ 0
 NRST
-Wire Wire Line
-	7200 4700 7300 4700
-Connection ~ 7300 4700
-Wire Wire Line
-	7300 4700 7400 4700
 Wire Wire Line
 	7900 2300 8450 2300
 Wire Wire Line
@@ -424,9 +394,6 @@ vdd1
 Text Label 7200 1075 1    50   ~ 0
 vdd1
 Wire Wire Line
-	7100 1200 7000 1200
-Connection ~ 7100 1200
-Wire Wire Line
 	2925 7000 2925 7150
 Wire Wire Line
 	2925 7150 2500 7150
@@ -474,7 +441,6 @@ Wire Wire Line
 	2925 6625 2925 6325
 Text Label 2925 6525 1    50   ~ 0
 vdd1
-NoConn ~ 7900 4300
 Text Label 6200 6550 1    50   ~ 0
 vdd1
 Wire Wire Line
@@ -498,27 +464,21 @@ Text HLabel 8430 2200 2    50   Input ~ 0
 BT_Connected
 Wire Wire Line
 	7200 1200 7200 850 
-Connection ~ 4150 6625
 Wire Wire Line
-	4575 6625 4150 6625
-Connection ~ 4150 7150
+	3975 1875 3975 1700
 Wire Wire Line
-	4575 7150 4150 7150
-Wire Wire Line
-	4575 6800 4575 6625
-Wire Wire Line
-	4575 7000 4575 7150
+	3975 2075 3975 2150
 $Comp
 L Device:C_Small C8
 U 1 1 5FD6341D
-P 4575 6900
+P 3975 1975
 AR Path="/5F047EA6/5FD6341D" Ref="C8"  Part="1" 
 AR Path="/5F047EA6/5FD62F96/5FD6341D" Ref="C?"  Part="1" 
-F 0 "C8" H 4667 6946 50  0000 L CNN
-F 1 "100nf" H 4667 6855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric" H 4575 6900 50  0001 C CNN
-F 3 "~" H 4575 6900 50  0001 C CNN
-	1    4575 6900
+F 0 "C8" H 4067 2021 50  0000 L CNN
+F 1 "100nf" H 4067 1930 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 3975 1975 50  0001 C CNN
+F 3 "~" H 3975 1975 50  0001 C CNN
+	1    3975 1975
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -536,9 +496,6 @@ F 3 "" H 1925 2175 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1925 1725 1925 2175
-Connection ~ 7400 1200
-Wire Wire Line
-	7500 1200 7400 1200
 Wire Wire Line
 	1300 950  1300 1300
 NoConn ~ 6500 4300
@@ -753,7 +710,6 @@ Wire Wire Line
 	8425 3400 7900 3400
 Wire Wire Line
 	8425 3300 7900 3300
-NoConn ~ 7900 4400
 Wire Wire Line
 	7900 3100 8425 3100
 Wire Wire Line
@@ -895,7 +851,7 @@ L Device:R_Small R9
 U 1 1 61060EB0
 P 3275 5350
 F 0 "R9" V 3025 5375 50  0000 C CNN
-F 1 "100k" V 3125 5375 50  0000 C CNN
+F 1 "10k" V 3125 5375 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 3275 5350 50  0001 C CNN
 F 3 "~" H 3275 5350 50  0001 C CNN
 	1    3275 5350
@@ -907,4 +863,120 @@ Wire Wire Line
 	3375 5350 3800 5350
 Text Label 3575 5350 0    50   ~ 0
 v24
+$Comp
+L Device:D_Small D10
+U 1 1 60EFB759
+P 3650 1300
+F 0 "D10" H 3650 1050 50  0000 C CNN
+F 1 "SD103AWS" H 3650 1150 50  0000 C CNN
+F 2 "Diode_SMD:D_SOD-323" V 3650 1300 50  0001 C CNN
+F 3 "~" V 3650 1300 50  0001 C CNN
+	1    3650 1300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3750 1700 3975 1700
+Wire Wire Line
+	3975 1700 3975 1300
+Wire Wire Line
+	3975 1300 3750 1300
+Wire Wire Line
+	3975 1300 4425 1300
+Connection ~ 3975 1300
+Wire Wire Line
+	3550 1300 3075 1300
+Wire Wire Line
+	3075 2075 3075 2150
+$Comp
+L power:GND #PWR081
+U 1 1 60F1C19C
+P 3075 2225
+F 0 "#PWR081" H 3075 1975 50  0001 C CNN
+F 1 "GND" H 3125 2025 50  0000 C CNN
+F 2 "" H 3075 2225 50  0001 C CNN
+F 3 "" H 3075 2225 50  0001 C CNN
+	1    3075 2225
+	1    0    0    -1  
+$EndComp
+Text Label 4150 1300 0    50   ~ 0
+vbat
+Wire Wire Line
+	7100 1200 7200 1200
+Wire Wire Line
+	7000 1200 7000 850 
+Text Label 7000 1075 1    50   ~ 0
+vbat
+Text Label 3275 1300 0    50   ~ 0
+vdd1
+Connection ~ 3975 1700
+Connection ~ 3075 2150
+Wire Wire Line
+	3075 2150 3075 2225
+Wire Wire Line
+	7300 4700 7400 4700
+Connection ~ 7300 4700
+Wire Wire Line
+	7200 4700 7300 4700
+Connection ~ 7200 4700
+Wire Wire Line
+	7100 4700 7200 4700
+Wire Wire Line
+	7000 4700 7100 4700
+Connection ~ 7100 4700
+Connection ~ 7000 4700
+Wire Wire Line
+	7500 1200 7400 1200
+Connection ~ 7400 1200
+Wire Wire Line
+	7300 1200 7400 1200
+Wire Wire Line
+	7200 1200 7300 1200
+Connection ~ 7300 1200
+$Comp
+L MCU_ST_STM32F4:STM32F446RETx U1
+U 1 1 5F047F96
+P 7200 2900
+F 0 "U1" H 7200 1014 50  0000 C CNN
+F 1 "STM32F446RETx" H 7200 923 50  0000 C CNN
+F 2 "Package_QFP:LQFP-64_10x10mm_P0.5mm" H 6600 1200 50  0001 R CNN
+F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00141306.pdf" H 7200 2900 50  0001 C CNN
+	1    7200 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7900 4300 8425 4300
+Wire Wire Line
+	7900 4400 8425 4400
+Text HLabel 8425 4400 2    50   Input ~ 0
+ADR1
+Text HLabel 8425 4300 2    50   Input ~ 0
+ADR2
+$Comp
+L Device:R_Small R51
+U 1 1 60F23C8E
+P 3650 1700
+F 0 "R51" V 3400 1700 50  0000 C CNN
+F 1 "1k" V 3500 1700 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 3650 1700 50  0001 C CNN
+F 3 "~" H 3650 1700 50  0001 C CNN
+	1    3650 1700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BT1
+U 1 1 60F2D293
+P 3075 1975
+F 0 "BT1" H 3200 2100 50  0000 L CNN
+F 1 "MS621FE-FL11E" H 3200 2000 50  0000 L CNN
+F 2 "misc:MS621FE-FL11E" V 3075 2035 50  0001 C CNN
+F 3 "~" V 3075 2035 50  0001 C CNN
+	1    3075 1975
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3075 1775 3075 1700
+Wire Wire Line
+	3075 1700 3550 1700
+Wire Wire Line
+	3075 2150 3975 2150
 $EndSCHEMATC

@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 12 11
+Sheet 11 11
 Title ""
 Date ""
 Rev ""
@@ -51,21 +51,10 @@ L Device:C_Small C100
 U 1 1 60C690BB
 P 975 1150
 F 0 "C100" H 1075 1200 50  0000 L CNN
-F 1 "100uf" H 1075 1150 50  0000 L CNN
+F 1 "47uf" H 1075 1150 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1210_3225Metric" H 975 1150 50  0001 C CNN
 F 3 "~" H 975 1150 50  0001 C CNN
 	1    975  1150
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C105
-U 1 1 60C69971
-P 1500 1150
-F 0 "C105" H 1625 1200 50  0000 L CNN
-F 1 "10uf" H 1625 1150 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1500 1150 50  0001 C CNN
-F 3 "~" H 1500 1150 50  0001 C CNN
-	1    1500 1150
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -81,29 +70,15 @@ F 3 "~" H 1950 1150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	975  875  975  950 
-Wire Wire Line
-	975  950  1500 950 
-Wire Wire Line
-	1500 950  1500 1050
 Connection ~ 975  950 
 Wire Wire Line
 	975  950  975  1050
 Wire Wire Line
-	1500 950  1950 950 
-Wire Wire Line
 	1950 950  1950 1050
-Connection ~ 1500 950 
 Wire Wire Line
 	1950 1250 1950 1375
 Wire Wire Line
-	1950 1375 1500 1375
-Wire Wire Line
 	975  1375 975  1250
-Wire Wire Line
-	1500 1250 1500 1375
-Connection ~ 1500 1375
-Wire Wire Line
-	1500 1375 975  1375
 Wire Wire Line
 	975  1375 975  1500
 Connection ~ 975  1375
@@ -134,21 +109,10 @@ L Device:C_Small C101
 U 1 1 60C7472E
 P 975 2525
 F 0 "C101" H 1075 2575 50  0000 L CNN
-F 1 "100uf" H 1075 2525 50  0000 L CNN
+F 1 "47uf" H 1075 2525 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1210_3225Metric" H 975 2525 50  0001 C CNN
 F 3 "~" H 975 2525 50  0001 C CNN
 	1    975  2525
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C106
-U 1 1 60C74734
-P 1500 2525
-F 0 "C106" H 1625 2575 50  0000 L CNN
-F 1 "10uf" H 1625 2525 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1500 2525 50  0001 C CNN
-F 3 "~" H 1500 2525 50  0001 C CNN
-	1    1500 2525
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -164,29 +128,15 @@ F 3 "~" H 1950 2525 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	975  2250 975  2325
-Wire Wire Line
-	975  2325 1500 2325
-Wire Wire Line
-	1500 2325 1500 2425
 Connection ~ 975  2325
 Wire Wire Line
 	975  2325 975  2425
 Wire Wire Line
-	1500 2325 1950 2325
-Wire Wire Line
 	1950 2325 1950 2425
-Connection ~ 1500 2325
 Wire Wire Line
 	1950 2625 1950 2750
 Wire Wire Line
-	1950 2750 1500 2750
-Wire Wire Line
 	975  2750 975  2625
-Wire Wire Line
-	1500 2625 1500 2750
-Connection ~ 1500 2750
-Wire Wire Line
-	1500 2750 975  2750
 Wire Wire Line
 	975  2750 975  2875
 Connection ~ 975  2750
@@ -427,21 +377,10 @@ L Device:C_Small C102
 U 1 1 60D2C7D7
 P 1000 3850
 F 0 "C102" H 1100 3900 50  0000 L CNN
-F 1 "100uf" H 1100 3850 50  0000 L CNN
+F 1 "47uf" H 1100 3850 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1210_3225Metric" H 1000 3850 50  0001 C CNN
 F 3 "~" H 1000 3850 50  0001 C CNN
 	1    1000 3850
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C107
-U 1 1 60D2C7DD
-P 1525 3850
-F 0 "C107" H 1650 3900 50  0000 L CNN
-F 1 "10uf" H 1650 3850 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1525 3850 50  0001 C CNN
-F 3 "~" H 1525 3850 50  0001 C CNN
-	1    1525 3850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -457,29 +396,15 @@ F 3 "~" H 1975 3850 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1000 3575 1000 3650
-Wire Wire Line
-	1000 3650 1525 3650
-Wire Wire Line
-	1525 3650 1525 3750
 Connection ~ 1000 3650
 Wire Wire Line
 	1000 3650 1000 3750
 Wire Wire Line
-	1525 3650 1975 3650
-Wire Wire Line
 	1975 3650 1975 3750
-Connection ~ 1525 3650
 Wire Wire Line
 	1975 3950 1975 4075
 Wire Wire Line
-	1975 4075 1525 4075
-Wire Wire Line
 	1000 4075 1000 3950
-Wire Wire Line
-	1525 3950 1525 4075
-Connection ~ 1525 4075
-Wire Wire Line
-	1525 4075 1000 4075
 Wire Wire Line
 	1000 4075 1000 4200
 Connection ~ 1000 4075
@@ -515,21 +440,10 @@ L Device:C_Small C103
 U 1 1 60D2F6BA
 P 1000 5200
 F 0 "C103" H 1100 5250 50  0000 L CNN
-F 1 "100uf" H 1100 5200 50  0000 L CNN
+F 1 "47uf" H 1100 5200 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1210_3225Metric" H 1000 5200 50  0001 C CNN
 F 3 "~" H 1000 5200 50  0001 C CNN
 	1    1000 5200
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C108
-U 1 1 60D2F6C0
-P 1525 5200
-F 0 "C108" H 1650 5250 50  0000 L CNN
-F 1 "10uf" H 1650 5200 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 1525 5200 50  0001 C CNN
-F 3 "~" H 1525 5200 50  0001 C CNN
-	1    1525 5200
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -545,29 +459,15 @@ F 3 "~" H 1975 5200 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1000 4925 1000 5000
-Wire Wire Line
-	1000 5000 1525 5000
-Wire Wire Line
-	1525 5000 1525 5100
 Connection ~ 1000 5000
 Wire Wire Line
 	1000 5000 1000 5100
 Wire Wire Line
-	1525 5000 1975 5000
-Wire Wire Line
 	1975 5000 1975 5100
-Connection ~ 1525 5000
 Wire Wire Line
 	1975 5300 1975 5425
 Wire Wire Line
-	1975 5425 1525 5425
-Wire Wire Line
 	1000 5425 1000 5300
-Wire Wire Line
-	1525 5300 1525 5425
-Connection ~ 1525 5425
-Wire Wire Line
-	1525 5425 1000 5425
 Wire Wire Line
 	1000 5425 1000 5550
 Connection ~ 1000 5425
@@ -793,7 +693,7 @@ Wire Wire Line
 Wire Wire Line
 	5875 2875 5300 2875
 Wire Wire Line
-	5875 2400 4775 2400
+	5875 2400 4975 2400
 Wire Wire Line
 	4575 2400 4225 2400
 Text Label 4300 2400 0    50   ~ 0
@@ -1141,7 +1041,7 @@ F 3 "~" H 4675 5450 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5875 5450 4775 5450
+	5875 5450 4975 5450
 Wire Wire Line
 	4575 5450 4225 5450
 Text Label 4300 5450 0    50   ~ 0
@@ -1236,4 +1136,38 @@ F 3 "~" H 1925 6575 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1925 6575 1925 6775
+Text HLabel 4725 2525 0    50   Input ~ 0
+ADR1
+Text HLabel 4775 5575 0    50   Input ~ 0
+ADR2
+Wire Wire Line
+	4775 5575 4975 5575
+Wire Wire Line
+	4975 5575 4975 5450
+Connection ~ 4975 5450
+Wire Wire Line
+	4975 5450 4775 5450
+Wire Wire Line
+	4725 2525 4975 2525
+Wire Wire Line
+	4975 2525 4975 2400
+Connection ~ 4975 2400
+Wire Wire Line
+	4975 2400 4775 2400
+Wire Wire Line
+	975  950  1950 950 
+Wire Wire Line
+	975  1375 1950 1375
+Wire Wire Line
+	975  2325 1950 2325
+Wire Wire Line
+	975  2750 1950 2750
+Wire Wire Line
+	1000 3650 1975 3650
+Wire Wire Line
+	1000 4075 1975 4075
+Wire Wire Line
+	1000 5000 1975 5000
+Wire Wire Line
+	1000 5425 1975 5425
 $EndSCHEMATC

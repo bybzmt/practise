@@ -158,7 +158,7 @@ L Device:R_Small R50
 U 1 1 60C7D4F9
 P 5000 4300
 F 0 "R50" V 4775 4325 50  0000 C CNN
-F 1 "13k" V 4875 4325 50  0000 C CNN
+F 1 "11k" V 4875 4325 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 4300 50  0001 C CNN
 F 3 "~" H 5000 4300 50  0001 C CNN
 	1    5000 4300
@@ -206,17 +206,6 @@ F 1 "22uf" H 9750 1300 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 9625 1300 50  0001 C CNN
 F 3 "~" H 9625 1300 50  0001 C CNN
 	1    9625 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C76
-U 1 1 60C7D51E
-P 10075 1300
-F 0 "C76" H 10200 1350 50  0000 L CNN
-F 1 "22uf" H 10200 1300 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 10075 1300 50  0001 C CNN
-F 3 "~" H 10075 1300 50  0001 C CNN
-	1    10075 1300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -351,17 +340,6 @@ F 3 "~" H 9625 2850 50  0001 C CNN
 	1    9625 2850
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:C_Small C75
-U 1 1 60CC4A80
-P 10075 2850
-F 0 "C75" H 10200 2900 50  0000 L CNN
-F 1 "22uf" H 10200 2850 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 10075 2850 50  0001 C CNN
-F 3 "~" H 10075 2850 50  0001 C CNN
-	1    10075 2850
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9625 2750 9625 2575
 Connection ~ 9625 2575
@@ -486,10 +464,6 @@ F 3 "" H 925 5250 50  0001 C CNN
 	1    925  5250
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	925  4575 925  4375
-Wire Wire Line
-	925  4775 925  4950
 $Comp
 L Device:C_Small C57
 U 1 1 60C7D4B6
@@ -656,31 +630,6 @@ Text Label 5500 3200 0    50   ~ 0
 out+
 Text Label 7000 1025 0    50   ~ 0
 out+
-$Comp
-L Device:C_Small C58
-U 1 1 610F7DFC
-P 550 4675
-F 0 "C58" H 650 4725 50  0000 L CNN
-F 1 "10uf" H 650 4675 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 550 4675 50  0001 C CNN
-F 3 "~" H 550 4675 50  0001 C CNN
-	1    550  4675
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	550  4575 550  4375
-Wire Wire Line
-	550  4375 925  4375
-Connection ~ 925  4375
-Wire Wire Line
-	925  4375 925  3900
-Wire Wire Line
-	550  4775 550  4950
-Wire Wire Line
-	550  4950 925  4950
-Connection ~ 925  4950
-Wire Wire Line
-	925  4950 925  5250
 $Comp
 L power:VCC #PWR045
 U 1 1 60E5B30C
@@ -1105,4 +1054,30 @@ F 3 "" H 10625 3875 50  0001 C CNN
 	1    10625 3875
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:CP_Small C75
+U 1 1 60F6609A
+P 10075 1300
+F 0 "C75" H 10200 1350 50  0000 L CNN
+F 1 "220uf" H 10200 1300 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 10075 1300 50  0001 C CNN
+F 3 "~" H 10075 1300 50  0001 C CNN
+	1    10075 1300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP_Small C76
+U 1 1 60F683A6
+P 10075 2850
+F 0 "C76" H 9950 2800 50  0000 R CNN
+F 1 "220uf" H 9950 2850 50  0000 R CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 10075 2850 50  0001 C CNN
+F 3 "~" H 10075 2850 50  0001 C CNN
+	1    10075 2850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	925  3900 925  4575
+Wire Wire Line
+	925  4775 925  5250
 $EndSCHEMATC

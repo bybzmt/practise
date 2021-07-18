@@ -48,6 +48,8 @@ F28 "BT_prev" O L 2075 2625 50
 F29 "BT_next" O L 2075 2525 50 
 F30 "HP_EN" O R 3325 1225 50 
 F31 "OLED_EN" O R 3325 2600 50 
+F32 "ADR1" I R 3325 2800 50 
+F33 "ADR2" I R 3325 2900 50 
 $EndSheet
 $Sheet
 S 690  6485 1250 1000
@@ -430,6 +432,8 @@ F8 "OUT_A-" O R 6500 4150 50
 F9 "OUT_B+" O R 6500 4300 50 
 F10 "OUT_B-" O R 6500 4425 50 
 F11 "SD" I L 5375 4525 50 
+F12 "ADR1" I R 6500 4525 50 
+F13 "ADR2" I R 6500 4625 50 
 $EndSheet
 Wire Wire Line
 	5375 4025 4900 4025
@@ -505,4 +509,20 @@ Wire Wire Line
 	3325 2600 4100 2600
 Text Label 3525 2600 0    50   ~ 0
 oled_en
+Wire Wire Line
+	6500 4525 6950 4525
+Wire Wire Line
+	6500 4625 6950 4625
+Text Label 6625 4525 0    50   ~ 0
+adr1
+Text Label 6625 4625 0    50   ~ 0
+adr2
+Wire Wire Line
+	3325 2800 4100 2800
+Wire Wire Line
+	3325 2900 4100 2900
+Text Label 3525 2800 0    50   ~ 0
+adr1
+Text Label 3525 2900 0    50   ~ 0
+adr2
 $EndSCHEMATC
