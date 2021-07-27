@@ -1,24 +1,33 @@
 #include "base.h"
 #include "ssd1306.h"
+#include "ssd1306_fonts.h"
 #include "ssd1306_tests.h"
 
 #define VOLUME_TO_DB(v) (((int16_t)v - 207) / 2)
 
-static void _oled_show_fs(char *str)
+static void _oled_show_fs()
 {
     ssd1306_FillRectangle(0, 0, 7*5, 10, Black);
 
     ssd1306_SetCursor(0, 0);
 
-    ssd1306_Digit(str, 7, 10, White);
+    char buf[6];
+    sprintf(buf, "%d", (uint8_t)(audio.freq / 1000));
+    ssd1306_Digit(buf, 7, 10, White);
+
     ssd1306_Char(K, 7, 10, White);
     ssd1306_Char(H, 7, 10, White);
     ssd1306_Char(z, 7, 10, White);
+
+    ssd1306_Char(2A, 7, 10, White);
+
+    sprintf(buf, "%d", audio.bit_depth);
+    ssd1306_Digit(buf, 7, 10, White);
 }
 
 static void _oled_show_vol()
 {
-    if (audio.mute) {
+    if (settings.mute) {
         ssd1306_SetCursor(100, 53);
         ssd1306_Char(M, 7, 10, Black);
         ssd1306_Char(u, 7, 10, Black);
@@ -29,7 +38,7 @@ static void _oled_show_vol()
     }
 
     char buf[6];
-    int16_t db = VOLUME_TO_DB(audio.vol);
+    int16_t db = VOLUME_TO_DB(settings.vol);
 
     ssd1306_SetCursor(50, 26);
     if (db < 0) {
@@ -54,14 +63,27 @@ static void _oled_show_vol()
     ssd1306_Char(B, 7, 10, White);
 }
 
-static void _oled_show_input()
+static void _oled_show_input(void)
 {
     ssd1306_FillRectangle(0, 53, 7*4, 10, Black);
     ssd1306_SetCursor(0, 53);
 
-    ssd1306_Char(U, 7, 10, White);
-    ssd1306_Char(S, 7, 10, White);
-    ssd1306_Char(B, 7, 10, White);
+    if (settings.input_mode==0) {
+        ssd1306_Char(U, 7, 10, White);
+        ssd1306_Char(S, 7, 10, White);
+        ssd1306_Char(B, 7, 10, White);
+    }
+    else if (settings.input_mode == 1) {
+        ssd1306_Char(B, 7, 10, White);
+        ssd1306_Char(T, 7, 10, White);
+    }
+    else if (settings.input_mode == 2) {
+        ssd1306_Char(S, 7, 10, White);
+        ssd1306_Char(P, 7, 10, White);
+        ssd1306_Char(D, 7, 10, White);
+        ssd1306_Char(I, 7, 10, White);
+        ssd1306_Char(F, 7, 10, White);
+    }
 }
 
 void oled_init(void)
@@ -81,16 +103,88 @@ void oled_init(void)
     /* ssd1306_TestAll(); */
 }
 
-void oled_mode1(uint8_t focus)
+void oled_mode1(void)
 {
+    ssd1306_Fill(Black);
+
     _oled_show_input();
     _oled_show_vol();
-    _oled_show_fs("48");
+    _oled_show_fs();
 
     ssd1306_UpdateScreen();
 }
 
 void oled_mode2(uint8_t focus)
 {
-    return;
+    ssd1306_Fill(Black);
+
+    uint8_t line_h = 15;
+
+    ssd1306_SetCursor(0, 0);
+    ssd1306_WriteString("input: usb", &Font_7x10, focus==0 ? Black : White);
+    if (focus == 0) {
+        ssd1306_WriteString(" *", &Font_7x10, Black);
+    }
+
+    ssd1306_SetCursor(0, line_h*1);
+    ssd1306_WriteString("input: BT", &Font_7x10, focus==1 ? Black : White);
+    if (focus == 1) {
+        ssd1306_WriteString(" *", &Font_7x10, Black);
+    }
+
+    ssd1306_SetCursor(0, line_h*2);
+    ssd1306_WriteString("input: SPDIF", &Font_7x10, focus==2 ? Black : White);
+    if (focus == 2) {
+        ssd1306_WriteString(" *", &Font_7x10, Black);
+    }
+
+    ssd1306_SetCursor(0, line_h*3);
+    ssd1306_WriteString("MUTE", &Font_7x10, focus==3 ? Black : White);
+}
+
+void oled_mode3(uint8_t focus)
+{
+    ssd1306_Fill(Black);
+
+    uint8_t line_h = 15;
+
+    ssd1306_SetCursor(0, 0);
+    ssd1306_WriteString("Back", &Font_7x10, focus==0 ? Black : White);
+
+    ssd1306_SetCursor(0, line_h*1);
+    ssd1306_WriteString("auto_switch", &Font_7x10, focus==1 ? Black : White);
+    if (settings.auto_switch) {
+        ssd1306_WriteString(" Yes", &Font_7x10, focus==1 ? Black : White);
+    } else {
+        ssd1306_WriteString(" No", &Font_7x10, focus==1 ? Black : White);
+    }
+
+    ssd1306_SetCursor(0, line_h*2);
+    ssd1306_WriteString("headphone_on", &Font_7x10, focus==2 ? Black : White);
+    if (settings.auto_switch) {
+        ssd1306_WriteString(" N/A", &Font_7x10, focus==2 ? Black : White);
+    } else if (settings.headphone_on) {
+        ssd1306_WriteString(" Yes", &Font_7x10, focus==2 ? Black : White);
+    } else {
+        ssd1306_WriteString(" No", &Font_7x10, focus==2 ? Black : White);
+    }
+
+    ssd1306_SetCursor(0, line_h*3);
+    ssd1306_WriteString("speakers_on", &Font_7x10, focus==3 ? Black : White);
+    if (settings.auto_switch) {
+        ssd1306_WriteString(" N/A", &Font_7x10, focus==3 ? Black : White);
+    } else if (settings.speakers_on) {
+        ssd1306_WriteString(" Yes", &Font_7x10, focus==3 ? Black : White);
+    } else {
+        ssd1306_WriteString(" No", &Font_7x10, focus==3 ? Black : White);
+    }
+
+
+    ssd1306_SetCursor(0, line_h*4);
+    ssd1306_WriteString("auto_off", &Font_7x10, focus==4 ? Black : White);
+    if (settings.auto_off) {
+        ssd1306_WriteString(" Yes", &Font_7x10, focus==4 ? Black : White);
+    } else {
+        ssd1306_WriteString(" No", &Font_7x10, focus==4 ? Black : White);
+    }
 }

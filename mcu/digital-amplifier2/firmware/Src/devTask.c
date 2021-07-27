@@ -8,16 +8,17 @@ void task_dev_setter()
     printf("task dev running\n");
 
     uint8_t old_mode = 255;
-    bool old_out1_en = 0;
-    bool old_out2_en = 0;
+    bool old_headphone_on = 0;
+    bool old_speakers_on = 0;
     uint32_t old_audioFreq = 0;
     uint8_t old_bit_depth = 0;
     uint8_t close_tick1 = 0;
     uint8_t close_tick2 = 0;
+    uint8_t old_vol = 255;
 
     uint8_t input_mode = 0;
-    bool out1_en = 0;
-    bool out2_en = 0;
+    bool headphone_on = 0;
+    bool speakers_on = 0;
     uint32_t audioFreq = SAI_AUDIO_FREQUENCY_44K;
     uint8_t bit_depth = 16;
     uint8_t vol = 0;
@@ -26,8 +27,8 @@ void task_dev_setter()
     for (;;) {
         if (xTaskNotifyWait(0, ~0ul, &data, 1000)) {
             input_mode = (data>>24) & 0xf;
-            out1_en = (data>>20) & 0xf;
-            out2_en = (data>>16) & 0xf;
+            headphone_on = (data>>20) & 0xf;
+            speakers_on = (data>>16) & 0xf;
 
             switch ((data>>12) & 0xf) {
                 case 0: audioFreq = SAI_AUDIO_FREQUENCY_44K; break;
@@ -61,45 +62,48 @@ void task_dev_setter()
                 old_mode = input_mode;
             }
 
-            if (!old_out1_en && out1_en) {
+            if (!old_headphone_on && headphone_on) {
                 bsp_pcm1792_init();
                 bsp_pcm1792_play(audioFreq, bit_depth, vol);
 
-                old_out1_en = true;
+                old_headphone_on = true;
                 close_tick1 = 0;
-            } else if (old_out1_en && out1_en) {
+            } else if (old_headphone_on && headphone_on) {
                 if (old_audioFreq != audioFreq || old_bit_depth != bit_depth) {
                     bsp_pcm1792_play(audioFreq, bit_depth, vol);
                 } else {
                     bsp_pcm1792_volume(vol);
                 }
-            } else if (old_out1_en && !out1_en) {
+            } else if (old_headphone_on && !headphone_on) {
                 bsp_pcm1792_stop();
 
-                old_out1_en = false;
+                old_headphone_on = false;
                 close_tick1 = 1;
             }
 
-            if (!old_out2_en && out2_en) {
+            if (!old_speakers_on && speakers_on) {
                 bsp_tas5805_init();
                 bsp_tas5805_play(audioFreq, bit_depth, vol);
 
-                old_out2_en = true;
+                old_speakers_on = true;
                 close_tick2 = 0;
-            } else if (old_out2_en && out2_en) {
+            } else if (old_speakers_on && speakers_on) {
                 if (old_audioFreq != audioFreq || old_bit_depth != bit_depth) {
                     bsp_tas5805_play(audioFreq, bit_depth, vol);
                 } else {
                     bsp_tas5805_volume(vol);
                 }
-            } else if (old_out2_en && !out2_en) {
+            } else if (old_speakers_on && !speakers_on) {
                 bsp_tas5805_stop();
 
-                old_out2_en = false;
+                old_speakers_on = false;
                 close_tick2 = 1;
             }
 
-            btn_evt_vol_change();
+            if (old_vol != vol) {
+                btn_oled_refresh();
+                old_vol = vol;
+            }
 
             old_audioFreq = audioFreq;
             old_bit_depth = bit_depth;

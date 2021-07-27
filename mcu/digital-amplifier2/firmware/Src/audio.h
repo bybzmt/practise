@@ -21,6 +21,9 @@
 
 #define VOLUME_0dB 0xCF
 
+/* usb供电时最大音量 */
+#define VOLUME_ON_USB_POWER (0xCF-40)
+
  /*
   * Volume: 0.5dB/step
   * 0xFF: +24 dB
@@ -30,33 +33,51 @@
 */
 typedef uint8_t volume_t;
 
+/* 用户设置 */
+typedef struct {
+    bool _saved;
+
+    /* 输入源 */
+    uint8_t input_mode;
+    /* 音量 */
+    volume_t vol;
+    /* 静音 */
+    bool mute;
+    /* 耳机是否打开  */
+    bool headphone_on;
+    /* 音箱是否打开  */
+    bool speakers_on;
+    /* 耳机音箱自动切换 */
+    bool auto_switch;
+    /* 无数据时是否自动关闭 */
+    bool auto_off;
+} settings_t;
+
 typedef struct {
     uint8_t input_buf[AUDIO_INPUT_BUF_SIZE];
     uint8_t out_buf[AUDIO_OUT_BUF_SIZE];
 
-    uint8_t input_mode;
     uint32_t freq;
     uint8_t bit_depth;
-    volume_t vol;
-    bool mute;
 
-    bool set_out1;
-    bool set_out2;
-    bool set_auto_switch;
-    bool set_auto_off;
+    /* 供电来自usb */
+    bool power_from_usb;
 
     uint16_t w_idx;
     uint8_t state;
     uint8_t sample_size;
 
-    bool out_dev_en;
+    /* 是否要输出 */
+    bool is_play;
+    /* 无数据计数 */
     uint16_t all_zero;
 
     TaskHandle_t input_task_hd;
     TaskHandle_t out_task_hd;
-} Audio;
+} audio_t;
 
-extern Audio audio;
+extern audio_t audio;
+extern settings_t settings;
 
 void audio_init(uint32_t AudioFreq, uint8_t bit_depth);
 void audio_play(void);

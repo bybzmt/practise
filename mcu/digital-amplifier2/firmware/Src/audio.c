@@ -6,7 +6,11 @@ static uint16_t audio_rd_idx(void);
 static void audio_sai_init(uint32_t AudioFreq, uint8_t bit_depth);
 static void audio_dma_cplt_cb(SAI_HandleTypeDef *hsai);
 
-Audio audio = {0};
+audio_t audio = {
+    .power_from_usb = 1,
+};
+
+__attribute__((section("BKP_SRAM"))) settings_t settings={0};
 
 void audio_init(uint32_t audioFreq, uint8_t bit_depth)
 {
@@ -16,6 +20,10 @@ void audio_init(uint32_t audioFreq, uint8_t bit_depth)
     audio.bit_depth = bit_depth;
     audio.sample_size = bit_depth/8*2;
 
+    audio.w_idx = 0;
+    audio.is_play = 0;
+    audio.all_zero = 65535;
+
     audio_sai_init(audioFreq, bit_depth);
 }
 
@@ -23,8 +31,8 @@ void audio_play(void)
 {
     audio.state = AUDIO_STATE_INIT;
 
-    audio.out_dev_en = true;
-    audio.all_zero = 0;
+    audio.is_play = true;
+    audio.all_zero = 65535;
 
     audio_notify_dev();
 }
@@ -33,7 +41,7 @@ void audio_stop(void)
 {
     memset(audio.out_buf, 0, sizeof(audio.out_buf));
 
-    audio.out_dev_en = false;
+    audio.is_play = false;
 
     audio_notify_dev();
 }
@@ -41,15 +49,15 @@ void audio_stop(void)
 void audio_notify_dev(void)
 {
     uint32_t data = 0;
-    data |= audio.input_mode << 24;
+    data |= settings.input_mode << 24;
 
-    if (audio.out_dev_en) {
+    if (audio.is_play) {
         /* 非自动关闭 或 自动关闭下有数据 */
-        if (!audio.set_auto_off || (audio.set_auto_off && audio.all_zero != 65535)) {
-            if (audio.set_out1) {
+        if (!settings.auto_off || (settings.auto_off && audio.all_zero != 65535)) {
+            if (settings.headphone_on) {
                 data |= 1 << 20;
             }
-            if (audio.set_out2) {
+            if (settings.speakers_on) {
                 data |= 1 << 16;
             }
         }
@@ -70,8 +78,12 @@ void audio_notify_dev(void)
         case 32:  data |= 2<<8; break;
     }
 
-    if (!audio.mute) {
-        data |= audio.vol;
+    if (!settings.mute) {
+        if (audio.power_from_usb && settings.vol > VOLUME_ON_USB_POWER) {
+            data |= VOLUME_ON_USB_POWER;
+        } else {
+            data |= settings.vol;
+        }
     }
 
     if (__get_IPSR()) {
@@ -143,13 +155,13 @@ void audio_clock_sync(void)
 
 void audio_setVolume(volume_t vol)
 {
-    audio.vol = vol;
+    settings.vol = vol;
     audio_notify_dev();
 }
 
 void audio_setMute(bool flag)
 {
-    audio.mute = flag;
+    settings.mute = flag;
     audio_notify_dev();
 }
 

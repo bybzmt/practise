@@ -5,20 +5,17 @@
 #include "base.h"
 #include "msp_i2c.h"
 #include "bsp_tas5805.h"
+#include "stm32f4xx_ll_exti.h"
 
 #define ADDR_1 (0x5a)
 #define ADDR_2 (0x5c)
 
+static void bsp_tas5805_on_err(void);
+static void bsp_tas5805_pin_init(void);
+
 void bsp_tas5805_init()
 {
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    GPIO_InitTypeDef  GPIO_InitStruct;
-    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull  = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Pin = GPIO_PIN_10;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    bsp_tas5805_pin_init();
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1);
     vTaskDelay(20);
@@ -36,6 +33,43 @@ void bsp_tas5805_init()
 
     msp_i2c_write_reg(ADDR_1, 0x78, 0b10000000); //clear analog fault
     msp_i2c_write_reg(ADDR_2, 0x78, 0b10000000); //clear analog fault
+}
+
+static void bsp_tas5805_pin_init(void)
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    GPIO_InitTypeDef  GPIO_InitStruct;
+    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pin = GPIO_PIN_10;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_14;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    NVIC_SetVector(EXTI15_10_IRQn, (uint32_t)&bsp_tas5805_on_err);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+    NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+
+static void bsp_tas5805_on_err(void)
+{
+    if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_13)) {
+        //msp_i2c_write_reg(ADDR_2, 0x03, 0x03); //SET TO Hi-z
+        LL_EXTI_ClearFlag_0_31(GPIO_PIN_13);
+    }
+
+    if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_14)) {
+        //msp_i2c_write_reg(ADDR_2, 0x03, 0x03); //SET TO Hi-z
+        LL_EXTI_ClearFlag_0_31(GPIO_PIN_14);
+    }
+
 }
 
 void bsp_tas5805_play(uint32_t AudioFreq, uint8_t bit_depth, volume_t vol)

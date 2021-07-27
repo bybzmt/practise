@@ -41,8 +41,9 @@ _Min_Stack_Size = 0x400;; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
+    FLASH (rx)     : ORIGIN = 0x8000000,  LENGTH = 256K
+    RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
+    BKPSRAM (rw)   : ORIGIN = 0x40024000, LENGTH = 4096
 }
 
 /* Define output sections */
@@ -55,6 +56,14 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+
+  /* stm32 backup sram */
+   .BKP_SRAM :
+  {
+    . = ALIGN(4);
+    *(.BKP_SRAM)
+    . = ALIGN(4);
+  } >BKPSRAM
 
   /* The program code and other data goes into FLASH */
   .text :
@@ -153,7 +162,6 @@ SECTIONS
     . = ALIGN(4);
   } >RAM
 
-  
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

@@ -382,7 +382,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->alt_setting = 0U;
         haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
         haudio->bit_depth = 16U;
-        haudio->vol = audio.vol;
+        haudio->vol = settings.vol;
 
         audio_init(haudio->freq, haudio->bit_depth);
         audio_play();
@@ -517,11 +517,9 @@ static uint8_t USBD_AUDIO_Setup(USBD_HandleTypeDef* pdev,
                                     AUDIO_OUT_StopAndReset(pdev);
                                 } else if (haudio->alt_setting == 1U) {
                                     haudio->bit_depth = 16U;
-                                    audio.bit_depth= 16;
                                     AUDIO_OUT_Restart(pdev);
                                 } else if (haudio->alt_setting == 2U) {
                                     haudio->bit_depth = 24U;
-                                    audio.bit_depth= 24;
                                     AUDIO_OUT_Restart(pdev);
                                 }
                             }

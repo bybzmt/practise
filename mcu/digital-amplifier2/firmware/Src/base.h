@@ -17,10 +17,11 @@ void task_bt_input();
 void task_btn_service();
 void task_dev_setter();
 
-void btn_evt_vol_change(void);
+void btn_oled_refresh(void);
 void oled_init(void);
-void oled_mode1(uint8_t focus);
+void oled_mode1(void);
 void oled_mode2(uint8_t focus);
+void oled_mode3(uint8_t focus);
 
 #ifdef __cplusplus
 }
