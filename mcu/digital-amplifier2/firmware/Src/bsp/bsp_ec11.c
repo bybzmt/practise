@@ -17,7 +17,7 @@ void bsp_ec11_init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     GPIO_InitStructure.Pin       = GPIO_PIN_1 | GPIO_PIN_2;
-    GPIO_InitStructure.Mode      = GPIO_MODE_IT_FALLING;
+    GPIO_InitStructure.Mode      = GPIO_MODE_IT_RISING_FALLING;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     NVIC_SetVector(EXTI0_IRQn, (uint32_t)&ec11_btn_irq);
@@ -51,19 +51,22 @@ static volatile bool ec11_a=0;
 static volatile bool ec11_b=0;
 static volatile uint8_t direction=0;
 
-void bsp_ec11_rotate_reset(void)
-{
-    direction = 0;
-}
-
 static void ec11_rotate_irq(void)
 {
-    if (direction == 0) {
-        direction = 1;
-    }
+    ec11_a = !ec11_a;
 
-    if (direction == 1) {
-        ec11_rotate_left();
+    if (ec11_a) {
+        if (direction == 0) {
+            direction = 1;
+        }
+    } else {
+        if (direction == 2) {
+            direction = 0;
+        } else if (direction == 1) {
+            if (ec11_b) {
+                ec11_rotate_left();
+            }
+        }
     }
 
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
@@ -71,12 +74,20 @@ static void ec11_rotate_irq(void)
 
 static void ec11_rotate_irq2(void)
 {
-    if (direction == 0) {
-        direction = 2;
-    }
+    ec11_b = !ec11_b;
 
-    if (direction == 2) {
-        ec11_rotate_right();
+    if (ec11_b) {
+        if (direction == 0) {
+            direction = 2;
+        }
+    } else {
+        if (direction == 1) {
+            direction = 0;
+        } else if (direction == 2) {
+            if (ec11_a) {
+                ec11_rotate_right();
+            }
+        }
     }
 
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);

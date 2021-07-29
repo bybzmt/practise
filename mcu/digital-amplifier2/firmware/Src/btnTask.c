@@ -60,17 +60,20 @@ static void btn_mode1(uint8_t evt)
             break;
 
         case evt_left:
-            tick = HAL_GetTick() - old_tick;
-            audio_changeVolume(tick > 200 ? -2 : -10);
+            /* tick = HAL_GetTick() - old_tick; */
+            /* audio_changeVolume(tick > 200 ? -2 : -10); */
+            /* old_tick = HAL_GetTick(); */
+            audio_changeVolume(-2);
             oled_mode1();
-            old_tick = HAL_GetTick();
             break;
 
         case evt_right:
-            tick = HAL_GetTick() - old_tick;
-            audio_changeVolume(tick > 200 ? 2 : 10);
+            /* tick = HAL_GetTick() - old_tick; */
+            /* audio_changeVolume(tick > 200 ? 2 : 10); */
+            /* old_tick = HAL_GetTick(); */
+
+            audio_changeVolume(2);
             oled_mode1();
-            old_tick = HAL_GetTick();
             break;
 
         case evt_sw_down:
@@ -142,12 +145,12 @@ static void btn_mode3(uint8_t evt)
             break;
 
         case evt_left:
-            focus = cut_and_mod(focus, 1, 7);
+            focus = cut_and_mod(focus, 1, 5);
             oled_mode3(focus);
             break;
 
         case evt_right:
-            focus = (focus+1) % 7;
+            focus = (focus+1) % 5;
             oled_mode3(focus);
             break;
 
@@ -216,8 +219,6 @@ void task_btn_service()
             }
 
         } else {
-
-            bsp_ec11_rotate_reset();
 
             if (settings.auto_switch) {
                 if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)) {

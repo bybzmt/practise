@@ -7,22 +7,16 @@
 
 static void _oled_show_fs()
 {
-    ssd1306_FillRectangle(0, 0, 7*5, 10, Black);
-
     ssd1306_SetCursor(0, 0);
 
     char buf[6];
     sprintf(buf, "%d", (uint8_t)(audio.freq / 1000));
     ssd1306_Digit(buf, 7, 10, White);
-
-    ssd1306_Char(K, 7, 10, White);
-    ssd1306_Char(H, 7, 10, White);
-    ssd1306_Char(z, 7, 10, White);
-
-    ssd1306_Char(2A, 7, 10, White);
+    ssd1306_WriteString("KHz ", &Font_7x10, White);
 
     sprintf(buf, "%d", audio.bit_depth);
     ssd1306_Digit(buf, 7, 10, White);
+    ssd1306_WriteString("bit", &Font_7x10, White);
 }
 
 static void _oled_show_vol()
@@ -33,8 +27,6 @@ static void _oled_show_vol()
         ssd1306_Char(u, 7, 10, Black);
         ssd1306_Char(t, 7, 10, Black);
         ssd1306_Char(e, 7, 10, Black);
-    } else {
-        ssd1306_FillRectangle(100, 53, 7*4, 10, Black);
     }
 
     char buf[6];
@@ -53,7 +45,6 @@ static void _oled_show_vol()
         printf("vol: %ddB\n", db);
     }
 
-    ssd1306_FillRectangle(50+7+1, 20, 16*3+7*2+1, 26, Black);
     ssd1306_SetCursor(50+7+1, 20);
     ssd1306_Digit(buf, 16, 26, White);
 
@@ -65,24 +56,16 @@ static void _oled_show_vol()
 
 static void _oled_show_input(void)
 {
-    ssd1306_FillRectangle(0, 53, 7*4, 10, Black);
     ssd1306_SetCursor(0, 53);
 
     if (settings.input_mode==0) {
-        ssd1306_Char(U, 7, 10, White);
-        ssd1306_Char(S, 7, 10, White);
-        ssd1306_Char(B, 7, 10, White);
+        ssd1306_WriteString("USB", &Font_7x10, White);
     }
     else if (settings.input_mode == 1) {
-        ssd1306_Char(B, 7, 10, White);
-        ssd1306_Char(T, 7, 10, White);
+        ssd1306_WriteString("BT", &Font_7x10, White);
     }
     else if (settings.input_mode == 2) {
-        ssd1306_Char(S, 7, 10, White);
-        ssd1306_Char(P, 7, 10, White);
-        ssd1306_Char(D, 7, 10, White);
-        ssd1306_Char(I, 7, 10, White);
-        ssd1306_Char(F, 7, 10, White);
+        ssd1306_WriteString("SPDIF", &Font_7x10, White);
     }
 }
 
@@ -122,31 +105,33 @@ void oled_mode2(uint8_t focus)
 
     ssd1306_SetCursor(0, 0);
     ssd1306_WriteString("input: usb", &Font_7x10, focus==0 ? Black : White);
-    if (focus == 0) {
-        ssd1306_WriteString(" *", &Font_7x10, Black);
+    if (settings.input_mode == 0) {
+        ssd1306_WriteString(" *", &Font_7x10, focus==0 ? Black : White);
     }
 
     ssd1306_SetCursor(0, line_h*1);
     ssd1306_WriteString("input: BT", &Font_7x10, focus==1 ? Black : White);
-    if (focus == 1) {
-        ssd1306_WriteString(" *", &Font_7x10, Black);
+    if (settings.input_mode == 1) {
+        ssd1306_WriteString(" *", &Font_7x10, focus==1 ? Black : White);
     }
 
     ssd1306_SetCursor(0, line_h*2);
     ssd1306_WriteString("input: SPDIF", &Font_7x10, focus==2 ? Black : White);
-    if (focus == 2) {
-        ssd1306_WriteString(" *", &Font_7x10, Black);
+    if (settings.input_mode == 2) {
+        ssd1306_WriteString(" *", &Font_7x10, focus==1 ? Black : White);
     }
 
     ssd1306_SetCursor(0, line_h*3);
     ssd1306_WriteString("MUTE", &Font_7x10, focus==3 ? Black : White);
+
+    ssd1306_UpdateScreen();
 }
 
 void oled_mode3(uint8_t focus)
 {
     ssd1306_Fill(Black);
 
-    uint8_t line_h = 15;
+    uint8_t line_h = 12;
 
     ssd1306_SetCursor(0, 0);
     ssd1306_WriteString("Back", &Font_7x10, focus==0 ? Black : White);
@@ -179,7 +164,6 @@ void oled_mode3(uint8_t focus)
         ssd1306_WriteString(" No", &Font_7x10, focus==3 ? Black : White);
     }
 
-
     ssd1306_SetCursor(0, line_h*4);
     ssd1306_WriteString("auto_off", &Font_7x10, focus==4 ? Black : White);
     if (settings.auto_off) {
@@ -187,4 +171,6 @@ void oled_mode3(uint8_t focus)
     } else {
         ssd1306_WriteString(" No", &Font_7x10, focus==4 ? Black : White);
     }
+
+    ssd1306_UpdateScreen();
 }

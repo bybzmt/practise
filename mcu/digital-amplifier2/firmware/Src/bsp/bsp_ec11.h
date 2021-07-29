@@ -6,4 +6,3 @@ void (*ec11_sw_down)(void);
 void (*ec11_sw_up)(void);
 
 void bsp_ec11_init(void);
-void bsp_ec11_rotate_reset(void);
