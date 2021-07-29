@@ -50,8 +50,7 @@ static void _oled_show_vol()
 
     uint8_t len = strlen(buf);
     ssd1306_SetCursor(50+7+2 + (len*16), 36);
-    ssd1306_Char(d, 7, 10, White);
-    ssd1306_Char(B, 7, 10, White);
+    ssd1306_WriteString("dB", &Font_7x10, audio.power_from_usb ? Black : White);
 }
 
 static void _oled_show_input(void)

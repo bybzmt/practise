@@ -211,17 +211,13 @@ void task_btn_service()
     btn_mode1(evt_entry);
 
     for (;;) {
-        if (xQueueReceive(btn_que, &evt, 1000)) {
-            /* printf("mode:%d evt:%d\n", btn_mode, evt); */
-
+        if (xQueueReceive(btn_que, &evt, 200)) {
             switch (btn_mode) {
                 case 1: btn_mode1(evt); break;
                 case 2: btn_mode2(evt); break;
                 case 3: btn_mode3(evt); break;
             }
-
         } else {
-
             if (settings.auto_switch) {
                 if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)) {
                     if (settings.headphone_on != 1 || settings.speakers_on != 0) {
@@ -242,6 +238,7 @@ void task_btn_service()
             if (audio.power_from_usb != is_usb) {
                 audio.power_from_usb = is_usb;
                 audio_notify_dev();
+                btn_oled_refresh();
             }
         }
     }

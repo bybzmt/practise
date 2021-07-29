@@ -8,7 +8,7 @@
 #define VOLUME_0dB 0xCF
 
 /* usb供电时最大音量 */
-#define VOLUME_ON_USB_POWER (0xCF-40)
+#define VOLUME_ON_USB_POWER (0xCF-50)
 
  /*
   * Volume: 0.5dB/step
