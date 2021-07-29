@@ -4,6 +4,7 @@
 #include "usbd_desc.h"
 #include "usbd_audio.h"
 #include "bsp_btm331_sai.h"
+#include "bsp_btm331_spdif.h"
 #include "bsp_spdifrx.h"
 
 void task_init(void)
@@ -31,21 +32,35 @@ void task_bt_input()
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
 
-    bsp_btm331_init();
-    bsp_btm331_sai_start();
+    bsp_btm331_spdif_init();
 
     uint32_t interrupt;
+    bool waiting = true;
 
     for (;;) {
-        if (xTaskNotifyWait(0, ~0ul, &interrupt, 500) == pdTRUE) {
-            bsp_btm331_deInit();
+        if (xTaskNotifyWait(0, ~0ul, &interrupt, 10) == pdTRUE) {
+            bsp_btm331_spdif_deInit();
             break;
+        }
+
+        if (waiting) {
+            if (bsp_btm331_spdif_wait_signal()) {
+                bsp_btm331_spdif_start();
+                waiting = false;
+            }
+        } else {
+            vTaskDelay(500);
+
+            if (audio.state == AUDIO_STATE_ERROR) {
+                bsp_spdifrx_stop();
+                vTaskDelay(10);
+                bsp_btm331_spdif_start();
+                waiting = true;
+            }
         }
 
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
-
-        vTaskDelay(10);
     }
 
     vTaskDelete(NULL);

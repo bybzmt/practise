@@ -7,7 +7,7 @@
 static void _dma_half_cplt(SAI_HandleTypeDef *hsai);
 static void _dma_cplt(SAI_HandleTypeDef *hsai);
 
-void bsp_btm331_init(void)
+void bsp_btm331_sai_init(void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -53,7 +53,7 @@ void bsp_btm331_sai_start(void)
     audio_play();
 }
 
-void bsp_btm331_reset(void)
+void bsp_btm331_sai_reset(void)
 {
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
     //长按3秒进入配对
@@ -61,7 +61,7 @@ void bsp_btm331_reset(void)
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 0);
 }
 
-void bsp_btm331_deInit(void)
+void bsp_btm331_sai_deInit(void)
 {
     msp_sai_in_deInit();
 

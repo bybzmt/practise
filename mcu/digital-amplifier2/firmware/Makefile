@@ -52,6 +52,7 @@ C_SOURCES+=Src/msp/msp_spdifrx.c
 
 C_SOURCES+=Src/bsp/bsp_ec11.c
 C_SOURCES+=Src/bsp/bsp_btm331_sai.c
+C_SOURCES+=Src/bsp/bsp_btm331_spdif.c
 C_SOURCES+=Src/bsp/bsp_spdifrx.c
 C_SOURCES+=Src/bsp/bsp_pcm1792.c
 C_SOURCES+=Src/bsp/bsp_tas5805.c

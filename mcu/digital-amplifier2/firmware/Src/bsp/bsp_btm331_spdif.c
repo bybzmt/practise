@@ -4,7 +4,7 @@
 #include "bsp_spdifrx.h"
 #include "bsp_btm331_spdif.h"
 
-void bsp_btm331_init(void)
+void bsp_btm331_spdif_init(void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -39,7 +39,7 @@ void bsp_btm331_init(void)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 
-bool bsp_btm331_wait_signal(void)
+bool bsp_btm331_spdif_wait_signal(void)
 {
     return HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
 }
@@ -56,10 +56,10 @@ void bsp_btm331_spdif_start(void)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     SpdifrxHandle.Init.InputSelection = SPDIFRX_INPUT_IN1;
-    bsp_spdifrx_start();
+    bsp_spdifrx_real_start();
 }
 
-void bsp_btm331_reset(void)
+void bsp_btm331_spdif_reset(void)
 {
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
     //长按3秒进入配对
@@ -67,11 +67,11 @@ void bsp_btm331_reset(void)
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 0);
 }
 
-void bsp_btm331_deInit(void)
+void bsp_btm331_spdif_deInit(void)
 {
-    bsp_spdif_stop();
+    bsp_spdifrx_stop();
 
-    HAL_GPIO_deInit(GPIOC, GPIO_PIN_7);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7);
 
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 }

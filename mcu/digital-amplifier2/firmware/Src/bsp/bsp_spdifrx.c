@@ -45,6 +45,11 @@ void bsp_spdifrx_start(void)
 
     SpdifrxHandle.Init.InputSelection = SPDIFRX_INPUT_IN3;
 
+    bsp_spdifrx_real_start();
+}
+
+void bsp_spdifrx_real_start(void)
+{
     if (HAL_SPDIFRX_Init(&SpdifrxHandle) != HAL_OK)
     {
         printf("spdif init err\n");
@@ -64,6 +69,7 @@ void bsp_spdifrx_start(void)
 
     audio_play();
 }
+
 
 static void my_spdif_half_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
