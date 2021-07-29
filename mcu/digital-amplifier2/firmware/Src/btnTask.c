@@ -173,6 +173,8 @@ static void btn_mode3(uint8_t evt)
                     break;
             }
 
+            settings_fnv_set();
+
             btn_mode1(evt_entry);
             break;
     }

@@ -10,8 +10,6 @@ audio_t audio = {
     .power_from_usb = 1,
 };
 
-__attribute__((section("BKP_SRAM"))) settings_t settings={0};
-
 void audio_init(uint32_t audioFreq, uint8_t bit_depth)
 {
     printf("audio init: %ld %d\n", audioFreq, bit_depth);
@@ -151,18 +149,6 @@ void audio_clock_sync(void)
             audio.w_idx--;
         }
     }
-}
-
-void audio_setVolume(volume_t vol)
-{
-    settings.vol = vol;
-    audio_notify_dev();
-}
-
-void audio_setMute(bool flag)
-{
-    settings.mute = flag;
-    audio_notify_dev();
 }
 
 /* 当前读取指针的位置 */

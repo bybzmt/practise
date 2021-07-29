@@ -18,6 +18,7 @@ OPT = -Og
 BUILD_DIR = build
 RTOS_DIR = lib/FreeRTOSv10.2.1/FreeRTOS/Source
 STM32Cube_DIR = lib/STM32Cube_FW_F4_V1.25.0
+FNV_DIR = lib/fnv-hash
 
 ######################################
 # source
@@ -35,6 +36,7 @@ C_SOURCES+=Src/base/vectorTable.c
 C_SOURCES+=Src/base/system_stm32f4xx.c
 
 C_SOURCES+=Src/audio.c
+C_SOURCES+=Src/settings.c
 C_SOURCES+=Src/inputTasks.c
 C_SOURCES+=Src/btnTask.c
 C_SOURCES+=Src/devTask.c
@@ -114,6 +116,10 @@ C_INCLUDES+= $(STM32Cube_DIR)/Drivers/CMSIS/Include
 C_INCLUDES+= $(RTOS_DIR)/include
 C_INCLUDES+= $(RTOS_DIR)/portable/GCC/ARM_CM4F
 C_INCLUDES+= $(STM32Cube_DIR)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+
+#Fnv hash
+C_INCLUDES+= $(FNV_DIR)
+C_SOURCES+=$(FNV_DIR)/hash_32a.c
 
 #usb audio lib
 C_INCLUDES+= Src/usb_audio
