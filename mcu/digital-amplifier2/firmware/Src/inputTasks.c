@@ -7,7 +7,7 @@
 #include "bsp_btm331_spdif.h"
 #include "bsp_spdifrx.h"
 
-void task_init(void)
+static void task_init(void)
 {
     static bool a=0;
     if (a) {
@@ -22,7 +22,6 @@ void task_init(void)
     gpio_init.Speed     = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &gpio_init);
 }
-
 
 void task_bt_input()
 {
@@ -51,11 +50,12 @@ void task_bt_input()
         } else {
             vTaskDelay(500);
 
-            if (audio.state == AUDIO_STATE_ERROR) {
+            if (audio.state == AUDIO_STATE_INIT) {
                 bsp_spdifrx_stop();
                 vTaskDelay(10);
-                bsp_btm331_spdif_start();
-                waiting = true;
+                /* bsp_btm331_spdif_start(); */
+                bsp_spdifrx_real_start();
+                /* waiting = true; */
             }
         }
 
@@ -63,6 +63,7 @@ void task_bt_input()
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
     }
 
+    audio.input_task_hd = NULL;
     vTaskDelete(NULL);
 }
 
@@ -93,17 +94,20 @@ void task_spdif_input()
             }
         } else {
             vTaskDelay(500);
-            if (audio.state == AUDIO_STATE_ERROR) {
+
+            if (audio.state == AUDIO_STATE_INIT) {
                 bsp_spdifrx_stop();
                 vTaskDelay(10);
-                bsp_spdifrx_init();
-                waiting = true;
+                /* bsp_spdifrx_init(); */
+                /* waiting = true; */
+                bsp_spdifrx_real_start();
             }
         }
 
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
     }
 
+    audio.input_task_hd = NULL;
     vTaskDelete(NULL);
 }
 
@@ -134,5 +138,6 @@ void task_usb_input()
         vTaskDelay(10);
     }
 
+    audio.input_task_hd = NULL;
     vTaskDelete(NULL);
 }

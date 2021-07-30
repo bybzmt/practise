@@ -11,7 +11,7 @@
 
 #include "settings.h"
 
-#define AUDIO_BUF_SAMPLE_NUM 1000
+#define AUDIO_BUF_SAMPLE_NUM 2000
 #define AUDIO_SAMPLE_SIZE (4*2)
 #define AUDIO_OUT_BUF_SIZE (AUDIO_SAMPLE_SIZE * AUDIO_BUF_SAMPLE_NUM)
 #define AUDIO_INPUT_BUF_SIZE (AUDIO_SAMPLE_SIZE * 200)
@@ -19,7 +19,6 @@
 #define AUDIO_STATE_INIT   0
 #define AUDIO_STATE_RUN    1
 #define AUDIO_STATE_SYNC   2
-#define AUDIO_STATE_ERROR  3
 
 typedef struct {
     uint8_t input_buf[AUDIO_INPUT_BUF_SIZE];

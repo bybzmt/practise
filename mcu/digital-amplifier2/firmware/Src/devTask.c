@@ -46,7 +46,7 @@ void task_dev_setter()
             vol = data & 0xff;
 
             if (old_mode != input_mode) {
-                if (audio.input_task_hd != NULL) {
+                while (audio.input_task_hd != NULL) {
                     xTaskNotify(audio.input_task_hd, 1, eSetValueWithOverwrite);
                     vTaskDelay(100);
                 }

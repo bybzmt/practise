@@ -3,7 +3,7 @@
 #include "audio.h"
 #include "fnv.h"
 
-__attribute__((section("BKP_SRAM"))) settings_t settings={0};
+__attribute__((section(".BKP_SRAM"))) settings_t settings={0};
 
 void audio_setVolume(volume_t vol)
 {

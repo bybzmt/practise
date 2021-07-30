@@ -211,7 +211,7 @@ void task_btn_service()
     btn_mode1(evt_entry);
 
     for (;;) {
-        if (xQueueReceive(btn_que, &evt, 200)) {
+        if (xQueueReceive(btn_que, &evt, 500)) {
             switch (btn_mode) {
                 case 1: btn_mode1(evt); break;
                 case 2: btn_mode2(evt); break;

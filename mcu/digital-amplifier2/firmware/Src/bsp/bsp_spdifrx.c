@@ -25,7 +25,9 @@ void bsp_spdifrx_stop(void)
 {
     audio_stop();
 
-    HAL_SPDIFRX_DMAStop(&SpdifrxHandle);
+    if (!bsp_spdifrx_is_error()) {
+        HAL_SPDIFRX_DMAStop(&SpdifrxHandle);
+    }
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 }
 
@@ -81,5 +83,17 @@ static void my_spdif_cplt(SPDIFRX_HandleTypeDef *hspdif)
 {
     audio_append(&audio.input_buf[AUDIO_INPUT_BUF_SIZE/2], AUDIO_INPUT_BUF_SIZE/2);
     audio_clock_sync();
+}
+
+
+bool bsp_spdifrx_is_error(void)
+{
+    HAL_SPDIFRX_StateTypeDef val = HAL_SPDIFRX_GetState(&SpdifrxHandle);
+
+    if (val == HAL_SPDIFRX_STATE_ERROR) {
+        return true;
+    }
+
+    return false;
 }
 

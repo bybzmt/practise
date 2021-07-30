@@ -22,21 +22,23 @@ void bsp_btm331_spdif_init(void)
     //button: prev
     gpio_init.Pin = GPIO_PIN_4;
     HAL_GPIO_Init(GPIOB, &gpio_init);
-
     //state: Connected
     gpio_init.Mode = GPIO_MODE_INPUT,
     gpio_init.Pull = GPIO_NOPULL,
     gpio_init.Pin = GPIO_PIN_8;
     HAL_GPIO_Init(GPIOA, &gpio_init);
 
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
-
+    //spdif pin
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.Pin       = GPIO_PIN_7;
     GPIO_InitStructure.Mode      = GPIO_MODE_INPUT;
     GPIO_InitStructure.Pull      = GPIO_NOPULL;
     GPIO_InitStructure.Speed     = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10|GPIO_PIN_11, 0);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 }
 
 bool bsp_btm331_spdif_wait_signal(void)
@@ -46,6 +48,8 @@ bool bsp_btm331_spdif_wait_signal(void)
 
 void bsp_btm331_spdif_start(void)
 {
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7);
+
     /* Configure SPDIFRX_IN pin */
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.Pin       = GPIO_PIN_7;

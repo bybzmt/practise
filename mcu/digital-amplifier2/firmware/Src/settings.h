@@ -46,6 +46,7 @@ void audio_setMute(bool flag);
 
 void settings_fnv_set(void);
 void settings_fnv_check(void);
+void settings_init(void);
 
 #ifdef __cplusplus
 }

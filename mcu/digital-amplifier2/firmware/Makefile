@@ -271,7 +271,8 @@ OOCDFLAGS = -f interface/cmsis-dap.cfg
 OOCDFLAGS+= -f target/stm32f4x.cfg
 
 flash:
-	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+	$(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).elf reset exit"
+	# $(OOCD) $(OOCDFLAGS) -c init -c targets -c halt -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
 # -st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 

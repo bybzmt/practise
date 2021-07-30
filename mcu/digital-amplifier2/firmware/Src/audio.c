@@ -224,7 +224,7 @@ static void audio_dma_cplt_cb(SAI_HandleTypeDef *hsai)
 {
     if (audio.state == AUDIO_STATE_SYNC) {
         memset(audio.out_buf, 0, sizeof(audio.out_buf));
-        audio.state = AUDIO_STATE_ERROR;
+        audio.state = AUDIO_STATE_INIT;
         return;
     }
 

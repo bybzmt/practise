@@ -43,7 +43,7 @@ MEMORY
 {
     FLASH (rx)     : ORIGIN = 0x8000000,  LENGTH = 256K
     RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
-    BKPSRAM (rw)   : ORIGIN = 0x40024000, LENGTH = 4096
+    BKPSRAM (rw)   : ORIGIN = 0x40024000, LENGTH = 4k
 }
 
 /* Define output sections */
