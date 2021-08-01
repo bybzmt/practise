@@ -53,9 +53,8 @@ void task_bt_input()
             if (audio.state == AUDIO_STATE_INIT) {
                 bsp_spdifrx_stop();
                 vTaskDelay(10);
-                /* bsp_btm331_spdif_start(); */
-                bsp_spdifrx_real_start();
-                /* waiting = true; */
+                bsp_btm331_spdif_init();
+                waiting = true;
             }
         }
 
@@ -98,9 +97,8 @@ void task_spdif_input()
             if (audio.state == AUDIO_STATE_INIT) {
                 bsp_spdifrx_stop();
                 vTaskDelay(10);
-                /* bsp_spdifrx_init(); */
-                /* waiting = true; */
-                bsp_spdifrx_real_start();
+                bsp_spdifrx_init();
+                waiting = true;
             }
         }
 
@@ -118,6 +116,8 @@ void task_usb_input()
     task_init();
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+
+    settings.bak_vol = settings.vol;
 
     static USBD_HandleTypeDef USBD_Device;
     USBD_Init(&USBD_Device, &AUDIO_Desc, 0);
@@ -137,6 +137,8 @@ void task_usb_input()
 
         vTaskDelay(10);
     }
+
+    settings.vol = settings.bak_vol;
 
     audio.input_task_hd = NULL;
     vTaskDelete(NULL);

@@ -55,7 +55,8 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev);
 
 static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev);
 
-static uint8_t VOL_PERCENT(int16_t vol);
+static uint8_t VOL_16to8(int16_t vol);
+static int16_t VOL_8to16(uint8_t vol);
 
 /**
  * @}
@@ -382,7 +383,6 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
         haudio->alt_setting = 0U;
         haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
         haudio->bit_depth = 16U;
-        haudio->vol = settings.vol;
 
         audio_init(haudio->freq, haudio->bit_depth);
         audio_play();
@@ -745,17 +745,20 @@ static void AUDIO_REQ_GetCurrent(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef*
 
     if ((req->bmRequest & 0x1f) == AUDIO_CONTROL_REQ) {
         switch (HIBYTE(req->wValue)) {
-            case AUDIO_CONTROL_REQ_FU_MUTE: {
-                                                /* Current mute state */
-                                                uint8_t mute = 0;
-                                                USBD_CtlSendData(pdev, &mute, 1);
-                                            };
-                                            break;
-            case AUDIO_CONTROL_REQ_FU_VOL: {
-                                               /* Current volume. See UAC Spec 1.0 p.77 */
-                                               USBD_CtlSendData(pdev, (uint8_t*)&haudio->vol, 2);
-                                           };
-                                           break;
+            case AUDIO_CONTROL_REQ_FU_MUTE:
+                {
+                    /* Current mute state */
+                    uint8_t mute = settings.mute;
+                    USBD_CtlSendData(pdev, &mute, 1);
+                };
+                break;
+            case AUDIO_CONTROL_REQ_FU_VOL:
+                {
+                    /* Current volume. See UAC Spec 1.0 p.77 */
+                    int16_t _vol = VOL_8to16(settings.vol);
+                    USBD_CtlSendData(pdev, (uint8_t*)&_vol, 2);
+                };
+                break;
         }
     } else if ((req->bmRequest & 0x1f) == AUDIO_STREAMING_REQ) {
         if (HIBYTE(req->wValue) == AUDIO_STREAMING_REQ_FREQ_CTRL) {
@@ -777,11 +780,12 @@ static void AUDIO_REQ_GetMax(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req
 {
     if ((req->bmRequest & 0x1f) == AUDIO_CONTROL_REQ) {
         switch (HIBYTE(req->wValue)) {
-            case AUDIO_CONTROL_REQ_FU_VOL: {
-                                               int16_t vol_max = USBD_AUDIO_VOL_MAX;
-                                               USBD_CtlSendData(pdev, (uint8_t*)&vol_max, 2);
-                                           };
-                                           break;
+            case AUDIO_CONTROL_REQ_FU_VOL:
+                {
+                    int16_t vol_max = USBD_AUDIO_VOL_MAX;
+                    USBD_CtlSendData(pdev, (uint8_t*)&vol_max, 2);
+                };
+                break;
         }
     }
 }
@@ -797,11 +801,12 @@ static void AUDIO_REQ_GetMin(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req
 {
     if ((req->bmRequest & 0x1f) == AUDIO_CONTROL_REQ) {
         switch (HIBYTE(req->wValue)) {
-            case AUDIO_CONTROL_REQ_FU_VOL: {
-                                               int16_t vol_min = USBD_AUDIO_VOL_MIN;
-                                               USBD_CtlSendData(pdev, (uint8_t*)&vol_min, 2);
-                                           };
-                                           break;
+            case AUDIO_CONTROL_REQ_FU_VOL:
+                {
+                    int16_t vol_min = USBD_AUDIO_VOL_MIN;
+                    USBD_CtlSendData(pdev, (uint8_t*)&vol_min, 2);
+                };
+                break;
         }
     }
 }
@@ -817,11 +822,12 @@ static void AUDIO_REQ_GetRes(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req
 {
     if ((req->bmRequest & 0x1f) == AUDIO_CONTROL_REQ) {
         switch (HIBYTE(req->wValue)) {
-            case AUDIO_CONTROL_REQ_FU_VOL: {
-                                               int16_t vol_res = USBD_AUDIO_VOL_STEP;
-                                               USBD_CtlSendData(pdev, (uint8_t*)&vol_res, 2);
-                                           };
-                                           break;
+            case AUDIO_CONTROL_REQ_FU_VOL:
+                {
+                    int16_t vol_res = USBD_AUDIO_VOL_STEP;
+                    USBD_CtlSendData(pdev, (uint8_t*)&vol_res, 2);
+                };
+                break;
         }
     }
 }
@@ -869,18 +875,18 @@ static uint8_t USBD_AUDIO_EP0_RxReady(USBD_HandleTypeDef* pdev)
         if (haudio->control.req_type == AUDIO_CONTROL_REQ) {
             switch (haudio->control.cs) {
                 /* Mute Control */
-                case AUDIO_CONTROL_REQ_FU_MUTE: {
-                                                    audio_setMute(haudio->control.data[0]);
-                                                };
-                                                break;
-                                                /* Volume Control */
-                case AUDIO_CONTROL_REQ_FU_VOL: {
-                                                   int16_t vol = *(int16_t*)&haudio->control.data[0];
-                                                   haudio->vol = vol;
-
-                                                   audio_setVolume(VOL_PERCENT(vol));
-                                               };
-                                               break;
+                case AUDIO_CONTROL_REQ_FU_MUTE:
+                    {
+                        audio_setMute(haudio->control.data[0]);
+                    };
+                    break;
+                    /* Volume Control */
+                case AUDIO_CONTROL_REQ_FU_VOL:
+                    {
+                        int16_t vol = *(int16_t*)&haudio->control.data[0];
+                        audio_setVolume(VOL_16to8(vol));
+                    };
+                    break;
             }
 
         } else if (haudio->control.req_type == AUDIO_STREAMING_REQ) {
@@ -962,8 +968,16 @@ static uint8_t* USBD_AUDIO_GetDeviceQualifierDesc(uint16_t* length)
     return USBD_AUDIO_DeviceQualifierDesc;
 }
 
+
+void  USBD_AUDIO_VOLUME (USBD_HandleTypeDef *pdev, uint8_t vol)
+{
+    int16_t _vol = VOL_8to16(vol);
+
+    USBD_CtlSendData(pdev, (uint8_t*)&_vol, 2);
+}
+
 /* Convert USB volume value to uint8_t 0xff +24db - 0x00 -103db */
-uint8_t VOL_PERCENT(int16_t vol)
+uint8_t VOL_16to8(int16_t vol)
 {
 /*
     0x7FFF: 127.9961 DB
@@ -986,4 +1000,12 @@ uint8_t VOL_PERCENT(int16_t vol)
     return vol;
 }
 
+static int16_t VOL_8to16(uint8_t vol)
+{
+    int16_t _vol = vol;
+
+    _vol = _vol - 207;
+    _vol = _vol * 128;
+    return _vol;
+}
 

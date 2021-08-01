@@ -27,6 +27,7 @@ typedef struct {
     uint8_t input_mode;
     /* 音量 */
     volume_t vol;
+    volume_t bak_vol;
     /* 静音 */
     bool mute;
     /* 耳机是否打开  */

@@ -25,9 +25,9 @@ void bsp_spdifrx_stop(void)
 {
     audio_stop();
 
-    if (!bsp_spdifrx_is_error()) {
-        HAL_SPDIFRX_DMAStop(&SpdifrxHandle);
-    }
+    /* if (!bsp_spdifrx_is_error()) { */
+        /* HAL_SPDIFRX_DMAStop(&SpdifrxHandle); */
+    /* } */
     HAL_SPDIFRX_DeInit(&SpdifrxHandle);
 }
 

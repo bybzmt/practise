@@ -203,7 +203,7 @@ void task_btn_service()
     ec11_sw_down = btn_down_irq;
     ec11_sw_up = btn_up_irq;
 
-    btn_que = xQueueCreate(2, 1);
+    btn_que = xQueueCreate(10, 1);
 
     bsp_ec11_init();
     oled_init();

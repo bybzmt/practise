@@ -268,6 +268,10 @@ uint8_t  USBD_AUDIO_RegisterInterface  (USBD_HandleTypeDef   *pdev,
                                         USBD_AUDIO_ItfTypeDef *fops);
 
 void  USBD_AUDIO_Sync (USBD_HandleTypeDef *pdev, AUDIO_OffsetTypeDef offset);
+
+
+void  USBD_AUDIO_VOLUME (USBD_HandleTypeDef *pdev, uint8_t vol);
+
 /**
   * @}
   */

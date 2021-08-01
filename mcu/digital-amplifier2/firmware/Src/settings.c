@@ -48,6 +48,7 @@ void settings_fnv_check(void)
     if (settings._fnv1a == 0) {
         settings.input_mode = 0;
         settings.vol = VOLUME_0dB - 40;
+        settings.bak_vol = VOLUME_0dB - 40;
         settings.mute = 0;
         settings.headphone_on = 1;
         settings.speakers_on = 1;
@@ -62,6 +63,8 @@ void bkp_sram_init(void)
 	HAL_PWR_EnableBkUpAccess();
 	__HAL_RCC_BKPSRAM_CLK_ENABLE();
 	HAL_PWREx_EnableBkUpReg();
+
+    vTaskDelay(1);
 }
 
 void settings_init(void)
