@@ -186,11 +186,14 @@ void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
         for (int i=0; i<sample_num; i++) {
             oft2 = ((idx+i) % AUDIO_BUF_SAMPLE_NUM) * AUDIO_SAMPLE_SIZE;
             oft = 4 * i;
-            /* 调换左右声道 */
             audio.out_buf[oft2+0] = buf[oft];
             audio.out_buf[oft2+1] = buf[oft+1];
+            audio.out_buf[oft2+2] = 0;
+            audio.out_buf[oft2+3] = 0;
             audio.out_buf[oft2+4] = buf[oft+2];
             audio.out_buf[oft2+5] = buf[oft+3];
+            audio.out_buf[oft2+6] = 0;
+            audio.out_buf[oft2+7] = 0;
         }
     } else if (audio.bit_depth==24) {
         for (int i=0; i<sample_num; i++) {
@@ -199,10 +202,11 @@ void audio_copy(uint16_t idx, uint8_t* buf, uint16_t sample_num)
             audio.out_buf[oft2+0] = buf[oft+0];
             audio.out_buf[oft2+1] = buf[oft+1];
             audio.out_buf[oft2+2] = buf[oft+2];
-
+            audio.out_buf[oft2+3] = 0;
             audio.out_buf[oft2+4] = buf[oft+3];
             audio.out_buf[oft2+5] = buf[oft+4];
             audio.out_buf[oft2+6] = buf[oft+5];
+            audio.out_buf[oft2+7] = 0;
         }
     } else {
         for (int i=0; i<sample_num; i++) {

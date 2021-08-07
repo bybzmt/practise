@@ -32,15 +32,15 @@ static void _oled_show_vol()
     char buf[6];
     int16_t db = VOLUME_TO_DB(settings.vol);
 
-    ssd1306_SetCursor(50, 26);
+    ssd1306_SetCursor(40, 18);
     if (db < 0) {
         sprintf(buf, "%d", -db);
-        ssd1306_Char(2D, 7, 10, White);
+        ssd1306_Char(2D, 16, 26, White);
 
         printf("vol: -%ddB\n", -db);
     } else {
         sprintf(buf, "%d", db);
-        ssd1306_Char(2B, 7, 10, White);
+        ssd1306_Char(2B, 16, 26, White);
 
         printf("vol: %ddB\n", db);
     }
