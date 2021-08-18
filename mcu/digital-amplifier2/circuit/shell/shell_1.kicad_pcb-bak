@@ -105,7 +105,7 @@
   (gr_circle (center 196.5 122) (end 197.75 122) (layer Edge.Cuts) (width 0.05) (tstamp 60CA2298))
   (gr_circle (center 103.5 122) (end 104.75 122) (layer Edge.Cuts) (width 0.05) (tstamp 60CA2296))
   (gr_circle (center 103.5 103.5) (end 104.75 103.5) (layer Edge.Cuts) (width 0.05))
-  (gr_text "R+ R- L+ L-" (at 123.063 108.712) (layer B.SilkS) (tstamp 60CA2323)
+  (gr_text "R- R+ L- L+" (at 123.063 108.712) (layer B.SilkS) (tstamp 60CA2323)
     (effects (font (size 1.5 1.5) (thickness 0.3)) (justify mirror))
   )
   (gr_text "speaker out" (at 123.571 105.664) (layer B.SilkS) (tstamp 60CA238C)

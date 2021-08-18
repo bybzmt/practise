@@ -87,7 +87,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "out"))
+      (outputdirectory "../out/shell1"))
   )
 
   (net 0 "")
@@ -149,7 +149,7 @@
   (gr_line (start 104 125.5) (end 196 125.5) (layer Edge.Cuts) (width 0.05))
   (gr_line (start 100 104) (end 100 121.5) (layer Edge.Cuts) (width 0.05))
 
-  (zone (net 0) (net_name "") (layer F.Cu) (tstamp 60CA23D7) (hatch edge 0.508)
+  (zone (net 0) (net_name "") (layer F.Cu) (tstamp 611466F9) (hatch edge 0.508)
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (fill yes (arc_segments 32) (thermal_gap 0.508) (thermal_bridge_width 0.508))
@@ -358,7 +358,7 @@
       )
     )
   )
-  (zone (net 0) (net_name "") (layer B.Cu) (tstamp 60CA23D4) (hatch edge 0.508)
+  (zone (net 0) (net_name "") (layer B.Cu) (tstamp 611466F6) (hatch edge 0.508)
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (fill yes (arc_segments 32) (thermal_gap 0.508) (thermal_bridge_width 0.508))
