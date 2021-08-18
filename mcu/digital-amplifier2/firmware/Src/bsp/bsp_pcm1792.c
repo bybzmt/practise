@@ -4,8 +4,6 @@
 
 #define ADDR 0b10011000
 
-static uint8_t reg_18 = 0b10000000;
-
 static uint8_t _volume_filter(volume_t vol)
 {
     if (vol > 0xCF) {
@@ -19,14 +17,22 @@ static uint8_t _volume_filter(volume_t vol)
     return vol;
 }
 
-void bsp_pcm1792_play(uint32_t AudioFreq, uint8_t bit_depth, volume_t vol)
+void bsp_pcm1792_play(uint32_t audioFreq, uint8_t bit_depth, volume_t vol)
 {
-    reg_18 &= ~(7<<4);
+    uint8_t reg_18 = 0b10000000;
 
+    /* Audio Interface Data Format */
     if (bit_depth == 16) {
-        reg_18 |= 4<<4;
+        reg_18 |= 0b01000000;
     } else {
-        reg_18 |= 5<<4;
+        reg_18 |= 0b01010000;
+    }
+
+    /* De-Emphasis */
+    if (audioFreq == SAI_AUDIO_FREQUENCY_44K) {
+        reg_18 |= 0b00001010;
+    } else {
+        reg_18 |= 0b00000110;
     }
 
     vol = _volume_filter(vol);
@@ -61,7 +67,7 @@ void bsp_pcm1792_init(void)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
 
-    vTaskDelay(20);
+    vTaskDelay(10);
 }
 
 void bsp_pcm1792_deInit(void)

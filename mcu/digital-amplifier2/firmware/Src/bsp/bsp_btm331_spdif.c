@@ -66,8 +66,8 @@ void bsp_btm331_spdif_start(void)
 void bsp_btm331_spdif_reset(void)
 {
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
-    //长按3秒进入配对
-    vTaskDelay(3500);
+    //长按5秒清空配对记录
+    vTaskDelay(6000);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 0);
 }
 

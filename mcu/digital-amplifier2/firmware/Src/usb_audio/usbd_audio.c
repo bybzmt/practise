@@ -588,20 +588,12 @@ static uint32_t audio_delta_fb(USBD_HandleTypeDef* pdev)
     uint32_t fb_value, fb_raw;
 
     /* Calculate feedback value based on the change of writable buffer size */
-    int16_t delta;
-    delta = audio_clock_delta();
+    int16_t delta = audio_clock_delta();
 
     float x = delta;
     x = x * (x/(float)100);
     x = x * x + x*0.35;
     delta = x;
-
-    /* int16_t aa = delta > 0 ? delta : -delta; */
-    /* if (aa < 100) { */
-        /* delta = delta / 2; */
-    /* } else if (aa > 200) { */
-        /* delta = delta * 2; */
-    /* } */
 
     fb_value = haudio->freq - delta;
 

@@ -70,7 +70,6 @@ void task_dev_setter()
                 close_tick1 = 0;
             } else if (old_headphone_on && headphone_on) {
                 if (old_audioFreq != audioFreq || old_bit_depth != bit_depth) {
-                    vTaskDelay(5);
                     bsp_pcm1792_play(audioFreq, bit_depth, vol);
                 } else {
                     bsp_pcm1792_volume(vol);
@@ -114,7 +113,7 @@ void task_dev_setter()
         } else {
             if (close_tick1 > 0) {
                 close_tick1++;
-                if (close_tick1 > 30) {
+                if (close_tick1 > 5) {
                     bsp_pcm1792_deInit();
                     close_tick1 = 0;
                 }
@@ -122,7 +121,7 @@ void task_dev_setter()
 
             if (close_tick2 > 0) {
                 close_tick2++;
-                if (close_tick2 > 30) {
+                if (close_tick2 > 5) {
                     bsp_tas5805_deInit();
                     close_tick2 = 0;
                 }

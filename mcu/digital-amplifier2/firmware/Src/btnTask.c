@@ -1,5 +1,6 @@
 #include "base.h"
 #include "bsp_ec11.h"
+#include "bsp_btm331_spdif.h"
 
 #define cut_and_mod(a,b,max) (a<b ? a+max-b : a-b)
 
@@ -145,12 +146,12 @@ static void btn_mode3(uint8_t evt)
             break;
 
         case evt_left:
-            focus = cut_and_mod(focus, 1, 5);
+            focus = cut_and_mod(focus, 1, 6);
             oled_mode3(focus);
             break;
 
         case evt_right:
-            focus = (focus+1) % 5;
+            focus = (focus+1) % 6;
             oled_mode3(focus);
             break;
 
@@ -170,6 +171,9 @@ static void btn_mode3(uint8_t evt)
                     break;
                 case 4:
                     settings.auto_off = !settings.auto_off;
+                    break;
+                case 5:
+                    bsp_btm331_spdif_reset();
                     break;
             }
 

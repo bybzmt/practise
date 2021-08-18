@@ -117,7 +117,7 @@ void oled_mode2(uint8_t focus)
     ssd1306_SetCursor(0, line_h*2);
     ssd1306_WriteString("input: SPDIF", &Font_7x10, focus==2 ? Black : White);
     if (settings.input_mode == 2) {
-        ssd1306_WriteString(" *", &Font_7x10, focus==1 ? Black : White);
+        ssd1306_WriteString(" *", &Font_7x10, focus==2 ? Black : White);
     }
 
     ssd1306_SetCursor(0, line_h*3);
@@ -132,43 +132,51 @@ void oled_mode3(uint8_t focus)
 
     uint8_t line_h = 12;
 
-    ssd1306_SetCursor(0, 0);
-    ssd1306_WriteString("Back", &Font_7x10, focus==0 ? Black : White);
+    if (focus < 5) {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteString("Back", &Font_7x10, focus==0 ? Black : White);
 
-    ssd1306_SetCursor(0, line_h*1);
-    ssd1306_WriteString("auto_switch", &Font_7x10, focus==1 ? Black : White);
-    if (settings.auto_switch) {
-        ssd1306_WriteString(" Yes", &Font_7x10, focus==1 ? Black : White);
-    } else {
-        ssd1306_WriteString(" No", &Font_7x10, focus==1 ? Black : White);
-    }
+        ssd1306_SetCursor(0, line_h*1);
+        ssd1306_WriteString("auto_switch", &Font_7x10, focus==1 ? Black : White);
+        if (settings.auto_switch) {
+            ssd1306_WriteString(" Yes", &Font_7x10, focus==1 ? Black : White);
+        } else {
+            ssd1306_WriteString(" No", &Font_7x10, focus==1 ? Black : White);
+        }
 
-    ssd1306_SetCursor(0, line_h*2);
-    ssd1306_WriteString("headphone_on", &Font_7x10, focus==2 ? Black : White);
-    if (settings.auto_switch) {
-        ssd1306_WriteString(" N/A", &Font_7x10, focus==2 ? Black : White);
-    } else if (settings.headphone_on) {
-        ssd1306_WriteString(" Yes", &Font_7x10, focus==2 ? Black : White);
-    } else {
-        ssd1306_WriteString(" No", &Font_7x10, focus==2 ? Black : White);
-    }
+        ssd1306_SetCursor(0, line_h*2);
+        ssd1306_WriteString("headphone_on", &Font_7x10, focus==2 ? Black : White);
+        if (settings.auto_switch) {
+            ssd1306_WriteString(" N/A", &Font_7x10, focus==2 ? Black : White);
+        } else if (settings.headphone_on) {
+            ssd1306_WriteString(" Yes", &Font_7x10, focus==2 ? Black : White);
+        } else {
+            ssd1306_WriteString(" No", &Font_7x10, focus==2 ? Black : White);
+        }
 
-    ssd1306_SetCursor(0, line_h*3);
-    ssd1306_WriteString("speakers_on", &Font_7x10, focus==3 ? Black : White);
-    if (settings.auto_switch) {
-        ssd1306_WriteString(" N/A", &Font_7x10, focus==3 ? Black : White);
-    } else if (settings.speakers_on) {
-        ssd1306_WriteString(" Yes", &Font_7x10, focus==3 ? Black : White);
-    } else {
-        ssd1306_WriteString(" No", &Font_7x10, focus==3 ? Black : White);
-    }
+        ssd1306_SetCursor(0, line_h*3);
+        ssd1306_WriteString("speakers_on", &Font_7x10, focus==3 ? Black : White);
+        if (settings.auto_switch) {
+            ssd1306_WriteString(" N/A", &Font_7x10, focus==3 ? Black : White);
+        } else if (settings.speakers_on) {
+            ssd1306_WriteString(" Yes", &Font_7x10, focus==3 ? Black : White);
+        } else {
+            ssd1306_WriteString(" No", &Font_7x10, focus==3 ? Black : White);
+        }
 
-    ssd1306_SetCursor(0, line_h*4);
-    ssd1306_WriteString("auto_off", &Font_7x10, focus==4 ? Black : White);
-    if (settings.auto_off) {
-        ssd1306_WriteString(" Yes", &Font_7x10, focus==4 ? Black : White);
+        ssd1306_SetCursor(0, line_h*4);
+        ssd1306_WriteString("auto_off", &Font_7x10, focus==4 ? Black : White);
+        if (settings.auto_off) {
+            ssd1306_WriteString(" Yes", &Font_7x10, focus==4 ? Black : White);
+        } else {
+            ssd1306_WriteString(" No", &Font_7x10, focus==4 ? Black : White);
+        }
     } else {
-        ssd1306_WriteString(" No", &Font_7x10, focus==4 ? Black : White);
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteString("BT reset", &Font_7x10, Black);
+
+        ssd1306_SetCursor(0, line_h*1);
+        ssd1306_WriteString("Back", &Font_7x10, White);
     }
 
     ssd1306_UpdateScreen();

@@ -169,8 +169,3 @@ static void msp_pcd_irq(void)
 {
     HAL_PCD_IRQHandler(&hpcd);
 }
-
-/* void OTG_FS_IRQHandler(void) */
-/* { */
-    /* msp_pcd_irq(); */
-/* } */
