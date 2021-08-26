@@ -20,6 +20,7 @@ static uint8_t _volume_filter(volume_t vol)
 void bsp_pcm1792_play(uint32_t audioFreq, uint8_t bit_depth, volume_t vol)
 {
     uint8_t reg_18 = 0b10000000;
+    uint8_t reg_19 = 0;
 
     /* Audio Interface Data Format */
     if (bit_depth == 16) {
@@ -29,16 +30,16 @@ void bsp_pcm1792_play(uint32_t audioFreq, uint8_t bit_depth, volume_t vol)
     }
 
     /* De-Emphasis */
-    if (audioFreq == SAI_AUDIO_FREQUENCY_44K) {
-        reg_18 |= 0b00001010;
-    } else {
-        reg_18 |= 0b00000110;
-    }
+    /* if (audioFreq == SAI_AUDIO_FREQUENCY_44K) { */
+        /* reg_18 |= 0b00001010; */
+    /* } else { */
+        /* reg_18 |= 0b00000110; */
+    /* } */
 
     vol = _volume_filter(vol);
 
-    uint8_t d[] = {vol, vol, reg_18};
-    msp_i2c_write(ADDR, 16, d, 3);
+    uint8_t d[] = {vol, vol, reg_18, reg_19};
+    msp_i2c_write(ADDR, 16, d, 4);
 }
 
 void bsp_pcm1792_volume(uint8_t vol)
@@ -51,7 +52,10 @@ void bsp_pcm1792_volume(uint8_t vol)
 
 void bsp_pcm1792_stop(void)
 {
-    bsp_pcm1792_volume(0);
+    /* DAC operation disabled */
+    uint8_t reg_19 = 0b00010000;
+
+    msp_i2c_write_reg(ADDR, 19, reg_19);
 }
 
 void bsp_pcm1792_init(void)
