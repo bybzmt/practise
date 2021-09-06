@@ -112,12 +112,12 @@ static void btn_mode2(uint8_t evt)
             break;
 
         case evt_left:
-            input_mode = cut_and_mod(input_mode, 1, 4);
+            input_mode = (input_mode+1) % 4;
             oled_mode2(input_mode);
             break;
 
         case evt_right:
-            input_mode = (input_mode+1) % 4;
+            input_mode = cut_and_mod(input_mode, 1, 4);
             oled_mode2(input_mode);
             break;
 
@@ -146,12 +146,12 @@ static void btn_mode3(uint8_t evt)
             break;
 
         case evt_left:
-            focus = cut_and_mod(focus, 1, 6);
+            focus = (focus+1) % 6;
             oled_mode3(focus);
             break;
 
         case evt_right:
-            focus = (focus+1) % 6;
+            focus = cut_and_mod(focus, 1, 6);
             oled_mode3(focus);
             break;
 

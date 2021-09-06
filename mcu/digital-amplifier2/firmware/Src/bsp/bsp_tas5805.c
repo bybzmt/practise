@@ -20,6 +20,9 @@ void bsp_tas5805_init()
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1);
     vTaskDelay(20);
 
+    msp_i2c_write_reg(ADDR_1, 0x78, 0b10000000); //clear analog fault
+    msp_i2c_write_reg(ADDR_2, 0x78, 0b10000000); //clear analog fault
+
     /* msp_i2c_write_reg(0x00, 0x00); //Go to Page 0x00 */
     msp_i2c_write_reg(ADDR_1, 0x02, 1<<2); //768kHz/PBTL/BD Modulation
     msp_i2c_write_reg(ADDR_2, 0x02, 1<<2); //768kHz/PBTL/BD Modulation
@@ -31,8 +34,7 @@ void bsp_tas5805_init()
     msp_i2c_write_reg(ADDR_1, 0x4e, 0b10111011); //Volume Update every 4 FS periods
     msp_i2c_write_reg(ADDR_2, 0x4e, 0b10111011); //Volume Update every 4 FS periods
 
-    msp_i2c_write_reg(ADDR_1, 0x78, 0b10000000); //clear analog fault
-    msp_i2c_write_reg(ADDR_2, 0x78, 0b10000000); //clear analog fault
+    bsp_tas5805_volume(0);
 }
 
 static void bsp_tas5805_pin_init(void)
@@ -74,10 +76,12 @@ static void bsp_tas5805_on_err(void)
 
 void bsp_tas5805_play(uint32_t AudioFreq, uint8_t bit_depth, volume_t vol)
 {
-    bsp_tas5805_volume(vol);
-
     msp_i2c_write_reg(ADDR_1, 0x03, 0x03); //Play Mode
     msp_i2c_write_reg(ADDR_2, 0x03, 0x03); //Play Mode
+
+    vTaskDelay(1);
+
+    bsp_tas5805_volume(vol);
 }
 
 void bsp_tas5805_stop(void)
