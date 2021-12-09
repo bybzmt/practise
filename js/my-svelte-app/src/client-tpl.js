@@ -1,6 +1,6 @@
-import App from './pages/index.svelte'
+import page from '{%page%}';
 
-const app = new App({
+const app = new page({
   target:document.querySelector("#app"),
   hydrate: true,
 });

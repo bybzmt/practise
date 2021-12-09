@@ -7,7 +7,7 @@ import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano';
 
 import path from 'path';
-import { fileURLToPath } from 'url';
+//import { fileURLToPath } from 'url';
 //const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({command, mode}) =>{
@@ -19,12 +19,15 @@ export default defineConfig(({command, mode}) =>{
     plugins: [
       postcssImport(),
       postcssNested(),
-      tailwindcss(),
+      tailwindcss({
+        purge:["src/**/*.svelte"]
+      }),
       autoprefixer({
         cascade: true,
       }),
     ],
-  };
+  }
+
   if (!dev) {
     postcss_config.plugins.push(
       cssnano({
@@ -36,8 +39,9 @@ export default defineConfig(({command, mode}) =>{
   return {
     mode:"development",
     publicDir:'./public',
+    root:'./src',
     build:{
-      sourcemap:true
+      sourcemap:true,
     },
     resolve: {
       alias: {
@@ -59,4 +63,5 @@ export default defineConfig(({command, mode}) =>{
         //useVitePreprocess:true,
       }),
     ]
-  }})
+  }
+})

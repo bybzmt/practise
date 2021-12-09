@@ -2,7 +2,7 @@
   "name": "my-svelte-app",
   "version": "0.0.0",
   "scripts": {
-    "dev": "node server",
+    "dev": "node src/server-dev",
     "build:client": "vite build --mode production --outDir dist/client --ssrManifest",
     "build:server": "vite build --mode production --outDir dist/server --ssr src/entry-server.js "
   },

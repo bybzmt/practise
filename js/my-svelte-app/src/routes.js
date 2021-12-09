@@ -1,18 +1,13 @@
 
-export default [
-  {
-    path: '/',
-    component: () => import('./pages/aa.jsx'),
-    name: 'index',
+export default {
+  map:{
+    "/": () => import('./pages/index.svelte'),
+    "/index2": () => import('./pages/index2.svelte'),
   },
-  {
-    path: '/about',
-    component: () => import('./pages/bb.jsx'),
-    name: 'about',
-  },
-  {
-    path: '/:catchAll(.*)',
-    name: 'not-found',
-    component: () => import('./pages/404.vue'),
-  },
-]
+  matchs:[
+    {
+      reg: /\.*/,
+      page: () => import('./pages/404.svelte'),
+    },
+  ]
+}
