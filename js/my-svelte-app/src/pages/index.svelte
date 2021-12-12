@@ -1,5 +1,6 @@
 <script context="module">
 export const load = async () => {
+    console.log("load1");
     return {
         props: { }
     };
@@ -11,7 +12,11 @@ export const load = async () => {
 </svelte:head>
 
 <main>
-test
+index
+<br />
+<a href="/">index</a>
+<br />
+<a href="/index2">index2</a>
 </main>
 
 <style>

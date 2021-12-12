@@ -1,17 +1,9 @@
-<script context="module">
-export const load = async () => {
-    return {
-        props: { }
-    };
-};
-</script>
-
 <svelte:head>
-  <title>Dashboard</title>
+  <title>404</title>
 </svelte:head>
 
 <main>
-test
+404 Not Found.
 </main>
 
 <style>

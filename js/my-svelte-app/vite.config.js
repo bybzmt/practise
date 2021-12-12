@@ -46,7 +46,6 @@ export default defineConfig(({command, mode}) =>{
     resolve: {
       alias: {
         $src: path.resolve(__dirname, './src'),
-        $icon: path.resolve(__dirname, './src/icons'),
       }
     },
     css:{

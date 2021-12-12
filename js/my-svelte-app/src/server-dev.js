@@ -32,7 +32,7 @@ async function createServer() {
       // 3. 加载服务器入口。vite.ssrLoadModule 将自动转换
       //    你的 ESM 源码使之可以在 Node.js 中运行！无需打包
       //    并提供类似 HMR 的根据情况随时失效。
-      const { render } = await vite.ssrLoadModule('src/entry-server.js')
+      const { render } = await vite.ssrLoadModule('./src/entry-server.js')
 
       await render(req, res, template)
     } catch (e) {

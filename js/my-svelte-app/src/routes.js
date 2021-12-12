@@ -4,9 +4,10 @@ export default {
     "/": () => import('./pages/index.svelte'),
     "/index2": () => import('./pages/index2.svelte'),
   },
-  matchs:[
+  e404: () => import('./pages/404.svelte'),
+  preg:[
     {
-      reg: /\.*/,
+      pattern: /\.*/,
       page: () => import('./pages/404.svelte'),
     },
   ]
