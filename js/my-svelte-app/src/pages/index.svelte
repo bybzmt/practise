@@ -6,6 +6,9 @@ export const load = async () => {
     };
 };
 </script>
+<script>
+import {href} from '$src/lib/core';
+</script>
 
 <svelte:head>
   <title>Dashboard</title>
@@ -14,9 +17,9 @@ export const load = async () => {
 <main>
 index
 <br />
-<a href="/">index</a>
+<a on:click={href("/")}>index</a>
 <br />
-<a href="/index2">index2</a>
+<a on:click={href("/index2")}>index2</a>
 </main>
 
 <style>

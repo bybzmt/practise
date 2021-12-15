@@ -1,8 +1,11 @@
 import routes from './routes';
-import {match} from '$src/lib/core';
+import {App, match, setP} from '$src/lib/core';
 
 (function(){
-  let uri = Location.href.split('?')[0];
+  let url = new URL(location.href);
+
+  let uri = url.pathname;
+  console.log(uri);
 
   let page = match(routes, uri)
   if (!page) {
@@ -11,14 +14,15 @@ import {match} from '$src/lib/core';
   }
 
   page().then((page)=>{
+
     const loader = page.load || (()=>{return {};});
-    const App = page.default;
+
+    setP(page.default)
 
     const app = new App({
       target:document.querySelector("#app"),
       hydrate: true,
     });
-
   }).catch((e) => {
     console.log(e)
   })
