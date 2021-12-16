@@ -1,32 +1,43 @@
-import routes from './routes';
-import {App, match, setP} from '$src/lib/core';
+import {loadPage} from '$src/lib/core';
+import {uri} from '$src/lib/core/nav';
+import App from '$src/lib/core/app.svelte';
+import routes from '$src/routes'
 
-(function(){
+
+function render() {
+
   let url = new URL(location.href);
 
-  let uri = url.pathname;
-  console.log(uri);
+  let path = url.pathname;
 
-  let page = match(routes, uri)
-  if (!page) {
-    console.log("404 Not Found.");
-    return;
-  }
+  console.log(path);
 
-  page().then((page)=>{
+  uri.set(path)
 
-    const loader = page.load || (()=>{return {};});
-
-    setP(page.default)
+  loadPage(routes, path).then((d)=>{
+    const props = d ? d : {page:null, props:{}}
 
     const app = new App({
       target:document.querySelector("#app"),
       hydrate: true,
+      props,
     });
-  }).catch((e) => {
-    console.log(e)
+
+    uri.subscribe(value => {
+      console.log("goto:", value);
+      loadPage(routes, value).then((d) => {
+        const props = d ? d : {page:null, props:{}}
+        app.$set(props)
+      })
+    });
   })
 
+  window.addEventListener('popstate', (event) => {
+    let url = new URL(location.href);
+    uri.set(url.pathname);
+  });
+
+}
 
 
-})()
+render()

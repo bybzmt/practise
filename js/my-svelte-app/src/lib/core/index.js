@@ -1,9 +1,3 @@
-import router, {setPage} from "./app.svelte"
-
-import routes from "$src/routes"
-
-export const App = router
-export const setP = setPage
 
 export function match(routes, uri) {
   let page = routes.map[uri];
@@ -14,24 +8,20 @@ export function match(routes, uri) {
   return null;
 }
 
-export function goto(uri) {
-  let f = match(routes, uri)
-  if (!f) {
-    console.log("404")
-    return
+export async function loadPage(routes, uri) {
+  let page = routes.map[uri];
+  if (page) {
+    let p = await page()
+
+    const loader = p.load || (()=>{return {};});
+
+    let x = await loader()
+
+    return {
+      page: p.default,
+      props: x,
+    }
   }
 
-  f().then((p) => {
-      setPage(p.default)
-  }).catch((e)=>{
-    console.log(e)
-  })
-}
-
-export function href(uri) {
-  return ()=>{
-    console.log("href", uri)
-
-    goto(uri)
-  }
+  return null;
 }
