@@ -1,14 +1,17 @@
 
 export default {
-  map:{
-    "/": () => import('./pages/index.svelte'),
-    "/index2": () => import('./pages/index2.svelte'),
-  },
-  e404: () => import('./pages/404.svelte'),
-  preg:[
-    {
-      pattern: /\.*/,
-      page: () => import('./pages/404.svelte'),
+    map: {
+        "/": {
+            page: () => import('./pages/index.svelte'),
+            perm: null,
+        },
+        "/index2": {
+            page: () => import('./pages/index2.svelte'),
+            perm: '@login',
+        },
     },
-  ]
+    error:{
+        page: () => import('./pages/404.svelte'),
+        perm: null,
+    }
 }

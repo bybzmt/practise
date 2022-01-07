@@ -5,62 +5,85 @@ import tailwindcss from 'tailwindcss';
 import postcssNested from 'postcss-nested';
 import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano';
-
 import path from 'path';
+
 //import { fileURLToPath } from 'url';
 //const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({command, mode}) =>{
-  console.log("command", command, "mode", mode)
+    console.log("command", command, "mode", mode)
 
-  const dev = mode === 'development';
+    let api_base;
+    let use_cssnano = false;
 
-  let postcss_config = {
-    plugins: [
-      postcssImport(),
-      postcssNested(),
-      tailwindcss({
-        purge:["src/**/*.svelte"]
-      }),
-      autoprefixer({
-        cascade: true,
-      }),
-    ],
-  }
+    if (mode === 'production') {
+        api_base = JSON.stringify("http://api.ming.test")
+        use_cssnano = true;
+    } else if (mode === 'test') {
+        api_base = JSON.stringify("http://api.ming.test")
+    } else {
+        api_base = JSON.stringify("http://api.ming.lan")
+    }
 
-  if (!dev) {
-    postcss_config.plugins.push(
-      cssnano({
-        preset: 'default',
-      })
-    );
-  }
+    let postcss_config = {
+        plugins: [
+            postcssImport(),
+            postcssNested(),
+            tailwindcss({
+                mode: 'jit',
+                enabled: true,
+                purge:["src/**/*.svelte"]
+            }),
+            autoprefixer({
+                cascade: true,
+            }),
+        ],
+    }
 
-  return {
-    mode:"development",
-    publicDir:'./public',
-    root:'./src',
-    build:{
-      sourcemap:true,
-    },
-    resolve: {
-      alias: {
-        $src: path.resolve(__dirname, './src'),
-      }
-    },
-    css:{
-      postcss: postcss_config,
-      preprocessorOptions:{},
-    },
-    plugins: [
-      svelte({
-        compilerOptions:{
-          hydratable:true,
+    if (use_cssnano) {
+        postcss_config.plugins.push(
+            cssnano({
+                preset: 'default',
+            })
+        );
+    }
+
+    return {
+        publicDir: path.resolve(__dirname, './static'),
+        //http://cdn.xx.com/xxx/
+        base:'/',
+        root:'./src',
+        define: {
+            API_BASE: api_base,
         },
-        disableDependencyReinclusion:true,
-        extensions:[".svelte"],
-        //useVitePreprocess:true,
-      }),
-    ]
-  }
+        build: {
+            emptyOutDir:false,
+            sourcemap:true,
+            cssCodeSplit:false,
+        },
+        resolve: {
+            alias: {
+                $src: path.resolve(__dirname, './src'),
+                $lib: path.resolve(__dirname, './src/lib'),
+                $icon: path.resolve(__dirname, './src/icons'),
+            }
+        },
+        css:{
+            postcss: postcss_config,
+            preprocessorOptions:{},
+        },
+        plugins: [
+            svelte({
+                compilerOptions:{
+                    hydratable:true,
+                },
+                disableDependencyReinclusion:true,
+                extensions:[".svelte"],
+                //useVitePreprocess:true,
+            }),
+        ],
+        server:{
+            host:"0.0.0.0"
+        }
+    }
 })

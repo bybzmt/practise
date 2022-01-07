@@ -1,43 +1,90 @@
-import {loadPage} from '$src/lib/core';
-import {uri} from '$src/lib/core/nav';
-import App from '$src/lib/core/app.svelte';
+import { goto, loadPage, initSession } from '$src/lib/core';
+import { initEvent } from '$src/lib/core/event';
+import { GraphQLInit } from '$src/lib/api'
 import routes from '$src/routes'
+import { writable } from 'svelte/store';
+import cookie from 'cookie';
 
 
-function render() {
+async function render(target) {
 
-  let url = new URL(location.href);
+    let _url = new URL(location.href);
 
-  let path = url.pathname;
+    let url = writable(_url);
 
-  console.log(path);
+    let session = writable({});
 
-  uri.set(path)
+    let context = new Map()
 
-  loadPage(routes, path).then((d)=>{
-    const props = d ? d : {page:null, props:{}}
+    //cookie读取
+    let cookies = cookie.parse(document.cookie)
 
-    const app = new App({
-      target:document.querySelector("#app"),
-      hydrate: true,
-      props,
+    context.set('url', url)
+    context.set('cookie', cookies)
+    context.set('session', session)
+    context.set('goto', goto(context))
+    context.set('api', GraphQLInit(context))
+
+    let sess_data;
+    let init_data = window._init_data_;
+
+    if (init_data) {
+        context.set('init_props', init_data.props)
+
+        sess_data = init_data.sess_data || {};
+    } else {
+        sess_data = await initSession(context);
+    }
+
+    session.set({ user: sess_data.user })
+
+    if (sess_data.sid != cookies.sid) {
+        cookies.sid = sess_data.sid
+        document.cookie = cookie.serialize('sid', sess_data.sid, { sameSite: 'lax', path: "/" })
+    }
+
+    let app;
+
+    function onload(page) {
+        if (!page) {
+            return;
+        }
+
+        if (page.redirect) {
+            let goto = context.get('goto')
+            goto(page.redirect)
+            return;
+        }
+
+        if (page.headers) {
+            for (let key in page.headers) {
+                document.cookie = cookie.serialize(key, String(page.header[key]), { sameSite: 'lax', path: "/" })
+            }
+        }
+
+        if (app instanceof page.render) {
+            app.$set(page.props)
+        } else {
+            if (app) {
+                app.$destroy()
+            }
+
+            app = new page.render({
+                target,
+                hydrate: true,
+                props: page.props,
+                context,
+            });
+        }
+    }
+
+    url.subscribe(url => {
+        _url = url
+        loadPage(context, routes, url).then(onload)
     });
 
-    uri.subscribe(value => {
-      console.log("goto:", value);
-      loadPage(routes, value).then((d) => {
-        const props = d ? d : {page:null, props:{}}
-        app.$set(props)
-      })
-    });
-  })
-
-  window.addEventListener('popstate', (event) => {
-    let url = new URL(location.href);
-    uri.set(url.pathname);
-  });
-
+    initEvent(context)
 }
 
 
-render()
+render(document.querySelector("#app"))

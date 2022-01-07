@@ -1,18 +1,29 @@
 import { writable } from 'svelte/store';
 
-const uri = writable('/');
+const url = writable({});
 
-function goto(n)
-{
-  history.pushState({}, "", n)
-  uri.update(()=>n)
+function get_base_uri(doc) {
+  let baseURI = doc.baseURI;
+
+  if (!baseURI) {
+    const baseTags = doc.getElementsByTagName('base');
+    baseURI = baseTags.length ? baseTags[0].href : doc.URL;
+  }
+
+  return baseURI;
 }
 
-function href(n)
-{
-  return ()=>{
+function goto(href) {
+  const _url = new URL(href, get_base_uri(document));
+
+  history.pushState({}, "", _url.href)
+  url.update(() => _url)
+}
+
+function href(n) {
+  return () => {
     goto(n)
   }
 }
 
-export {uri, goto, href}
+export { url, goto, href }

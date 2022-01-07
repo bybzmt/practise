@@ -1,24 +1,38 @@
 {
-  "name": "my-svelte-app",
-  "version": "0.0.0",
+  "name": "test-demo",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "ssr": "node src/server-dev",
-    "build:client": "vite build --mode production --outDir dist/client --ssrManifest",
-    "build:server": "vite build --mode production --outDir dist/server --ssr src/entry-server.js "
-  },
-  "dependencies": {
-    "svelte": "^3.44.2"
+    "vite:test": "vite -m test",
+    "vite:pro": "vite -m production",
+    "ssr": "cross-env ENV=development node src/server-dev",
+    "build:dev": "vite build -m development --emptyOutDir --outDir ../dist --ssr server-production.js && vite build -m development --outDir ../dist/client --ssrManifest",
+    "build:test": "vite build -m test --emptyOutDir --outDir ../dist --ssr server-production.js && vite build -m test --outDir ../dist/client --ssrManifest",
+    "build": "vite build --emptyOutDir --outDir ../dist --ssr server-production.js && vite build --outDir ../dist/client --ssrManifest",
+    "start": "node dist/server-production",
+    "production": "echo 'use: pm2 start|status|stop pm2.config.js'"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.31",
+    "@sveltejs/adapter-node": "^1.0.0-next.55",
+    "@sveltejs/kit": "^1.0.0-next.201",
+    "@tailwindcss/jit": "^0.1.18",
     "autoprefixer": "^10.4.0",
+    "cross-env": "^7.0.3",
     "cssnano": "^5.0.12",
-    "express": "^4.17.1",
+    "glob-parent": "^6.0.2",
+    "postcss": "^8.4.4",
     "postcss-import": "^14.0.2",
-    "postcss-nested": "^5.0.6",
+    "postcss-scss": "^4.0.2",
+    "rollup-plugin-svelte-svg": "^1.0.0-beta.5",
+    "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.9.8",
     "tailwindcss": "^2.2.19",
-    "vite": "^2.6.14",
-    "vite-ssr": "^0.14.3"
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "cookie": "^0.4.1",
+    "express": "^4.17.2"
   }
 }

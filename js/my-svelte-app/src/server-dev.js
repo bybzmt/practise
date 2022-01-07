@@ -1,13 +1,16 @@
-const fs = require('fs')
-const path = require('path')
-const express = require('express')
-const { createServer: createViteServer } = require('vite')
+const fs = require("fs")
+const path = require("path")
+const express = require("express")
+const { createServer : createViteServer } = require('vite')
+
+//import { fileURLToPath } from 'url';
+//const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function createServer() {
   const app = express()
 
   const vite = await createViteServer({
-    mode:"development",
+    mode: "development",
     server: { middlewareMode: 'ssr' }
   })
 
