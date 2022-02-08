@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api_url = API_BASE + '/mcn/graphql';
+const api_url = API_BASE + '/graphql';
 
 function GraphQLInit(context) {
 	return async function (query, variables) {

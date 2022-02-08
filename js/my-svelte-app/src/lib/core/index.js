@@ -10,6 +10,8 @@ function match(routes, url) {
     return page
   }
 
+    if (routes.error) return routes.error
+
   return null
 }
 
@@ -95,6 +97,7 @@ function goto(context) {
 
 
 async function initSession(context) {
+    return {}
 
   //session初始化
   let query = `

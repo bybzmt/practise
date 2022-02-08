@@ -7,7 +7,7 @@ export default {
         },
         "/index2": {
             page: () => import('./pages/index2.svelte'),
-            perm: '@login',
+            perm: null,
         },
     },
     error:{

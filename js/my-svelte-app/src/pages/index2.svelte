@@ -1,28 +1,23 @@
 <script context="module">
 </script>
 
-<svelte:head>
-  <title>Dashboard</title>
-</svelte:head>
-
 <script>
-import {href} from '$src/lib/core/nav';
-
-export let a=0
-
 </script>
 
-<main>
-index2
-<br />
-<a on:click={href("/")}>index</a>
-<br />
-<a on:click={href("/index2")}>index2</a>
+<svelte:head>
+    <title>index2</title>
+</svelte:head>
 
+<main>
+    index2
+    <br />
+    <a href="/">index</a>
+    <br />
+    <a href="/index2">index2</a>
 </main>
 
 <style>
-main{
-    color:red;
-}
+    main {
+        color: red;
+    }
 </style>

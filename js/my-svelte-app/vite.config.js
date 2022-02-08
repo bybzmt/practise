@@ -17,12 +17,12 @@ export default defineConfig(({command, mode}) =>{
     let use_cssnano = false;
 
     if (mode === 'production') {
-        api_base = JSON.stringify("http://api.ming.test")
+        api_base = JSON.stringify("http://api.test")
         use_cssnano = true;
     } else if (mode === 'test') {
-        api_base = JSON.stringify("http://api.ming.test")
+        api_base = JSON.stringify("http://api.test")
     } else {
-        api_base = JSON.stringify("http://api.ming.lan")
+        api_base = JSON.stringify("http://api.lan")
     }
 
     let postcss_config = {
