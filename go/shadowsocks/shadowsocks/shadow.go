@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	shadow "./shadow"
+	shadow "ss/shadowsocks/shadow"
 )
 
 var errEmptyPassword = errors.New("empty key")

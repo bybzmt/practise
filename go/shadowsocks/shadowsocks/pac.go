@@ -1,10 +1,10 @@
 package shadowsocks
 
 import (
-	pac "./pac"
 	"net"
 	"regexp"
 	"regexp/syntax"
+	pac "ss/shadowsocks/pac"
 )
 
 type Rules struct {

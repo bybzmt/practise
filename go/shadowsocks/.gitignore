@@ -1,15 +1,13 @@
 !.empty
+/ss
+/shadowsocks.db
 
 #vim temp file
 *.swp
 *~
 *.swo
 
-shadowsocks-go
-
-/gopath/pkg
-/gopath/bin
-
 /webUI/package-lock.json
-/webUI/dist
 /webUI/node_modules
+
+/ui/dist

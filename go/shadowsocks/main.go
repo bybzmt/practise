@@ -7,8 +7,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	ss "./shadowsocks"
-	"./ui"
+	ss "ss/shadowsocks"
+	"ss/ui"
 
 	flaggy "github.com/integrii/flaggy"
 )

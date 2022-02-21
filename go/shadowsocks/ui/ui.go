@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"github.com/bybzmt/bolthold"
-	"github.com/elazarl/go-bindata-assetfs"
 	"log"
 	"net"
 	"net/http"
@@ -10,8 +8,15 @@ import (
 	"sync"
 	"time"
 
-	ss "../shadowsocks"
+	"github.com/bybzmt/bolthold"
+
+	"embed"
+	"io/fs"
+	ss "ss/shadowsocks"
 )
+
+//go:embed dist/*
+var uifiles embed.FS
 
 type ui struct {
 	l   sync.Mutex
@@ -51,8 +56,10 @@ func NewUI(cfg, addr, host string) *ui {
 }
 
 func (this *ui) init() {
-	this.handler.Handle("/", http.FileServer(
-		&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "./webUI/dist/"}))
+
+	tfs, _ := fs.Sub(uifiles, "dist")
+
+	this.handler.Handle("/", http.FileServer(http.FS(tfs)))
 
 	this.handler.HandleFunc("/api/state", this.apiState)
 	this.handler.HandleFunc("/api/log", this.apiLog)

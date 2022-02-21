@@ -1,13 +1,14 @@
 package ui
 
 import (
-	ss "../shadowsocks"
 	"encoding/json"
-	"github.com/bybzmt/bolthold"
 	"net/http"
+	ss "ss/shadowsocks"
 	"strconv"
 	"sync/atomic"
 	"time"
+
+	"github.com/bybzmt/bolthold"
 )
 
 type ui_state struct {

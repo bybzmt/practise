@@ -1,3 +1,13 @@
-module example.com/ss
+module ss
 
-go 1.13
+go 1.16
+
+require (
+	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
+	github.com/boltdb/bolt v1.3.1 // indirect
+	github.com/bybzmt/bolthold v0.0.0-20190514011116-2990f200cb1c // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/integrii/flaggy v1.4.4 // indirect
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
+)

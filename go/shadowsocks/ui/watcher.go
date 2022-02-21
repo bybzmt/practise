@@ -1,9 +1,9 @@
 package ui
 
 import (
-	ss "../shadowsocks"
 	"io"
 	"net"
+	ss "ss/shadowsocks"
 	"strings"
 	"sync/atomic"
 	"time"

@@ -10,7 +10,7 @@ module.exports = {
     index:'./src/index.js'
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../ui/dist'),
     filename: '[name].js'
   },
   mode: mode,

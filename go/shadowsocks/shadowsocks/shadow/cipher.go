@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	shadowaead "./aead"
-	shadowstream "./stream"
+	shadowaead "ss/shadowsocks/shadow/aead"
+	shadowstream "ss/shadowsocks/shadow/stream"
 )
 
 type Cipher interface {
