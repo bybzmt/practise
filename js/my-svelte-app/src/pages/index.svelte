@@ -32,5 +32,6 @@
 <style>
     main {
         color: red;
+		background:url("$lib/icons/zondicons/add-outline.svg") no-repeat;
     }
 </style>

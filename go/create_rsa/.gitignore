@@ -1,0 +1,3 @@
+
+/cmd/generater_openvpn_user/*
+!/cmd/generater_openvpn_user/*.go
