@@ -24,9 +24,11 @@ func AllCiphers() []string {
 }
 
 func NewShadow(network, addr, cipher, password string) (*Shadow, error) {
-	if password == "" {
-		return nil, errEmptyPassword
-	}
+	/*
+		if password == "" {
+			return nil, errEmptyPassword
+		}
+	*/
 
 	var key []byte
 	c, err := shadow.PickCipher(cipher, key, password)

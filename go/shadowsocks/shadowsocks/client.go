@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"sync/atomic"
 	"time"
+
+	"h12.io/socks"
 )
 
 var ErrAllServerUnavailable = errors.New("Failed connect to all available shadowsocks server")
@@ -113,7 +115,6 @@ func (s *Client) ListenAndServe() (e error) {
 		}
 		go s.Serve(c)
 	}
-	return nil
 }
 
 func (s *Client) Close() {
@@ -226,6 +227,10 @@ func (c *Client) dialShadow(addr ...RawAddr) (net.Conn, error) {
 }
 
 func (c *Client) dialShadowSingle(s *Shadow, addr RawAddr) (net.Conn, error) {
+
+	dialSocksProxy := socks.Dial("socks4://" + s.Address + "?timeout=5s")
+	return dialSocksProxy("", addr.String())
+
 	to, err := s.Dial(c.timeout)
 	if err != nil {
 		Debug.Println("Dial Shadow", s.Address, "To", addr.String(), err)
