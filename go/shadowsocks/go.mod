@@ -8,7 +8,7 @@ require (
 	github.com/bybzmt/bolthold v0.0.0-20190514011116-2990f200cb1c // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/integrii/flaggy v1.4.4 // indirect
-	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	h12.io/socks v1.0.3 // indirect
 )

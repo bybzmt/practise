@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"h12.io/socks"
+	"golang.org/x/crypto/ssh"
 )
 
 var ErrAllServerUnavailable = errors.New("Failed connect to all available shadowsocks server")
@@ -226,10 +226,36 @@ func (c *Client) dialShadow(addr ...RawAddr) (net.Conn, error) {
 	return nil, ErrAllServerUnavailable
 }
 
+var sshclient *ssh.Client
+
 func (c *Client) dialShadowSingle(s *Shadow, addr RawAddr) (net.Conn, error) {
 
-	dialSocksProxy := socks.Dial("socks4://" + s.Address + "?timeout=5s")
-	return dialSocksProxy("", addr.String())
+	/*
+		if sshclient == nil {
+			config := &ssh.ClientConfig{
+				User: "123",
+				Auth: []ssh.AuthMethod{
+					ssh.Password("345"),
+				},
+				HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			}
+			var err error
+			sshclient, err = ssh.Dial("tcp", "0.0.0.0:22", config)
+			if err != nil {
+				log.Println(1, err)
+				return nil, err
+			}
+		}
+
+		n, err := sshclient.Dial("tcp", addr.String())
+		if err != nil {
+			log.Println(2, err)
+		}
+		return n, err
+
+		dialSocksProxy := socks.Dial("socks4://" + s.Address + "?timeout=5s")
+		return dialSocksProxy("", addr.String())
+	*/
 
 	to, err := s.Dial(c.timeout)
 	if err != nil {
