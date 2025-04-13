@@ -1,13 +1,13 @@
 !.empty
-/ss
-/shadowsocks.db
+
+/bin/client/
+/bin/server/
+!/bin/client/*.go
+!/bin/server/*.go
+!/bin/client/config.toml
+!/bin/server/config.toml
 
 #vim temp file
 *.swp
 *~
 *.swo
-
-/webUI/package-lock.json
-/webUI/node_modules
-
-/ui/dist

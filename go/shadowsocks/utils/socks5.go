@@ -1,11 +1,13 @@
-package shadowsocks
+package utils
 
 import (
+	"bytes"
 	"encoding/binary"
 	"errors"
 	"io"
 	"net"
 	"strconv"
+	"time"
 )
 
 var (
@@ -63,7 +65,7 @@ func HandShake(rw io.ReadWriter) (RawAddr, error) {
 	// +----+-----+-------+------+----------+----------+
 	// | 1  |  1  | X'00' |  1   | Variable |    2     |
 	// +----+-----+-------+------+----------+----------+
-	//VER + CMD + RSV
+	// VER + CMD + RSV
 	idCmd := 1
 	h2 := [3]byte{}
 
@@ -121,7 +123,7 @@ func ReadRawAddr(r io.Reader) (RawAddr, error) {
 		return nil, errAddrType
 	}
 
-	//atype(1) + len + prot(2)
+	// atype(1) + len + prot(2)
 	buf := make([]byte, 1+l+2)
 	copy(buf, h[:])
 
@@ -146,7 +148,7 @@ func (r RawAddr) ToIP() net.IP {
 }
 
 func (r RawAddr) Host() string {
-	//atype(1) + len(min 1) + port(2)
+	// atype(1) + len(min 1) + port(2)
 	if len(r) < 4 {
 		return ""
 	}
@@ -159,6 +161,13 @@ func (r RawAddr) Host() string {
 		host = string(r[2 : len(r)-2])
 	}
 	return host
+}
+
+func (r RawAddr) Type() uint8 {
+	if len(r) > 0 {
+		return r[0]
+	}
+	return 0
 }
 
 func (r RawAddr) Port() uint16 {
@@ -179,7 +188,7 @@ func (r RawAddr) String() string {
 	return net.JoinHostPort(r.Host(), r.PortString())
 }
 
-//interface net.Addr
+// interface net.Addr
 func (r RawAddr) Network() string {
 	return "tcp"
 }
@@ -229,4 +238,150 @@ func Parse2RawAddr(addr string) (RawAddr, error) {
 	raw[len(raw)-1] = uint8(port & 0xff)
 
 	return RawAddr(raw), nil
+}
+
+type SocksServer struct {
+	Addr    string
+	Auth    *SocksAuth
+	Timeout time.Duration
+}
+
+type SocksAuth struct {
+	Username string
+	Password string
+}
+
+func (s *SocksServer) Dial(targetAddr string) (_ net.Conn, err error) {
+	conn, err := net.DialTimeout("tcp", s.Addr, s.Timeout)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			conn.Close()
+		}
+	}()
+
+	var req socksRequestBuilder
+
+	version := byte(5) // socks version 5
+	method := byte(0)  // method 0: no authentication (only anonymous access supported for now)
+	if s.Auth != nil {
+		method = 2 // method 2: username/password
+	}
+
+	// version identifier/method selection request
+	req.add(
+		version, // socks version
+		1,       // number of methods
+		method,
+	)
+
+	resp, err := s.sendReceive(conn, req.Bytes())
+	if err != nil {
+		return nil, err
+	} else if len(resp) != 2 {
+		return nil, errors.New("server does not respond properly")
+	} else if resp[0] != 5 {
+		return nil, errors.New("server does not support Socks 5")
+	} else if resp[1] != method {
+		return nil, errors.New("socks method negotiation failed")
+	}
+
+	if s.Auth != nil {
+		version := byte(1)
+		req.Reset()
+		req.add(
+			version,
+			byte(len(s.Auth.Username)),
+		)
+		req.add([]byte(s.Auth.Username)...)
+		req.add(byte(len(s.Auth.Password)))
+		req.add([]byte(s.Auth.Password)...)
+		resp, err := s.sendReceive(conn, req.Bytes())
+		if err != nil {
+			return nil, err
+		} else if len(resp) != 2 {
+			return nil, errors.New("server does not respond properly")
+		} else if resp[0] != version {
+			return nil, errors.New("server does not support user/password version 1")
+		} else if resp[1] != 0 { // not success
+			return nil, errors.New("user/password login failed")
+		}
+	}
+
+	host, port, err := splitHostPort(targetAddr)
+	if err != nil {
+		return nil, err
+	}
+	req.Reset()
+	req.add(
+		5,               // version number
+		1,               // connect command
+		0,               // reserved, must be zero
+		3,               // address type, 3 means domain name
+		byte(len(host)), // address length
+	)
+	req.add([]byte(host)...)
+	req.add(
+		byte(port>>8), // higher byte of destination port
+		byte(port),    // lower byte of destination port (big endian)
+	)
+	resp, err = s.sendReceive(conn, req.Bytes())
+	if err != nil {
+		return
+	} else if len(resp) != 10 {
+		return nil, errors.New("server does not respond properly")
+	} else if resp[1] != 0 {
+		return nil, errors.New("can't complete SOCKS5 connection")
+	}
+
+	return conn, nil
+}
+
+func (s *SocksServer) sendReceive(conn net.Conn, req []byte) (resp []byte, err error) {
+	if s.Timeout > 0 {
+		if err := conn.SetWriteDeadline(time.Now().Add(s.Timeout)); err != nil {
+			return nil, err
+		}
+	}
+	_, err = conn.Write(req)
+	if err != nil {
+		return
+	}
+	resp, err = s.readAll(conn)
+	return
+}
+
+func (s *SocksServer) readAll(conn net.Conn) (resp []byte, err error) {
+	resp = make([]byte, 1024)
+	if s.Timeout > 0 {
+		if err := conn.SetReadDeadline(time.Now().Add(s.Timeout)); err != nil {
+			return nil, err
+		}
+	}
+	n, err := conn.Read(resp)
+	resp = resp[:n]
+	return
+}
+
+type socksRequestBuilder struct {
+	bytes.Buffer
+}
+
+func (b *socksRequestBuilder) add(data ...byte) {
+	_, _ = b.Write(data)
+}
+
+func splitHostPort(addr string) (host string, port uint16, err error) {
+	host, portStr, err := net.SplitHostPort(addr)
+	if err != nil {
+		return "", 0, err
+	}
+	portInt, err := strconv.ParseUint(portStr, 10, 16)
+	if err != nil {
+		return "", 0, err
+	}
+	port = uint16(portInt)
+	return
 }

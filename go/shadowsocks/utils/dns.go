@@ -1,11 +1,12 @@
-package shadowsocks
+package utils
 
 import (
 	"context"
-	lru "github.com/hashicorp/golang-lru"
 	"net"
 	"sync"
 	"time"
+
+	lru "github.com/hashicorp/golang-lru"
 )
 
 type dnsVal struct {
@@ -18,7 +19,7 @@ type dnsLocker struct {
 	num int
 }
 
-type dns struct {
+type Dns struct {
 	dns      []string
 	lru      *lru.Cache
 	job      chan string
@@ -27,13 +28,13 @@ type dns struct {
 	l        sync.Mutex
 	lh       map[string]*dnsLocker
 
-	Dial func(n, addr string) (net.Conn, error)
+	Dial func(network, addr string) (net.Conn, error)
 }
 
-func NewDNS(ips []string) *dns {
+func NewDNS(ips []string) *Dns {
 	lru, _ := lru.New(2000)
 
-	d := &dns{
+	d := &Dns{
 		dns: ips,
 		lru: lru,
 		job: make(chan string, 100),
@@ -59,11 +60,11 @@ func NewDNS(ips []string) *dns {
 	return d
 }
 
-func (d *dns) Close() {
+func (d *Dns) Close() {
 	close(d.job)
 }
 
-func (d *dns) run() {
+func (d *Dns) run() {
 	for {
 		host, ok := <-d.job
 		if !ok {
@@ -80,7 +81,7 @@ func (d *dns) run() {
 	}
 }
 
-func (d *dns) _lookupIPAddr(host string) ([]net.IPAddr, error) {
+func (d *Dns) _lookupIPAddr(host string) ([]net.IPAddr, error) {
 	ipaddr, err := d.resolver.LookupIPAddr(context.Background(), host)
 	if err != nil {
 		Debug.Println("Lookup", host, err)
@@ -99,7 +100,7 @@ func (d *dns) _lookupIPAddr(host string) ([]net.IPAddr, error) {
 	return ipaddr, nil
 }
 
-func (d *dns) LookupIPAddr(host string) ([]net.IPAddr, error) {
+func (d *Dns) LookupIPAddr(host string) ([]net.IPAddr, error) {
 	d.l.Lock()
 	l, ok := d.lh[host]
 	if !ok {
