@@ -6,40 +6,63 @@ import (
 )
 
 type Watcher interface {
-	// Client HandShake Error
-	OnSocksInvalid(from net.Addr, err error)
-	// Server HandShake Error
-	OnShadowInvalid(from net.Addr, err error)
-	OnProxyStart(mode string, from, to net.Addr)
-	OnProxyStop(mode string, from, to net.Addr, err error)
-	Hijacker(host string, c net.Conn) bool
+	HandShake(from net.Addr, err error)
+	Hijacker(to RawAddr, c net.Conn) bool
+	NoServer(to RawAddr)
+	Create(server string, from, to net.Addr) ProxyWatcher
 }
 
-var DefaultWatcher = &defaultWatcher{}
+type ProxyWatcher interface {
+	ShadowInvalid(err error)
+	Proxy()
+	Relay(err error)
+}
 
-type defaultWatcher struct {
+var DefaultWatcher = &watcher{}
+
+type watcher struct {
 	Counter int32
 }
 
-func (w *defaultWatcher) OnSocksInvalid(from net.Addr, err error) {
-	Debug.Println("SocksInvalid", from, err)
+type proxyWatcher struct {
+	w      *watcher
+	server string
+	from   net.Addr
+	to     net.Addr
 }
 
-func (w *defaultWatcher) OnShadowInvalid(from net.Addr, err error) {
-	Debug.Println("ShadowInvalid", from, err)
+func (w *watcher) HandShake(from net.Addr, err error) {
+	Debug.Println("HandShake", from, err)
 }
 
-func (w *defaultWatcher) OnProxyStart(mode string, from, to net.Addr) {
-	Debug.Println("ProxyStart", mode, from, "<=>", to)
-	atomic.AddInt32(&w.Counter, 1)
-}
-
-func (w *defaultWatcher) OnProxyStop(mode string, from, to net.Addr, err error) {
-	Debug.Println("ProxyStop", mode, from, "<=>", to, err)
-
-	atomic.AddInt32(&w.Counter, -1)
-}
-
-func (this *defaultWatcher) Hijacker(host string, c net.Conn) bool {
+func (this *watcher) Hijacker(to RawAddr, c net.Conn) bool {
 	return false
+}
+
+func (this *watcher) NoServer(to RawAddr) {
+	Debug.Println(to.String() + " No Match Server")
+}
+
+func (w *watcher) Create(server string, from, to net.Addr) ProxyWatcher {
+	pw := &proxyWatcher{
+		w:      w,
+		server: server,
+		from:   from,
+		to:     to,
+	}
+	return pw
+}
+
+func (pw *proxyWatcher) ShadowInvalid(err error) {
+	Debug.Println("ShadowInvalid", pw.server, err)
+}
+
+func (pw *proxyWatcher) Proxy() {
+	atomic.AddInt32(&pw.w.Counter, 1)
+	Debug.Println("ProxyStart", pw.server, pw.from, "<=>", pw.to)
+}
+
+func (pw *proxyWatcher) Relay(err error) {
+	atomic.AddInt32(&pw.w.Counter, -1)
+	Debug.Println("ProxyStop", pw.server, pw.from, "<=>", pw.to, err)
 }

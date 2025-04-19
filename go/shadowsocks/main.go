@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/signal"
 	"ss/utils"
 	"sync/atomic"
 	"time"
@@ -28,15 +29,15 @@ func main() {
 
 	f := loadConfig(*configFile)
 
-	if f.Addr == "" {
-		f.Addr = "127.0.0.1:1080"
-	}
-
 	if *debug {
 		log.Printf("%#v", f)
 	}
 
 	runClient(f)
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
+	<-sigChan
 }
 
 func loadConfig(file string) ss.Config {
@@ -75,29 +76,40 @@ func loadFile(file string) (string, error) {
 }
 
 func runClient(f ss.Config) {
-	client, err := ss.NewClient(&f)
-
-	if *debug {
-		log.Printf("%#v", client)
+	clients, err := ss.NewClient(&f)
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	log.Println("Starting Shadowsocks Client At", f.Addr)
+	for _, c := range clients {
+		err := c.Listen()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 
-	go cliState(client)
+	for _, c := range clients {
+		log.Println("Starting Shadowsocks Client At", c.Addr())
 
-	err = client.ListenAndServe()
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		go cliState(c)
+		go func(c ss.Client) {
+			for {
+				conn, err := c.Accept()
+				if err != nil {
+					log.Fatalln(err)
+				}
+				go c.Serve(conn)
+			}
+		}(c)
 	}
 }
 
-func cliState(c *ss.Client) {
+func cliState(c ss.Client) {
 	for range time.Tick(10 * time.Second) {
 		num := atomic.LoadInt32(&utils.DefaultWatcher.Counter)
 
-		t := c.Traffic.Clone()
-		c.Traffic.Sub(&t)
+		t := c.Traffic().Clone()
+		c.Traffic().Sub(&t)
 
 		Outgoing := utils.FmtSize(10*time.Second, t.Outgoing)
 		Incoming := utils.FmtSize(10*time.Second, t.Incoming)

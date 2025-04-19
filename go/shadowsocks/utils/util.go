@@ -1,11 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"strings"
-    "time"
-    "fmt"
+	"time"
 )
 
 type Creater func(net.Conn) net.Conn
@@ -31,7 +31,7 @@ func Relay(a, b net.Conn) (err error) {
 		ch <- e
 	}()
 
-	//first err
+	// first err
 	return <-ch
 }
 
@@ -49,7 +49,6 @@ func StrSplit(str string) (out []string) {
 	return
 }
 
-
 const (
 	s_kb = 1024
 	s_mb = 1024 * 1024
@@ -66,6 +65,10 @@ func FmtSize(t time.Duration, i int64) string {
 	} else if num > s_kb {
 		return fmt.Sprintf("%.2fKB/s", num/s_kb)
 	} else {
-		return fmt.Sprintf("%.2fB/s", num)
+		str := fmt.Sprintf("%.2fB/s", num)
+		if str == "0.00B/s" && num > 0 {
+			return "0.01B/s"
+		}
+		return str
 	}
 }

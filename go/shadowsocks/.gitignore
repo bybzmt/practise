@@ -1,11 +1,9 @@
 !.empty
 
-/bin/client/
-/bin/server/
-!/bin/client/*.go
-!/bin/server/*.go
-!/bin/client/config.toml
-!/bin/server/config.toml
+/ss
+
+*.toml
+!/example.toml
 
 #vim temp file
 *.swp

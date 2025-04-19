@@ -2,12 +2,19 @@ package utils
 
 import (
 	"context"
+	"math/rand"
 	"net"
 	"sync"
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
 )
+
+type DNS interface {
+	LookupIPAddr(ctx context.Context, host string) ([]net.IPAddr, error)
+}
+
+type DNSDialer func(network, addr string) (net.Conn, error)
 
 type dnsVal struct {
 	ipaddr []net.IPAddr
@@ -19,70 +26,54 @@ type dnsLocker struct {
 	num int
 }
 
-type Dns struct {
+type dns struct {
 	dns      []string
 	lru      *lru.Cache
-	job      chan string
-	idx      uint16
 	resolver net.Resolver
 	l        sync.Mutex
 	lh       map[string]*dnsLocker
-
-	Dial func(network, addr string) (net.Conn, error)
 }
 
-func NewDNS(ips []string) *Dns {
+func NewDNS(ips []string, dialer DNSDialer) DNS {
+	if len(ips) == 0 {
+		return net.DefaultResolver
+	}
+
+	if dialer == nil {
+		return &net.Resolver{
+			Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+				ip := ips[rand.Intn(len(ips))]
+
+				_, port, _ := net.SplitHostPort(address)
+				addr := net.JoinHostPort(ip, port)
+
+				return net.Dial(network, addr)
+			},
+		}
+	}
+
 	lru, _ := lru.New(2000)
 
-	d := &Dns{
+	d := &dns{
 		dns: ips,
 		lru: lru,
-		job: make(chan string, 100),
 		lh:  make(map[string]*dnsLocker),
 	}
 
 	d.resolver.Dial = func(ctx context.Context, network, address string) (net.Conn, error) {
-		ip := d.dns[int(d.idx)%len(d.dns)]
-		d.idx++
+		ip := ips[rand.Intn(len(ips))]
 
 		_, port, _ := net.SplitHostPort(address)
 		addr := net.JoinHostPort(ip, port)
 
-		if d.Dial != nil {
-			return d.Dial(network, addr)
-		} else {
-			return net.Dial(network, addr)
-		}
+		return dialer(network, addr)
 	}
-
-	go d.run()
 
 	return d
 }
 
-func (d *Dns) Close() {
-	close(d.job)
-}
-
-func (d *Dns) run() {
-	for {
-		host, ok := <-d.job
-		if !ok {
-			break
-		}
-
-		if t, ok := d.lru.Get(host); ok {
-			if time.Now().Before(t.(dnsVal).expire) {
-				continue
-			}
-		}
-
-		go d._lookupIPAddr(host)
-	}
-}
-
-func (d *Dns) _lookupIPAddr(host string) ([]net.IPAddr, error) {
-	ipaddr, err := d.resolver.LookupIPAddr(context.Background(), host)
+func (d *dns) _lookupIPAddr(ctx context.Context, host string) ([]net.IPAddr, error) {
+	ipaddr, err := d.resolver.LookupIPAddr(ctx, host)
 	if err != nil {
 		Debug.Println("Lookup", host, err)
 		return nil, err
@@ -100,7 +91,7 @@ func (d *Dns) _lookupIPAddr(host string) ([]net.IPAddr, error) {
 	return ipaddr, nil
 }
 
-func (d *Dns) LookupIPAddr(host string) ([]net.IPAddr, error) {
+func (d *dns) LookupIPAddr(ctx context.Context, host string) ([]net.IPAddr, error) {
 	d.l.Lock()
 	l, ok := d.lh[host]
 	if !ok {
@@ -130,14 +121,9 @@ func (d *Dns) LookupIPAddr(host string) ([]net.IPAddr, error) {
 		v := t.(dnsVal)
 
 		if time.Now().After(v.expire) {
-			d.job <- host
-			Debug.Println("Lookup Refresh", host, v.ipaddr)
-		} else {
-			Debug.Println("Lookup Cached", host, v.ipaddr)
+			return d._lookupIPAddr(ctx, host)
 		}
-
-		return v.ipaddr, nil
 	}
 
-	return d._lookupIPAddr(host)
+	return d._lookupIPAddr(ctx, host)
 }
