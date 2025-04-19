@@ -17,6 +17,7 @@ type shadowProxy struct {
 
 func (s *shadowProxy) init() {
 	s.name = fmt.Sprintf("ShadowProxy(%s)", s.addr)
+
 	s.dnsDialer = func(network, addr string) (net.Conn, error) {
 		raw, err := utils.Parse2RawAddr(addr)
 		if err != nil {

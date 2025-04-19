@@ -8,7 +8,7 @@ import (
 
 type shadowClient struct {
 	baseClient
-	RelayTo utils.RawAddr
+	shadow utils.Creater
 }
 
 func (s *shadowClient) Serve(from net.Conn) {
@@ -16,6 +16,8 @@ func (s *shadowClient) Serve(from net.Conn) {
 
 	from = s.connTraffic(from)
 	from.SetDeadline(time.Now().Add(s.timeout))
+
+	from = s.shadow(from)
 
 	addr, err := utils.ReadRawAddr(from)
 	if err != nil {
@@ -28,9 +30,9 @@ func (s *shadowClient) Serve(from net.Conn) {
 		return
 	}
 
-	pw := s.watcher.Create(server.Name(), from.RemoteAddr(), s.RelayTo)
+	pw := s.watcher.Create(server.Name(), from.RemoteAddr(), addr)
 
-	to, err := server.Shadow(s.RelayTo)
+	to, err := server.Shadow(addr)
 	if err != nil {
 		pw.ShadowInvalid(err)
 		return

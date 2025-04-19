@@ -114,7 +114,22 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 			return nil, err
 		}
 		c.RelayTo = addr
+		return c, nil
 
+	case SHADOWSOCKS:
+		c := &shadowClient{}
+		c.addr = f.Addr
+		c.timeout = timeout
+		c.idleTimeout = idleTimeout
+		c.servers = ss
+		c.watcher = utils.DefaultWatcher
+
+		var key []byte
+		t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
+		if err != nil {
+			return nil, err
+		}
+		c.shadow = t.StreamConn
 		return c, nil
 
 	default:
