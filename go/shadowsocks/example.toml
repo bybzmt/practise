@@ -4,16 +4,21 @@ Addr = "127.0.0.1:1080"
 Timeout = 10
 IdleTimeout = 120
 
-#Type: Relay SOCKS(default)
+#Type: SOCKS(default) RELAY SHADOWSOCKS
 Type = "SOCKS"
 
 #Transparent forwarding Address
 RelayTo = "192.168.0.1:3306"
 
+[[Client]]
+Addr = "127.0.0.1:3306"
+Type = "RELAY"
+RelayTo = "192.168.0.1:3306"
+
 [[Server]]
 #Disable = true
 
-#Type: NOPROXY SOCKS SHADOWSOCKS(default)
+#Type: SHADOWSOCKS(default) NOPROXY SOCKS
 Type = "SHADOWSOCKS"
 
 Addr = "127.0.0.1:1081"
