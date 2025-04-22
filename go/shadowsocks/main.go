@@ -88,6 +88,10 @@ func runClient(f ss.Config) {
 		}
 	}
 
+	if err := ss.PrivilegeDropping(f.Setgid, f.Setuid); err != nil {
+		log.Fatalln(err)
+	}
+
 	for _, c := range clients {
 		log.Println("Starting Shadowsocks Client At", c.Addr())
 

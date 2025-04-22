@@ -16,6 +16,8 @@ const (
 )
 
 type Config struct {
+	Setuid string
+	Setgid string
 	Client []ClientConfig
 	Server []ServerConfig
 }
