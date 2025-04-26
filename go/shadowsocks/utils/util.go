@@ -10,6 +10,11 @@ import (
 
 type Creater func(net.Conn) net.Conn
 
+type SimpleAuth struct {
+	Username string
+	Password string
+}
+
 func Relay(a, b net.Conn) (err error) {
 	if t, ok := a.(*net.TCPConn); ok {
 		t.SetNoDelay(true)

@@ -8,7 +8,7 @@ import (
 
 type socksClient struct {
 	baseClient
-	auth *utils.SocksAuth
+	auth *utils.SimpleAuth
 }
 
 func (s *socksClient) Serve(from net.Conn) {
@@ -18,19 +18,18 @@ func (s *socksClient) Serve(from net.Conn) {
 
 	from.SetDeadline(time.Now().Add(s.timeout))
 
-	addr, err := utils.HandShake(from)
+	ss := utils.NewSocks(from, s.auth)
+
+	addr, err := ss.HandShake()
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
-		return
-	}
-
-	if s.watcher.Hijacker(addr, from) {
 		return
 	}
 
 	server := s.match(addr)
 	if server == nil {
 		s.watcher.NoServer(addr)
+		ss.RespDial(utils.SOCKS_ERR_FORBIDDEN)
 		return
 	}
 
@@ -38,12 +37,18 @@ func (s *socksClient) Serve(from net.Conn) {
 
 	to, err := server.Shadow(addr)
 	if err != nil {
+		ss.RespDial(utils.SOCKS_ERR_NET)
 		pw.ShadowInvalid(err)
 		return
 	}
 	defer to.Close()
 
+	if err := ss.RespDial(utils.SOCKS_SUCCESS); err != nil {
+		pw.ShadowInvalid(err)
+		return
+	}
+
 	pw.Proxy()
-	err = utils.Relay(s.connTick(from), s.connTick(to))
+	err = utils.Relay(s.connTick(from), s.connTick(ss))
 	pw.Relay(err)
 }

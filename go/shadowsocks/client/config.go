@@ -26,7 +26,7 @@ type ClientConfig struct {
 	Type        string
 	Addr        string
 	RelayTo     string
-	Auth        *utils.SocksAuth
+	Auth        *utils.SimpleAuth
 	Timeout     int
 	IdleTimeout int
 }
@@ -160,14 +160,11 @@ func newServer(timeout int, v *ServerConfig) (Server, error) {
 				proxy:   v.Proxy,
 				timeout: timeout2,
 			},
-			socks: utils.SocksServer{
-				Addr:    v.Addr,
-				Timeout: timeout2,
-			},
+			addr: v.Addr,
 		}
 
 		if v.Cipher != "" {
-			s2.socks.Auth = &utils.SocksAuth{
+			s2.auth = &utils.SimpleAuth{
 				Username: v.Cipher,
 				Password: v.Password,
 			}
