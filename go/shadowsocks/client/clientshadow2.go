@@ -7,36 +7,39 @@ import (
 	"time"
 )
 
-type clientSocks struct {
+type clientShadow2 struct {
 	clientBase
-	auth *socks.SimpleAuth
+	shadow utils.Creater
 }
 
-func (s *clientSocks) Serve(from net.Conn) {
+func (s *clientShadow2) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)
-
 	from.SetDeadline(time.Now().Add(s.timeout))
 
-	ss := socks.NewServer(from, s.auth)
+	from = s.shadow(from)
 
-	addr, err := ss.HandShake()
+	cmd, addr, err := socks.ReadCmd(from)
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
+	}
+
+	if cmd != socks.CMD_CONNECT {
+		s.watcher.HandShake(from.RemoteAddr(), socks.ErrCmd)
 		return
 	}
 
 	if s.forbid.MatchRawAddr(addr) {
 		utils.Debug.Println("forbidden", addr.String())
-		ss.RespDial(socks.ERR_FORBIDDEN)
+		socks.SendCmd(from, socks.ERR_FORBIDDEN, nil)
 		return
 	}
 
 	server := s.match(addr)
 	if server == nil {
 		s.watcher.NoServer(addr)
-		ss.RespDial(socks.ERR_FORBIDDEN)
+		socks.SendCmd(from, socks.ERR_FORBIDDEN, nil)
 		return
 	}
 
@@ -44,18 +47,17 @@ func (s *clientSocks) Serve(from net.Conn) {
 
 	to, err := server.Shadow(addr)
 	if err != nil {
-		ss.RespDial(socks.FAIL)
 		pw.ShadowInvalid(err)
+		socks.SendCmd(from, socks.FAIL, nil)
 		return
 	}
 	defer to.Close()
 
-	if err := ss.RespDial(socks.SUCCESS); err != nil {
-		pw.ShadowInvalid(err)
+	if err := socks.SendCmd(from, socks.SUCCESS, nil); err != nil {
 		return
 	}
 
 	pw.Proxy()
-	err = utils.Relay(s.connTick(ss), s.connTick(to))
+	err = utils.Relay(s.connTick(from), s.connTick(to))
 	pw.Relay(err)
 }

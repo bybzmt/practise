@@ -11,7 +11,9 @@ type Server struct {
 }
 
 func NewServer(c net.Conn, auth *SimpleAuth) *Server {
-	return &Server{socks: newSocks(c, auth)}
+	s := &Server{socks: newSocks(c, auth)}
+	s.bind = RawAddr([]byte{ATYP_IPV4, 0, 0, 0, 0, 0, 0})
+	return s
 }
 
 func (s *Server) HandShake() (RawAddr, error) {
@@ -25,69 +27,45 @@ func (s *Server) HandShake() (RawAddr, error) {
 		}
 	}
 
-	req := [3]byte{}
-
-	if _, err := io.ReadFull(s, req[:]); err != nil {
-		return nil, err
-	}
-
-	if req[0] != VER {
-		return nil, errVer
-	}
-
-	if req[1] != CMD_CONNECT {
-		return nil, errCmd
-	}
-
-	addr, err := ReadRawAddr(s)
+	cmd, addr, err := ReadCmd(s.rw)
 	if err != nil {
 		return nil, err
+	}
+
+	if cmd != CMD_CONNECT {
+		return nil, ErrCmd
 	}
 
 	return addr, nil
 }
 
 func (s *Server) RespDial(rep byte) error {
-	if _, err := s.rw.Write([]byte{VER, rep, RSV}); err != nil {
-		return err
-	}
-
-	if s.bind == nil {
-		s.bind = RawAddr([]byte{ATYP_IPV4, 0, 0, 0, 0, 0, 0})
-	}
-
-	if _, err := s.rw.Write(s.bind); err != nil {
-		return err
-	}
-
-	if err := s.rw.Flush(); err != nil {
-		return err
-	}
-
-	return nil
+	return SendCmd(s.rw, rep, s.bind)
 }
 
 func (s *Server) checkAuth() error {
-	if err := checkAuth(s.rw, s.auth); err != nil {
+	auth, err := readAuth(s.rw)
+	if err != nil {
 		return err
 	}
 
-	if _, err := s.rw.Write([]byte{AUTH_VER, SUCCESS}); err != nil {
-		return err
+	if *auth == *s.auth {
+		sendAuthResp(s.rw, false)
+		return ErrAuth
 	}
 
-	return nil
+	return sendAuthResp(s.rw, true)
 }
 
 func (s *Server) checkMethod() error {
-	req := [3]byte{}
+	req := [2]byte{}
 
-	if _, err := io.ReadFull(s.rw, req[:2]); err != nil {
+	if _, err := io.ReadFull(s.rw, req[:]); err != nil {
 		return err
 	}
 
-	if req[0] != VER {
-		return errVer
+	if req[0] != SOCKS_VER {
+		return ErrVer
 	}
 
 	methods := make([]byte, int(req[1]))
@@ -96,13 +74,11 @@ func (s *Server) checkMethod() error {
 	}
 
 	if idx := bytes.IndexByte(methods, s.method); idx < 0 {
-		if _, err := s.rw.Write([]byte{VER, METHOD_INVALID}); err != nil {
-			return err
-		}
-		return errMethodFail
+		s.rw.Write([]byte{SOCKS_VER, METHOD_INVALID})
+		return ErrMethodFail
 	}
 
-	if _, err := s.rw.Write([]byte{VER, s.method}); err != nil {
+	if _, err := s.rw.Write([]byte{SOCKS_VER, s.method}); err != nil {
 		return err
 	}
 

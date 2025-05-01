@@ -10,12 +10,6 @@ import (
 	"time"
 )
 
-var (
-	ErrAllServerUnavailable = errors.New("Failed connect to all available shadowsocks server")
-	ErrDial                 = errors.New("Dial Error")
-	errForbidden            = errors.New("Forbidden")
-)
-
 type Proxy interface {
 	Name() string
 	Shadow(addr socks.RawAddr) (net.Conn, error)
@@ -69,7 +63,7 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 	timeout := time.Duration(f.Timeout) * time.Second
 	idleTimeout := time.Duration(f.IdleTimeout) * time.Second
 
-	base := baseClient{}
+	base := clientBase{}
 	base.addr = f.Addr
 	base.timeout = timeout
 	base.idleTimeout = idleTimeout
@@ -85,14 +79,14 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 		fallthrough
 	case SOCKS:
 		c := &clientSocks{
-			baseClient: base,
+			clientBase: base,
 		}
 		c.auth = f.Auth
 		return c, nil
 
 	case RELAY:
 		c := &clientRelay{
-			baseClient: base,
+			clientBase: base,
 		}
 		addr, err := socks.ParseRawAddr(f.RelayTo)
 		if err != nil {
@@ -103,7 +97,7 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 
 	case SHADOWSOCKS:
 		c := &clientShadow{
-			baseClient: base,
+			clientBase: base,
 		}
 		var key []byte
 		t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
@@ -121,7 +115,7 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 func newServer(timeout int, v *ServerConfig) (Proxy, error) {
 	timeout2 := time.Duration(timeout) * time.Second
 
-	base := baseProxy{
+	base := proxyBase{
 		defaultRule: v.DefaultRule,
 		timeout:     timeout2,
 	}
@@ -131,22 +125,16 @@ func newServer(timeout int, v *ServerConfig) (Proxy, error) {
 	switch strings.ToUpper(v.Type) {
 	case NATIVE:
 		s2 := &proxyNative{
-			baseProxy: base,
+			proxyBase: base,
 		}
 		s2.init()
 		return s2, nil
 
 	case SOCKS:
 		s2 := &proxySocks{
-			baseProxy: base,
+			proxyBase: base,
 			addr:      v.Addr,
-		}
-
-		if v.Cipher != "" {
-			s2.auth = &socks.SimpleAuth{
-				Username: v.Cipher,
-				Password: v.Password,
-			}
+			auth:      v.Auth,
 		}
 		s2.init()
 		return s2, nil
@@ -154,14 +142,18 @@ func newServer(timeout int, v *ServerConfig) (Proxy, error) {
 	case "":
 		fallthrough
 	case SHADOWSOCKS:
+		if v.Auth == nil {
+			return nil, errors.New("shadowsocks Auth nil")
+		}
+
 		var key []byte
-		t, err := shadow.PickCipher(v.Cipher, key, v.Password)
+		t, err := shadow.PickCipher(v.Auth.Username, key, v.Auth.Password)
 		if err != nil {
 			return nil, err
 		}
 
 		s2 := &proxyShadow{
-			baseProxy: base,
+			proxyBase: base,
 			addr:      v.Addr,
 			shadow:    t.StreamConn,
 		}

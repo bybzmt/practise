@@ -8,7 +8,7 @@ import (
 )
 
 type clientRelay struct {
-	baseClient
+	clientBase
 	RelayTo socks.RawAddr
 }
 

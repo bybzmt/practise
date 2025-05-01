@@ -33,7 +33,7 @@ func ReadRawAddr(r io.Reader) (RawAddr, error) {
 	case ATYP_DOMAINNAME:
 		l = int(h[idLen]) + 1
 	default:
-		return nil, errAddrType
+		return nil, ErrAddrType
 	}
 
 	// atype(1) + len + prot(2)

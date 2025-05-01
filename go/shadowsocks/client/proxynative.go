@@ -8,7 +8,7 @@ import (
 )
 
 type proxyNative struct {
-	baseProxy
+	proxyBase
 }
 
 func (s *proxyNative) init() {

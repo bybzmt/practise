@@ -8,7 +8,7 @@ import (
 )
 
 type clientShadow struct {
-	baseClient
+	clientBase
 	shadow utils.Creater
 }
 

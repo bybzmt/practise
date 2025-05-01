@@ -33,8 +33,7 @@ type ClientConfig struct {
 type ServerConfig struct {
 	Type        string
 	Addr        string
-	Cipher      string
-	Password    string
+	Auth        *socks.SimpleAuth
 	Disable     bool
 	DefaultRule bool
 	Rules       []string

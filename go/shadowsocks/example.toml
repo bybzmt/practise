@@ -31,8 +31,9 @@ Addr = "127.0.0.1:1081"
 # AES-128-CTR AES-192-CTR AES-256-CTR
 # AES-128-CFB AES-192-CFB AES-256-CFB
 # CHACHA20-POLY1305 CHACHA20-IETF XCHACHA20
-Cipher = "AES-256-GCM"
-Password = "123456"
+Auth.Username = "AES-256-GCM"
+Auth.Password = "123456"
+
 DNS = []
 
 #Rules ["www.google.com", ".github.com"]

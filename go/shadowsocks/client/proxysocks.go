@@ -10,7 +10,7 @@ import (
 )
 
 type proxySocks struct {
-	baseProxy
+	proxyBase
 	addr string
 	auth *socks.SimpleAuth
 }

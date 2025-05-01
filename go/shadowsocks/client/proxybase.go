@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type baseProxy struct {
+type proxyBase struct {
 	name        string
 	dns         utils.DNS
 	dnsDialer   utils.DNSDialer
@@ -15,18 +15,18 @@ type baseProxy struct {
 	timeout     time.Duration
 }
 
-func (s *baseProxy) Name() string {
+func (s *proxyBase) Name() string {
 	return s.name
 }
 
-func (s *baseProxy) Match(addr socks.RawAddr) bool {
+func (s *proxyBase) Match(addr socks.RawAddr) bool {
 	if s.rule.MatchRawAddr(addr) {
 		return !s.defaultRule
 	}
 	return s.defaultRule
 }
 
-func (s *baseProxy) SetRules(rules []string) {
+func (s *proxyBase) SetRules(rules []string) {
 	s.rule.Init()
 
 	for _, t := range rules {
@@ -34,7 +34,7 @@ func (s *baseProxy) SetRules(rules []string) {
 	}
 }
 
-func (s *baseProxy) SetDNS(ips []string) {
+func (s *proxyBase) SetDNS(ips []string) {
 	if len(ips) == 0 {
 		s.dns = nil
 		return
