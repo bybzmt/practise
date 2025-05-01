@@ -1,18 +1,18 @@
 package client
 
 import (
-	"ss/utils"
 	"ss/socks"
+	"ss/utils"
 	"time"
 )
 
 type baseProxy struct {
-	name      string
-	dns       utils.DNS
-	dnsDialer utils.DNSDialer
-	rule      utils.Rules
-	proxy     bool
-	timeout   time.Duration
+	name        string
+	dns         utils.DNS
+	dnsDialer   utils.DNSDialer
+	rule        utils.Rules
+	defaultRule bool
+	timeout     time.Duration
 }
 
 func (s *baseProxy) Name() string {
@@ -21,9 +21,9 @@ func (s *baseProxy) Name() string {
 
 func (s *baseProxy) Match(addr socks.RawAddr) bool {
 	if s.rule.MatchRawAddr(addr) {
-		return !s.proxy
+		return !s.defaultRule
 	}
-	return s.proxy
+	return s.defaultRule
 }
 
 func (s *baseProxy) SetRules(rules []string) {

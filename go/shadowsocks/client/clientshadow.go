@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type shadowClient struct {
+type clientShadow struct {
 	baseClient
 	shadow utils.Creater
 }
 
-func (s *shadowClient) Serve(from net.Conn) {
+func (s *clientShadow) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)

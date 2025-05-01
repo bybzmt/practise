@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type socksClient struct {
+type clientSocks struct {
 	baseClient
 	auth *socks.SimpleAuth
 }
 
-func (s *socksClient) Serve(from net.Conn) {
+func (s *clientSocks) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)
@@ -44,7 +44,7 @@ func (s *socksClient) Serve(from net.Conn) {
 
 	to, err := server.Shadow(addr)
 	if err != nil {
-		ss.RespDial(socks.ERR_NET)
+		ss.RespDial(socks.FAIL)
 		pw.ShadowInvalid(err)
 		return
 	}

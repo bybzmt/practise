@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-type socksProxy struct {
+type proxySocks struct {
 	baseProxy
 	addr string
 	auth *socks.SimpleAuth
 }
 
-func (s *socksProxy) init() {
+func (s *proxySocks) init() {
 	s.name = fmt.Sprintf("SocksProxy(%s)", s.addr)
 	s.dnsDialer = func(network, addr string) (net.Conn, error) {
 		raw, err := socks.ParseRawAddr(addr)
@@ -26,7 +26,7 @@ func (s *socksProxy) init() {
 	}
 }
 
-func (s *socksProxy) Shadow(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxySocks) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {
@@ -41,7 +41,7 @@ func (s *socksProxy) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	return s.dial(addr)
 }
 
-func (s *socksProxy) dial(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxySocks) dial(addr socks.RawAddr) (net.Conn, error) {
 	to, err := net.DialTimeout("tcp", s.addr, s.timeout)
 	if err != nil {
 		return nil, err

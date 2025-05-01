@@ -7,15 +7,15 @@ import (
 	"ss/socks"
 )
 
-type serverNoProxy struct {
+type proxyNative struct {
 	baseProxy
 }
 
-func (s *serverNoProxy) init() {
+func (s *proxyNative) init() {
 	s.name = "NoProxy"
 }
 
-func (s *serverNoProxy) Shadow(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxyNative) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {

@@ -10,7 +10,7 @@ import (
 type baseClient struct {
 	net.Listener
 	addr        string
-	servers     []Server
+	servers     []Proxy
 	idleTimeout time.Duration
 	timeout     time.Duration
 	watcher     utils.Watcher
@@ -23,7 +23,7 @@ func (s *baseClient) Listen() (err error) {
 	return
 }
 
-func (s *baseClient) match(addr socks.RawAddr) Server {
+func (s *baseClient) match(addr socks.RawAddr) Proxy {
 	for _, t := range s.servers {
 		if t.Match(addr) {
 			return t

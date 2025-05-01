@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	NOPROXY     = "NOPROXY"
+	NATIVE      = "NATIVE"
 	SOCKS       = "SOCKS"
 	SHADOWSOCKS = "SHADOWSOCKS"
 	RELAY       = "RELAY"
@@ -73,7 +73,7 @@ func (c *Config) FillDefault() {
 	if !defaultServer {
 		if c.DefaultServer == nil || *c.DefaultServer == true {
 			servers = append(servers, ServerConfig{
-				Type:        NOPROXY,
+				Type:        NATIVE,
 				DefaultRule: true,
 			})
 		}

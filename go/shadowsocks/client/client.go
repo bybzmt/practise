@@ -16,12 +16,10 @@ var (
 	errForbidden            = errors.New("Forbidden")
 )
 
-type Server interface {
+type Proxy interface {
 	Name() string
 	Shadow(addr socks.RawAddr) (net.Conn, error)
 	Match(addr socks.RawAddr) bool
-	SetRules(rules []string)
-	SetDNS(ips []string)
 }
 
 type Client interface {
@@ -54,15 +52,12 @@ func NewClient(f *Config) ([]Client, error) {
 }
 
 func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
-	var ss []Server
+	var ss []Proxy
 	for _, v := range servers {
 		s, err := newServer(f.Timeout, &v)
 		if err != nil {
 			return nil, err
 		}
-
-		s.SetRules(v.Rules)
-		s.SetDNS(v.DNS)
 
 		ss = append(ss, s)
 	}
@@ -89,14 +84,14 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 	case "":
 		fallthrough
 	case SOCKS:
-		c := &socksClient{
+		c := &clientSocks{
 			baseClient: base,
 		}
 		c.auth = f.Auth
 		return c, nil
 
 	case RELAY:
-		c := &relayClient{
+		c := &clientRelay{
 			baseClient: base,
 		}
 		addr, err := socks.ParseRawAddr(f.RelayTo)
@@ -107,7 +102,7 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 		return c, nil
 
 	case SHADOWSOCKS:
-		c := &shadowClient{
+		c := &clientShadow{
 			baseClient: base,
 		}
 		var key []byte
@@ -123,27 +118,28 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 	}
 }
 
-func newServer(timeout int, v *ServerConfig) (Server, error) {
+func newServer(timeout int, v *ServerConfig) (Proxy, error) {
 	timeout2 := time.Duration(timeout) * time.Second
 
+	base := baseProxy{
+		defaultRule: v.DefaultRule,
+		timeout:     timeout2,
+	}
+	base.SetRules(v.Rules)
+	base.SetDNS(v.DNS)
+
 	switch strings.ToUpper(v.Type) {
-	case NOPROXY:
-		s2 := &serverNoProxy{
-			baseProxy: baseProxy{
-				proxy:   v.DefaultRule,
-				timeout: timeout2,
-			},
+	case NATIVE:
+		s2 := &proxyNative{
+			baseProxy: base,
 		}
 		s2.init()
 		return s2, nil
 
 	case SOCKS:
-		s2 := &socksProxy{
-			baseProxy: baseProxy{
-				proxy:   v.DefaultRule,
-				timeout: timeout2,
-			},
-			addr: v.Addr,
+		s2 := &proxySocks{
+			baseProxy: base,
+			addr:      v.Addr,
 		}
 
 		if v.Cipher != "" {
@@ -154,6 +150,7 @@ func newServer(timeout int, v *ServerConfig) (Server, error) {
 		}
 		s2.init()
 		return s2, nil
+
 	case "":
 		fallthrough
 	case SHADOWSOCKS:
@@ -163,13 +160,10 @@ func newServer(timeout int, v *ServerConfig) (Server, error) {
 			return nil, err
 		}
 
-		s2 := &shadowProxy{
-			addr: v.Addr,
-			baseProxy: baseProxy{
-				proxy:   v.DefaultRule,
-				timeout: timeout2,
-			},
-			shadow: t.StreamConn,
+		s2 := &proxyShadow{
+			baseProxy: base,
+			addr:      v.Addr,
+			shadow:    t.StreamConn,
 		}
 		s2.init()
 		return s2, nil

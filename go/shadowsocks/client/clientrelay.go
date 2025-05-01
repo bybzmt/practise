@@ -2,17 +2,17 @@ package client
 
 import (
 	"net"
-	"ss/utils"
 	"ss/socks"
+	"ss/utils"
 	"time"
 )
 
-type relayClient struct {
+type clientRelay struct {
 	baseClient
 	RelayTo socks.RawAddr
 }
 
-func (s *relayClient) Serve(from net.Conn) {
+func (s *clientRelay) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)

@@ -20,7 +20,7 @@ RelayTo = "192.168.0.1:3306"
 [[Server]]
 #Disable = true
 
-#Type: SHADOWSOCKS(default) NOPROXY SOCKS
+#Type: SHADOWSOCKS(default) NATIVE SOCKS
 Type = "SHADOWSOCKS"
 
 Addr = "127.0.0.1:1081"
@@ -35,8 +35,6 @@ Cipher = "AES-256-GCM"
 Password = "123456"
 DNS = []
 
-#Proxy if Rules Not Match
-Proxy = true
-
 #Rules ["www.google.com", ".github.com"]
 Rules = []
+DefaultRule = true
