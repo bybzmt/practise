@@ -4,7 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"net"
-	"ss/utils"
+	"ss/socks"
 )
 
 type serverNoProxy struct {
@@ -15,7 +15,7 @@ func (s *serverNoProxy) init() {
 	s.name = "NoProxy"
 }
 
-func (s *serverNoProxy) Shadow(addr utils.RawAddr) (net.Conn, error) {
+func (s *serverNoProxy) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {

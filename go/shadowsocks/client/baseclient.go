@@ -3,6 +3,7 @@ package client
 import (
 	"net"
 	"ss/utils"
+	"ss/socks"
 	"time"
 )
 
@@ -21,7 +22,7 @@ func (s *baseClient) Listen() (err error) {
 	return
 }
 
-func (s *baseClient) match(addr utils.RawAddr) Server {
+func (s *baseClient) match(addr socks.RawAddr) Server {
 	for _, t := range s.servers {
 		if t.Match(addr) {
 			return t

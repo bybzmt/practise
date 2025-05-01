@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"ss/utils"
+	"ss/socks"
 )
 
 var (
@@ -13,8 +14,8 @@ var (
 
 type Server interface {
 	Name() string
-	Shadow(addr utils.RawAddr) (net.Conn, error)
-	Match(addr utils.RawAddr) bool
+	Shadow(addr socks.RawAddr) (net.Conn, error)
+	Match(addr socks.RawAddr) bool
 	SetRules(rules []string)
 	SetDNS(ips []string)
 }

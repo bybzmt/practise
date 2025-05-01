@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"ss/socks"
 	"ss/utils"
 	"time"
 )
@@ -19,7 +20,7 @@ func (s *shadowProxy) init() {
 	s.name = fmt.Sprintf("ShadowProxy(%s)", s.addr)
 
 	s.dnsDialer = func(network, addr string) (net.Conn, error) {
-		raw, err := utils.Parse2RawAddr(addr)
+		raw, err := socks.ParseRawAddr(addr)
 		if err != nil {
 			return nil, err
 		}
@@ -28,7 +29,7 @@ func (s *shadowProxy) init() {
 	}
 }
 
-func (s *shadowProxy) Shadow(addr utils.RawAddr) (net.Conn, error) {
+func (s *shadowProxy) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {
@@ -36,14 +37,14 @@ func (s *shadowProxy) Shadow(addr utils.RawAddr) (net.Conn, error) {
 		}
 		n := rand.Intn(len(ipaddr))
 
-		host := utils.IP2RawAddr(ipaddr[n].IP, addr.Port())
+		host := socks.IP2RawAddr(ipaddr[n].IP, addr.Port())
 		return s.dialShadow(host)
 	}
 
 	return s.dialShadow(addr)
 }
 
-func (s *shadowProxy) dialShadow(addr utils.RawAddr) (net.Conn, error) {
+func (s *shadowProxy) dialShadow(addr socks.RawAddr) (net.Conn, error) {
 	to, err := net.DialTimeout("tcp", s.addr, s.timeout)
 	if err != nil {
 		return nil, err

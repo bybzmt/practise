@@ -3,12 +3,13 @@ package client
 import (
 	"net"
 	"ss/utils"
+	"ss/socks"
 	"time"
 )
 
 type relayClient struct {
 	baseClient
-	RelayTo utils.RawAddr
+	RelayTo socks.RawAddr
 }
 
 func (s *relayClient) Serve(from net.Conn) {

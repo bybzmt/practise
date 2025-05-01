@@ -2,6 +2,7 @@ package client
 
 import (
 	"ss/utils"
+	"ss/socks"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func (s *baseProxy) Name() string {
 	return s.name
 }
 
-func (s *baseProxy) Match(addr utils.RawAddr) bool {
+func (s *baseProxy) Match(addr socks.RawAddr) bool {
 	if s.rule.MatchRawAddr(addr) {
 		return !s.proxy
 	}

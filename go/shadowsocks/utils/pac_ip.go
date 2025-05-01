@@ -1,4 +1,4 @@
-package pac
+package utils
 
 import (
 	"net"
@@ -15,10 +15,12 @@ func NewIPNets() IPNets {
 	return new(ipNets)
 }
 
-type ipv4 [net.IPv4len]byte
-type ipv6 [net.IPv6len]byte
-type ipv6s map[ipv6]struct{}
-type ipv4s map[ipv4]struct{}
+type (
+	ipv4  [net.IPv4len]byte
+	ipv6  [net.IPv6len]byte
+	ipv6s map[ipv6]struct{}
+	ipv4s map[ipv4]struct{}
+)
 
 type ipv4Nets struct {
 	ips  ipv4s
@@ -124,7 +126,7 @@ func (s *ipNets) Match(ip net.IP) bool {
 
 func (s *ipNets) Each(fn func(net.IPNet)) {
 	for _, n := range s.v4 {
-		for ip, _ := range n.ips {
+		for ip := range n.ips {
 			t := net.IPNet{
 				IP:   net.IP(ip[:]),
 				Mask: n.mask,
@@ -133,7 +135,7 @@ func (s *ipNets) Each(fn func(net.IPNet)) {
 		}
 	}
 	for _, n := range s.v6 {
-		for ip, _ := range n.ips {
+		for ip := range n.ips {
 			t := net.IPNet{
 				IP:   net.IP(ip[:]),
 				Mask: n.mask,

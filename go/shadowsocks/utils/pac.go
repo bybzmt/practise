@@ -5,18 +5,18 @@ import (
 	"net"
 	"regexp"
 	"regexp/syntax"
-	pac "ss/utils/pac"
+	"ss/socks"
 )
 
 type Rules struct {
-	Host pac.Domain
-	IP   pac.IPNets
+	Host Domain
+	IP   IPNets
 	Regs []regexp.Regexp
 }
 
 func (r *Rules) Init() {
-	r.Host = make(pac.Domain)
-	r.IP = pac.NewIPNets()
+	r.Host = make(Domain)
+	r.IP = NewIPNets()
 }
 
 // 192.168.0.0/16
@@ -60,12 +60,12 @@ func (r *Rules) Match(host string) bool {
 	return false
 }
 
-func (r *Rules) MatchRawAddr(addr RawAddr) bool {
+func (r *Rules) MatchRawAddr(addr socks.RawAddr) bool {
 	switch addr.Type() {
-	case SOCKS_ATYP_IPV4, SOCKS_ATYP_IPV6:
+	case socks.ATYP_IPV4, socks.ATYP_IPV6:
 		return r.IP.Match(addr.ToIP())
 
-	case SOCKS_ATYP_DOMAINNAME:
+	case socks.ATYP_DOMAINNAME:
 		host := addr.Host()
 		if r.Host.Match(host) {
 			return true

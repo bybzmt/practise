@@ -3,6 +3,7 @@ package client
 import (
 	"net"
 	"ss/utils"
+	"ss/socks"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func (s *shadowClient) Serve(from net.Conn) {
 
 	from = s.shadow(from)
 
-	addr, err := utils.ReadRawAddr(from)
+	addr, err := socks.ReadRawAddr(from)
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
 	}

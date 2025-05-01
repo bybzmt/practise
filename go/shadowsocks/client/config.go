@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	shadow "ss/shadow"
+	"ss/socks"
 	"ss/utils"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ type ClientConfig struct {
 	Type        string
 	Addr        string
 	RelayTo     string
-	Auth        *utils.SimpleAuth
+	Auth        *socks.SimpleAuth
 	Timeout     int
 	IdleTimeout int
 }
@@ -111,7 +112,7 @@ func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
 		c.servers = ss
 		c.watcher = utils.DefaultWatcher
 
-		addr, err := utils.Parse2RawAddr(f.RelayTo)
+		addr, err := socks.ParseRawAddr(f.RelayTo)
 		if err != nil {
 			return nil, err
 		}
@@ -164,7 +165,7 @@ func newServer(timeout int, v *ServerConfig) (Server, error) {
 		}
 
 		if v.Cipher != "" {
-			s2.auth = &utils.SimpleAuth{
+			s2.auth = &socks.SimpleAuth{
 				Username: v.Cipher,
 				Password: v.Password,
 			}

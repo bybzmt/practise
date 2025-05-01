@@ -1,8 +1,4 @@
-package pac
-
-import (
-// "sort"
-)
+package utils
 
 type ipv4NetsSort []ipv4Nets
 

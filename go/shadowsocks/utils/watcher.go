@@ -3,12 +3,13 @@ package utils
 import (
 	"net"
 	"sync/atomic"
+	"ss/socks"
 )
 
 type Watcher interface {
 	HandShake(from net.Addr, err error)
-	Hijacker(to RawAddr, c net.Conn) bool
-	NoServer(to RawAddr)
+	Hijacker(to socks.RawAddr, c net.Conn) bool
+	NoServer(to socks.RawAddr)
 	Create(server string, from, to net.Addr) ProxyWatcher
 }
 
@@ -35,11 +36,11 @@ func (w *watcher) HandShake(from net.Addr, err error) {
 	Debug.Println("HandShake", from, err)
 }
 
-func (this *watcher) Hijacker(to RawAddr, c net.Conn) bool {
+func (this *watcher) Hijacker(to socks.RawAddr, c net.Conn) bool {
 	return false
 }
 
-func (this *watcher) NoServer(to RawAddr) {
+func (this *watcher) NoServer(to socks.RawAddr) {
 	Debug.Println(to.String() + " No Match Server")
 }
 
