@@ -2,13 +2,12 @@ package utils
 
 import (
 	"net"
-	"sync/atomic"
 	"ss/socks"
+	"sync/atomic"
 )
 
 type Watcher interface {
 	HandShake(from net.Addr, err error)
-	Hijacker(to socks.RawAddr, c net.Conn) bool
 	NoServer(to socks.RawAddr)
 	Create(server string, from, to net.Addr) ProxyWatcher
 }
@@ -34,10 +33,6 @@ type proxyWatcher struct {
 
 func (w *watcher) HandShake(from net.Addr, err error) {
 	Debug.Println("HandShake", from, err)
-}
-
-func (this *watcher) Hijacker(to socks.RawAddr, c net.Conn) bool {
-	return false
 }
 
 func (this *watcher) NoServer(to socks.RawAddr) {

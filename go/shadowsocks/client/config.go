@@ -1,12 +1,7 @@
 package client
 
 import (
-	"errors"
-	shadow "ss/shadow"
 	"ss/socks"
-	"ss/utils"
-	"strings"
-	"time"
 )
 
 const (
@@ -17,10 +12,11 @@ const (
 )
 
 type Config struct {
-	Setuid string
-	Setgid string
-	Client []ClientConfig
-	Server []ServerConfig
+	Setuid        string
+	Setgid        string
+	Client        []ClientConfig
+	Server        []ServerConfig
+	DefaultServer *bool
 }
 
 type ClientConfig struct {
@@ -30,176 +26,73 @@ type ClientConfig struct {
 	Auth        *socks.SimpleAuth
 	Timeout     int
 	IdleTimeout int
+	Forbid      []string
+	Disable     bool
 }
 
 type ServerConfig struct {
-	Type     string
-	Addr     string
-	Cipher   string
-	Password string
-	Disable  bool
-	Proxy    bool
-	Rules    []string
-	DNS      []string
+	Type        string
+	Addr        string
+	Cipher      string
+	Password    string
+	Disable     bool
+	DefaultRule bool
+	Rules       []string
+	DNS         []string
 }
 
-func NewClient(f *Config) ([]Client, error) {
-	var cs []Client
+func (c *Config) FillDefault() {
+	defaultServer := false
 
-	for _, cfg := range f.Client {
-		c, err := newClient(&cfg, f.Server)
-		if err != nil {
-			return nil, err
+	for _, cf := range c.Client {
+		cf.fillDefault()
+	}
+
+	var clients []ClientConfig
+	var servers []ServerConfig
+
+	for _, cf := range c.Client {
+		if cf.Disable {
+			continue
 		}
-
-		cs = append(cs, c)
+		clients = append(clients, cf)
 	}
 
-	if len(cs) == 0 {
-		return nil, errors.New("Client empty")
-	}
-
-	return cs, nil
-}
-
-func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
-	if f.Timeout == 0 {
-		f.Timeout = 10
-	}
-	if f.IdleTimeout == 0 {
-		f.IdleTimeout = 120
-	}
-
-	var ss []Server
-	for _, v := range servers {
-		if v.Disable {
+	for _, cs := range c.Server {
+		if cs.Disable || (!cs.DefaultRule && cs.Rules == nil) {
 			continue
 		}
 
-		s, err := newServer(f.Timeout, &v)
-		if err != nil {
-			return nil, err
+		if !cs.Disable && cs.DefaultRule {
+			defaultServer = true
 		}
 
-		ss = append(ss, s)
+		servers = append(servers, cs)
 	}
 
-	if len(ss) == 0 {
-		return nil, errors.New("servers empty")
-	}
-
-	timeout := time.Duration(f.Timeout) * time.Second
-	idleTimeout := time.Duration(f.IdleTimeout) * time.Second
-
-	switch strings.ToUpper(f.Type) {
-	case "":
-		fallthrough
-	case SOCKS:
-		c := &socksClient{}
-		c.addr = f.Addr
-		c.timeout = timeout
-		c.idleTimeout = idleTimeout
-		c.servers = ss
-		c.auth = f.Auth
-		c.watcher = utils.DefaultWatcher
-		return c, nil
-
-	case RELAY:
-		c := &relayClient{}
-		c.addr = f.Addr
-		c.timeout = timeout
-		c.idleTimeout = idleTimeout
-		c.servers = ss
-		c.watcher = utils.DefaultWatcher
-
-		addr, err := socks.ParseRawAddr(f.RelayTo)
-		if err != nil {
-			return nil, err
+	if !defaultServer {
+		if c.DefaultServer == nil || *c.DefaultServer == true {
+			servers = append(servers, ServerConfig{
+				Type:        NOPROXY,
+				DefaultRule: true,
+			})
 		}
-		c.RelayTo = addr
-		return c, nil
-
-	case SHADOWSOCKS:
-		c := &shadowClient{}
-		c.addr = f.Addr
-		c.timeout = timeout
-		c.idleTimeout = idleTimeout
-		c.servers = ss
-		c.watcher = utils.DefaultWatcher
-
-		var key []byte
-		t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
-		if err != nil {
-			return nil, err
-		}
-		c.shadow = t.StreamConn
-		return c, nil
-
-	default:
-		return nil, errors.New("Client Type Error")
 	}
+
+	c.Client = clients
+	c.Server = servers
 }
 
-func newServer(timeout int, v *ServerConfig) (Server, error) {
-	var s Server
-	timeout2 := time.Duration(timeout) * time.Second
-
-	switch strings.ToUpper(v.Type) {
-	case NOPROXY:
-		s2 := &serverNoProxy{
-			baseProxy: baseProxy{
-				proxy:   v.Proxy,
-				timeout: timeout2,
-			},
-		}
-		s2.init()
-		s = s2
-
-	case SOCKS:
-		s2 := &socksProxy{
-			baseProxy: baseProxy{
-				proxy:   v.Proxy,
-				timeout: timeout2,
-			},
-			addr: v.Addr,
-		}
-
-		if v.Cipher != "" {
-			s2.auth = &socks.SimpleAuth{
-				Username: v.Cipher,
-				Password: v.Password,
-			}
-		}
-		s2.init()
-		s = s2
-
-	case "":
-		fallthrough
-	case SHADOWSOCKS:
-		var key []byte
-		t, err := shadow.PickCipher(v.Cipher, key, v.Password)
-		if err != nil {
-			return nil, err
-		}
-
-		s2 := &shadowProxy{
-			addr: v.Addr,
-			baseProxy: baseProxy{
-				proxy:   v.Proxy,
-				timeout: timeout2,
-			},
-			shadow: t.StreamConn,
-		}
-		s2.init()
-		s = s2
-
-	default:
-		return nil, errors.New("Server Type Error")
+func (c *ClientConfig) fillDefault() {
+	if c.Timeout == 0 {
+		c.Timeout = 10
 	}
 
-	s.SetRules(v.Rules)
+	if c.IdleTimeout == 0 {
+		c.IdleTimeout = 120
+	}
 
-	s.SetDNS(v.DNS)
-
-	return s, nil
+	if c.Forbid == nil {
+		c.Forbid = []string{"127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"}
+	}
 }

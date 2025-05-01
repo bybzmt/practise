@@ -10,6 +10,8 @@ Type = "SOCKS"
 #Transparent forwarding Address
 RelayTo = "192.168.0.1:3306"
 
+Forbid = ["127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+
 [[Client]]
 Addr = "127.0.0.1:3306"
 Type = "RELAY"

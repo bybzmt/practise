@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"io"
 	"log"
@@ -28,9 +29,11 @@ func main() {
 	}
 
 	f := loadConfig(*configFile)
+    f.FillDefault()
 
 	if *debug {
-		log.Printf("%#v", f)
+		js, _ := json.MarshalIndent(&f, "", "  ")
+		log.Printf("%s", string(js))
 	}
 
 	runClient(f)

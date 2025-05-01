@@ -2,8 +2,8 @@ package client
 
 import (
 	"net"
-	"ss/utils"
 	"ss/socks"
+	"ss/utils"
 	"time"
 )
 
@@ -15,6 +15,7 @@ type baseClient struct {
 	timeout     time.Duration
 	watcher     utils.Watcher
 	traffic     utils.Traffic
+	forbid      utils.Rules
 }
 
 func (s *baseClient) Listen() (err error) {

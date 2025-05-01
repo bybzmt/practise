@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"net"
 	"regexp"
 	"regexp/syntax"
@@ -80,25 +79,19 @@ func (r *Rules) MatchRawAddr(addr socks.RawAddr) bool {
 }
 
 func isSuffixDomain(domain string) bool {
-	log.Println(domain)
 	pattern := `^\*\.([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$`
 	matched, err := regexp.MatchString(pattern, domain)
 	if err != nil {
-		log.Println(err)
 		return false
 	}
-	log.Println(matched)
 	return matched
 }
 
 func isValidDomain(domain string) bool {
-	log.Println(domain)
 	pattern := `^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$`
 	matched, err := regexp.MatchString(pattern, domain)
 	if err != nil {
-		log.Println(err)
 		return false
 	}
-	log.Println(matched)
 	return matched
 }

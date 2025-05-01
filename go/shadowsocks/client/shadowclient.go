@@ -2,8 +2,8 @@ package client
 
 import (
 	"net"
-	"ss/utils"
 	"ss/socks"
+	"ss/utils"
 	"time"
 )
 
@@ -23,6 +23,11 @@ func (s *shadowClient) Serve(from net.Conn) {
 	addr, err := socks.ReadRawAddr(from)
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
+	}
+
+	if s.forbid.MatchRawAddr(addr) {
+		utils.Debug.Println("forbidden", addr.String())
+		return
 	}
 
 	server := s.match(addr)

@@ -2,8 +2,8 @@ package client
 
 import (
 	"net"
-	"ss/utils"
 	"ss/socks"
+	"ss/utils"
 	"time"
 )
 
@@ -24,6 +24,12 @@ func (s *socksClient) Serve(from net.Conn) {
 	addr, err := ss.HandShake()
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
+		return
+	}
+
+	if s.forbid.MatchRawAddr(addr) {
+		utils.Debug.Println("forbidden", addr.String())
+		ss.RespDial(socks.ERR_FORBIDDEN)
 		return
 	}
 
