@@ -42,18 +42,14 @@ func ReadCmd(r io.Reader) (cmd byte, addr RawAddr, err error) {
 
 	if resp[0] != SOCKS_VER {
 		return 0, nil, ErrVer
-	} else if resp[1] != SUCCESS {
-		return 0, nil, ErrCmd
 	}
-
-	cmd = resp[1]
 
 	addr, err = ReadRawAddr(r)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	return
+	return resp[1], addr, nil
 }
 
 var EmptyAddr = RawAddr([]byte{ATYP_IPV4, 0, 0, 0, 0, 0, 0})

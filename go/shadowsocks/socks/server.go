@@ -12,7 +12,6 @@ type Server struct {
 
 func NewServer(c net.Conn, auth *SimpleAuth) *Server {
 	s := &Server{socks: newSocks(c, auth)}
-	s.bind = RawAddr([]byte{ATYP_IPV4, 0, 0, 0, 0, 0, 0})
 	return s
 }
 
@@ -40,7 +39,12 @@ func (s *Server) HandShake() (RawAddr, error) {
 }
 
 func (s *Server) RespDial(rep byte) error {
-	return SendCmd(s.rw, rep, s.bind)
+	err := SendCmd(s.rw, rep, s.bind)
+	if err != nil {
+		return err
+	}
+
+	return s.rw.Flush()
 }
 
 func (s *Server) checkAuth() error {

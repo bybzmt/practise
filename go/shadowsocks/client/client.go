@@ -30,7 +30,7 @@ func NewClient(f *Config) ([]Client, error) {
 	var cs []Client
 
 	for _, cfg := range f.Client {
-		c, err := newClient(&cfg, f.Server)
+		c, err := newClient(cfg, f.Server)
 		if err != nil {
 			return nil, err
 		}
@@ -45,10 +45,10 @@ func NewClient(f *Config) ([]Client, error) {
 	return cs, nil
 }
 
-func newClient(f *ClientConfig, servers []ServerConfig) (Client, error) {
+func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 	var ss []Proxy
 	for _, v := range servers {
-		s, err := newServer(f.Timeout, &v)
+		s, err := newServer(f.Timeout, v)
 		if err != nil {
 			return nil, err
 		}

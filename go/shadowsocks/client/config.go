@@ -14,8 +14,8 @@ const (
 type Config struct {
 	Setuid        string
 	Setgid        string
-	Client        []ClientConfig
-	Server        []ServerConfig
+	Client        []*ClientConfig
+	Server        []*ServerConfig
 	DefaultServer *bool
 }
 
@@ -47,8 +47,8 @@ func (c *Config) FillDefault() {
 		cf.fillDefault()
 	}
 
-	var clients []ClientConfig
-	var servers []ServerConfig
+	var clients []*ClientConfig
+	var servers []*ServerConfig
 
 	for _, cf := range c.Client {
 		if cf.Disable {
@@ -69,9 +69,16 @@ func (c *Config) FillDefault() {
 		servers = append(servers, cs)
 	}
 
+	if len(clients) == 0 {
+		clients = append(clients, &ClientConfig{
+			Addr: "127.0.0.1:1080",
+		})
+		clients[0].fillDefault()
+	}
+
 	if !defaultServer {
 		if c.DefaultServer == nil || *c.DefaultServer == true {
-			servers = append(servers, ServerConfig{
+			servers = append(servers, &ServerConfig{
 				Type:        NATIVE,
 				DefaultRule: true,
 			})
