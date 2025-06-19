@@ -8,6 +8,8 @@ import (
 	"ss/utils"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/ssh"
 )
 
 type Proxy interface {
@@ -135,6 +137,40 @@ func newServer(timeout int, v *ServerConfig) (Proxy, error) {
 			proxyBase: base,
 			addr:      v.Addr,
 			auth:      v.Auth,
+		}
+		s2.init()
+		return s2, nil
+
+	case SSH:
+		var c *ssh.ClientConfig
+
+		if strings.Contains(v.Auth.Password, "KEY-----") {
+			signer, err := ssh.ParsePrivateKey([]byte(v.Auth.Password))
+			if err != nil {
+				return nil, err
+			}
+
+			c = &ssh.ClientConfig{
+				User: v.Auth.Username,
+				Auth: []ssh.AuthMethod{
+					ssh.PublicKeys(signer),
+				},
+				HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			}
+		} else {
+			c = &ssh.ClientConfig{
+				User: v.Auth.Username,
+				Auth: []ssh.AuthMethod{
+					ssh.Password(v.Auth.Password),
+				},
+				HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			}
+		}
+
+		s2 := &proxySSH{
+			proxyBase: base,
+			addr:      v.Addr,
+			sshConfig: c,
 		}
 		s2.init()
 		return s2, nil

@@ -9,6 +9,7 @@ const (
 	SOCKS       = "SOCKS"
 	SHADOWSOCKS = "SHADOWSOCKS"
 	RELAY       = "RELAY"
+	SSH         = "SSH"
 )
 
 type Config struct {
