@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type clientRelay struct {
-	clientBase
+type serverRelay struct {
+	serverBase
 	RelayTo socks.RawAddr
 }
 
-func (s *clientRelay) Serve(from net.Conn) {
+func (s *serverRelay) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)

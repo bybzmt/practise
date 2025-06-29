@@ -36,7 +36,7 @@ func main() {
 		log.Printf("%s", string(js))
 	}
 
-	runClient(f)
+	runServer(f)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt)
@@ -78,8 +78,8 @@ func loadFile(file string) (string, error) {
 	return string(b), nil
 }
 
-func runClient(f ss.Config) {
-	clients, err := ss.NewClient(&f)
+func runServer(f ss.Config) {
+	clients, err := ss.NewServer(&f)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -99,7 +99,7 @@ func runClient(f ss.Config) {
 		log.Println("Starting Shadowsocks Client At", c.Addr())
 
 		go cliState(c)
-		go func(c ss.Client) {
+		go func(c ss.Server) {
 			for {
 				conn, err := c.Accept()
 				if err != nil {
@@ -111,7 +111,7 @@ func runClient(f ss.Config) {
 	}
 }
 
-func cliState(c ss.Client) {
+func cliState(c ss.Server) {
 	for range time.Tick(10 * time.Second) {
 		num := atomic.LoadInt32(&utils.DefaultWatcher.Counter)
 

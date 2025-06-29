@@ -18,7 +18,7 @@ type Proxy interface {
 	Match(addr socks.RawAddr) bool
 }
 
-type Client interface {
+type Server interface {
 	Listen() error
 	Accept() (net.Conn, error)
 	Close() error
@@ -28,11 +28,11 @@ type Client interface {
 	SetWatcher(w utils.Watcher)
 }
 
-func NewClient(f *Config) ([]Client, error) {
-	var cs []Client
+func NewServer(f *Config) ([]Server, error) {
+	var cs []Server
 
-	for _, cfg := range f.Client {
-		c, err := newClient(cfg, f.Server)
+	for _, cfg := range f.Server {
+		c, err := newServer(cfg, f.Proxy)
 		if err != nil {
 			return nil, err
 		}
@@ -41,16 +41,16 @@ func NewClient(f *Config) ([]Client, error) {
 	}
 
 	if len(cs) == 0 {
-		return nil, errors.New("Client empty")
+		return nil, errors.New("server empty")
 	}
 
 	return cs, nil
 }
 
-func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
+func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
 	var ss []Proxy
-	for _, v := range servers {
-		s, err := newServer(f.Timeout, v)
+	for _, v := range proxy {
+		s, err := newProxy(f.Timeout, v)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +65,7 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 	timeout := time.Duration(f.Timeout) * time.Second
 	idleTimeout := time.Duration(f.IdleTimeout) * time.Second
 
-	base := clientBase{}
+	base := serverBase{}
 	base.addr = f.Addr
 	base.timeout = timeout
 	base.idleTimeout = idleTimeout
@@ -80,8 +80,8 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 	case "":
 		fallthrough
 	case SOCKS:
-		c := &clientSocks{
-			clientBase: base,
+		c := &serverSocks{
+			serverBase: base,
 		}
 		c.auth = f.Auth
 
@@ -96,8 +96,8 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 		return c, nil
 
 	case RELAY:
-		c := &clientRelay{
-			clientBase: base,
+		c := &serverRelay{
+			serverBase: base,
 		}
 		addr, err := socks.ParseRawAddr(f.RelayTo)
 		if err != nil {
@@ -115,8 +115,8 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 		return c, nil
 
 	case SHADOWSOCKS:
-		c := &clientShadow{
-			clientBase: base,
+		c := &serverShadow{
+			serverBase: base,
 		}
 
 		if f.RuleAddr != "" {
@@ -140,7 +140,7 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 	}
 }
 
-func newServer(timeout int, v *ServerConfig) (Proxy, error) {
+func newProxy(timeout int, v *ProxyConfig) (Proxy, error) {
 	timeout2 := time.Duration(timeout) * time.Second
 
 	base := proxyBase{

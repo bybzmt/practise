@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type clientSocks struct {
-	clientBase
+type serverSocks struct {
+	serverBase
 	auth *socks.SimpleAuth
 }
 
-func (s *clientSocks) Serve(from net.Conn) {
+func (s *serverSocks) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)

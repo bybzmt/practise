@@ -15,12 +15,12 @@ const (
 type Config struct {
 	Setuid        string
 	Setgid        string
-	Client        []*ClientConfig
 	Server        []*ServerConfig
+	Proxy         []*ProxyConfig
 	DefaultServer *bool
 }
 
-type ClientConfig struct {
+type ServerConfig struct {
 	Type        string
 	Addr        string
 	RelayTo     string
@@ -32,7 +32,7 @@ type ClientConfig struct {
 	Disable     bool
 }
 
-type ServerConfig struct {
+type ProxyConfig struct {
 	Type        string
 	Addr        string
 	Auth        *socks.SimpleAuth
@@ -45,21 +45,21 @@ type ServerConfig struct {
 func (c *Config) FillDefault() {
 	defaultServer := false
 
-	for _, cf := range c.Client {
+	for _, cf := range c.Server {
 		cf.fillDefault()
 	}
 
-	var clients []*ClientConfig
-	var servers []*ServerConfig
+	var server []*ServerConfig
+	var proxy []*ProxyConfig
 
-	for _, cf := range c.Client {
+	for _, cf := range c.Server {
 		if cf.Disable {
 			continue
 		}
-		clients = append(clients, cf)
+		server = append(server, cf)
 	}
 
-	for _, cs := range c.Server {
+	for _, cs := range c.Proxy {
 		if cs.Disable || (!cs.DefaultRule && cs.Rules == nil) {
 			continue
 		}
@@ -68,30 +68,30 @@ func (c *Config) FillDefault() {
 			defaultServer = true
 		}
 
-		servers = append(servers, cs)
+		proxy = append(proxy, cs)
 	}
 
-	if len(clients) == 0 {
-		clients = append(clients, &ClientConfig{
+	if len(server) == 0 {
+		server = append(server, &ServerConfig{
 			Addr: "127.0.0.1:1080",
 		})
-		clients[0].fillDefault()
+		server[0].fillDefault()
 	}
 
 	if !defaultServer {
 		if c.DefaultServer == nil || *c.DefaultServer == true {
-			servers = append(servers, &ServerConfig{
+			proxy = append(proxy, &ProxyConfig{
 				Type:        NATIVE,
 				DefaultRule: true,
 			})
 		}
 	}
 
-	c.Client = clients
-	c.Server = servers
+	c.Server = server
+	c.Proxy = proxy
 }
 
-func (c *ClientConfig) fillDefault() {
+func (c *ServerConfig) fillDefault() {
 	if c.Timeout == 0 {
 		c.Timeout = 10
 	}
@@ -104,7 +104,11 @@ func (c *ClientConfig) fillDefault() {
 		c.Forbid = []string{"127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"}
 	}
 
-	if c.Type == "" && c.RelayTo != "" {
-        c.Type = "RELAY"
+	if c.Type == "" {
+		if c.RelayTo != "" {
+			c.Type = RELAY
+		} else {
+			c.Type = SOCKS
+		}
 	}
 }
