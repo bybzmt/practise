@@ -1,5 +1,6 @@
 
-[[Server]]
+[[Serve]]
+Disable = true
 Addr = "127.0.0.1:1080"
 Timeout = 10
 IdleTimeout = 120
@@ -12,12 +13,17 @@ RelayTo = "192.168.0.1:3306"
 
 Forbid = ["127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 
-[[Server]]
+#SOCKS
+[[Serve]]
+Addr = "127.0.0.1:1080"
+
+#RelayTo
+[[Serve]]
 Addr = "127.0.0.1:3306"
 RelayTo = "192.168.0.1:3306"
 
 [[Proxy]]
-#Disable = true
+Disable = true
 
 #Type: SHADOWSOCKS(default) NATIVE SOCKS
 Type = "SHADOWSOCKS"
