@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"ss/socks"

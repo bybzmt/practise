@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ type Proxy interface {
 	Match(addr socks.RawAddr) bool
 }
 
-type Server interface {
+type Serve interface {
 	Listen() error
 	Accept() (net.Conn, error)
 	Close() error
@@ -28,10 +28,10 @@ type Server interface {
 	SetWatcher(w utils.Watcher)
 }
 
-func NewServer(f *Config) ([]Server, error) {
-	var cs []Server
+func NewServe(f *Config) ([]Serve, error) {
+	var cs []Serve
 
-	for _, cfg := range f.Server {
+	for _, cfg := range f.Serve {
 		c, err := newServer(cfg, f.Proxy)
 		if err != nil {
 			return nil, err
@@ -47,7 +47,7 @@ func NewServer(f *Config) ([]Server, error) {
 	return cs, nil
 }
 
-func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
+func newServer(f *ServeConfig, proxy []*ProxyConfig) (Serve, error) {
 	var ss []Proxy
 	for _, v := range proxy {
 		s, err := newProxy(f.Timeout, v)
@@ -65,7 +65,7 @@ func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
 	timeout := time.Duration(f.Timeout) * time.Second
 	idleTimeout := time.Duration(f.IdleTimeout) * time.Second
 
-	base := serverBase{}
+	base := serveBase{}
 	base.addr = f.Addr
 	base.timeout = timeout
 	base.idleTimeout = idleTimeout
@@ -80,8 +80,8 @@ func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
 	case "":
 		fallthrough
 	case SOCKS:
-		c := &serverSocks{
-			serverBase: base,
+		c := &serveSocks{
+			serveBase: base,
 		}
 		c.auth = f.Auth
 
@@ -96,8 +96,8 @@ func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
 		return c, nil
 
 	case RELAY:
-		c := &serverRelay{
-			serverBase: base,
+		c := &serveRelay{
+			serveBase: base,
 		}
 		addr, err := socks.ParseRawAddr(f.RelayTo)
 		if err != nil {
@@ -115,8 +115,10 @@ func newServer(f *ServerConfig, proxy []*ProxyConfig) (Server, error) {
 		return c, nil
 
 	case SHADOWSOCKS:
-		c := &serverShadow{
-			serverBase: base,
+		c := &serveShadow{
+			serveSocks: serveSocks{
+				serveBase: base,
+			},
 		}
 
 		if f.RuleAddr != "" {

@@ -1,6 +1,6 @@
 //go:build linux
 
-package server
+package serve
 
 import (
 	"os/user"

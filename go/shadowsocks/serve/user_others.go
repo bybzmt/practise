@@ -1,6 +1,6 @@
 //go:build !linux
 
-package server
+package serve
 
 func PrivilegeDropping(group, user string) error {
 	return nil

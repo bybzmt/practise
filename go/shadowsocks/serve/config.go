@@ -1,26 +1,27 @@
-package server
+package serve
 
 import (
 	"ss/socks"
 )
 
 const (
-	NATIVE       = "NATIVE"
-	SOCKS        = "SOCKS"
-	SHADOWSOCKS  = "SHADOWSOCKS"
-	RELAY        = "RELAY"
-	SSH          = "SSH"
+	NATIVE      = "NATIVE"
+	SOCKS       = "SOCKS"
+	SHADOWSOCKS = "SHADOWSOCKS"
+	RELAY       = "RELAY"
+	SSH         = "SSH"
 )
 
 type Config struct {
 	Setuid        string
 	Setgid        string
-	Server        []*ServerConfig
+	StateTick     *int
+	Serve         []*ServeConfig
 	Proxy         []*ProxyConfig
 	DefaultServer *bool
 }
 
-type ServerConfig struct {
+type ServeConfig struct {
 	Type        string
 	Addr        string
 	RelayTo     string
@@ -45,18 +46,23 @@ type ProxyConfig struct {
 func (c *Config) FillDefault() {
 	defaultServer := false
 
-	for _, cf := range c.Server {
+	if c.StateTick == nil {
+		a := 10
+		c.StateTick = &a
+	}
+
+	for _, cf := range c.Serve {
 		cf.fillDefault()
 	}
 
-	var server []*ServerConfig
+	var serve []*ServeConfig
 	var proxy []*ProxyConfig
 
-	for _, cf := range c.Server {
+	for _, cf := range c.Serve {
 		if cf.Disable {
 			continue
 		}
-		server = append(server, cf)
+		serve = append(serve, cf)
 	}
 
 	for _, cs := range c.Proxy {
@@ -71,11 +77,11 @@ func (c *Config) FillDefault() {
 		proxy = append(proxy, cs)
 	}
 
-	if len(server) == 0 {
-		server = append(server, &ServerConfig{
+	if len(serve) == 0 {
+		serve = append(serve, &ServeConfig{
 			Addr: "127.0.0.1:1080",
 		})
-		server[0].fillDefault()
+		serve[0].fillDefault()
 	}
 
 	if !defaultServer {
@@ -87,11 +93,11 @@ func (c *Config) FillDefault() {
 		}
 	}
 
-	c.Server = server
+	c.Serve = serve
 	c.Proxy = proxy
 }
 
-func (c *ServerConfig) fillDefault() {
+func (c *ServeConfig) fillDefault() {
 	if c.Timeout == 0 {
 		c.Timeout = 10
 	}

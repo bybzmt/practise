@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"net"
@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type serverShadow2 struct {
-	serverSocks
+type serveShadow struct {
+	serveSocks
 	shadow utils.Creater
 }
 
-func (s *serverShadow2) Serve(from net.Conn) {
+func (s *serveShadow) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)
@@ -20,7 +20,7 @@ func (s *serverShadow2) Serve(from net.Conn) {
 
 	from = s.shadow(from)
 
-	ss := socks.NewServer(from, nil)
+	ss := socks.NewServer(from, s.auth)
 
 	err := ss.HandShake(false)
 	if err != nil {
@@ -28,5 +28,5 @@ func (s *serverShadow2) Serve(from net.Conn) {
 		return
 	}
 
-	s.serveSocks(ss)
+	s.serveSocksCmd(ss)
 }

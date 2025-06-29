@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"context"
@@ -10,13 +10,13 @@ import (
 	"time"
 )
 
-type proxyShadow2 struct {
+type proxyShadow struct {
 	proxyBase
 	addr   string
 	shadow utils.Creater
 }
 
-func (s *proxyShadow2) init() {
+func (s *proxyShadow) init() {
 	s.name = fmt.Sprintf("ShadowProxy(%s)", s.addr)
 
 	s.dnsDialer = func(network, addr string) (net.Conn, error) {
@@ -29,7 +29,7 @@ func (s *proxyShadow2) init() {
 	}
 }
 
-func (s *proxyShadow2) Shadow(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxyShadow) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {
@@ -44,7 +44,7 @@ func (s *proxyShadow2) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	return s.dialShadow(addr)
 }
 
-func (s *proxyShadow2) dialShadow(addr socks.RawAddr) (_ net.Conn, err error) {
+func (s *proxyShadow) dialShadow(addr socks.RawAddr) (_ net.Conn, err error) {
 	to, err := net.DialTimeout("tcp", s.addr, s.timeout)
 	if err != nil {
 		return nil, err

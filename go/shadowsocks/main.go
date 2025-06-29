@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	ss "ss/server"
+	ss "ss/serve"
 
 	"github.com/BurntSushi/toml"
 )
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	f := loadConfig(*configFile)
-    f.FillDefault()
+	f.FillDefault()
 
 	if *debug {
 		js, _ := json.MarshalIndent(&f, "", "  ")
@@ -79,12 +79,12 @@ func loadFile(file string) (string, error) {
 }
 
 func runServer(f ss.Config) {
-	clients, err := ss.NewServer(&f)
+	server, err := ss.NewServe(&f)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for _, c := range clients {
+	for _, c := range server {
 		err := c.Listen()
 		if err != nil {
 			log.Fatalln(err)
@@ -95,11 +95,10 @@ func runServer(f ss.Config) {
 		log.Fatalln(err)
 	}
 
-	for _, c := range clients {
+	for _, c := range server {
 		log.Println("Starting Shadowsocks Client At", c.Addr())
 
-		go cliState(c)
-		go func(c ss.Server) {
+		go func(c ss.Serve) {
 			for {
 				conn, err := c.Accept()
 				if err != nil {
@@ -109,18 +108,30 @@ func runServer(f ss.Config) {
 			}
 		}(c)
 	}
+
+	go cliStates(&f, server)
 }
 
-func cliState(c ss.Server) {
-	for range time.Tick(10 * time.Second) {
-		num := atomic.LoadInt32(&utils.DefaultWatcher.Counter)
-
-		t := c.Traffic().Clone()
-		c.Traffic().Sub(&t)
-
-		Outgoing := utils.FmtSize(10*time.Second, t.Outgoing)
-		Incoming := utils.FmtSize(10*time.Second, t.Incoming)
-
-		log.Println("state", "Conn", num, "Outgoing", Incoming, "Incoming", Outgoing)
+func cliStates(f *ss.Config, serve []ss.Serve) {
+	if f.StateTick == nil || *f.StateTick < 1 {
+		return
 	}
+
+	for range time.Tick(time.Duration(*f.StateTick) * time.Second) {
+		for _, c := range serve {
+			cliState(*f.StateTick, c)
+		}
+	}
+}
+
+func cliState(tick int, c ss.Serve) {
+	num := atomic.LoadInt32(&utils.DefaultWatcher.Counter)
+
+	t := c.Traffic().Clone()
+	c.Traffic().Sub(&t)
+
+	Outgoing := utils.FmtSize(time.Duration(tick)*time.Second, t.Outgoing)
+	Incoming := utils.FmtSize(time.Duration(tick)*time.Second, t.Incoming)
+
+	log.Println("state", c.Addr(), "Conn", num, "Outgoing", Incoming, "Incoming", Outgoing)
 }

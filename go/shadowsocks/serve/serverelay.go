@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"net"
@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type serverRelay struct {
-	serverBase
+type serveRelay struct {
+	serveBase
 	RelayTo socks.RawAddr
 }
 
-func (s *serverRelay) Serve(from net.Conn) {
+func (s *serveRelay) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)

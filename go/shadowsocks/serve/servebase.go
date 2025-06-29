@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"net"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type serverBase struct {
+type serveBase struct {
 	net.Listener
 	addr        string
 	ruleAddr    socks.RawAddr
@@ -19,12 +19,12 @@ type serverBase struct {
 	forbid      utils.Rules
 }
 
-func (s *serverBase) Listen() (err error) {
+func (s *serveBase) Listen() (err error) {
 	s.Listener, err = net.Listen("tcp", s.addr)
 	return
 }
 
-func (s *serverBase) match(addr socks.RawAddr) Proxy {
+func (s *serveBase) match(addr socks.RawAddr) Proxy {
 	for _, t := range s.servers {
 		if t.Match(addr) {
 			return t
@@ -34,7 +34,7 @@ func (s *serverBase) match(addr socks.RawAddr) Proxy {
 	return nil
 }
 
-func (s *serverBase) connTraffic(conn net.Conn) net.Conn {
+func (s *serveBase) connTraffic(conn net.Conn) net.Conn {
 	return &utils.TrafficConn{
 		Conn: conn,
 		Now:  &s.traffic,
@@ -42,7 +42,7 @@ func (s *serverBase) connTraffic(conn net.Conn) net.Conn {
 	}
 }
 
-func (s *serverBase) connTick(conn net.Conn) net.Conn {
+func (s *serveBase) connTick(conn net.Conn) net.Conn {
 	return &utils.TickConn{
 		Conn:         conn,
 		ReadTimeout:  s.idleTimeout,
@@ -50,10 +50,10 @@ func (s *serverBase) connTick(conn net.Conn) net.Conn {
 	}
 }
 
-func (s *serverBase) Traffic() *utils.Traffic {
+func (s *serveBase) Traffic() *utils.Traffic {
 	return &s.traffic
 }
 
-func (s *serverBase) SetWatcher(w utils.Watcher) {
+func (s *serveBase) SetWatcher(w utils.Watcher) {
 	s.watcher = w
 }

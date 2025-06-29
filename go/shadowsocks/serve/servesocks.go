@@ -1,4 +1,4 @@
-package server
+package serve
 
 import (
 	"net"
@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type serverSocks struct {
-	serverBase
+type serveSocks struct {
+	serveBase
 	auth *socks.SimpleAuth
 }
 
-func (s *serverSocks) Serve(from net.Conn) {
+func (s *serveSocks) Serve(from net.Conn) {
 	defer from.Close()
 
 	from = s.connTraffic(from)
@@ -27,10 +27,10 @@ func (s *serverSocks) Serve(from net.Conn) {
 		return
 	}
 
-	s.serveSocks(ss)
+	s.serveSocksCmd(ss)
 }
 
-func (s *serverSocks) serveSocks(ss *socks.Server) {
+func (s *serveSocks) serveSocksCmd(ss *socks.Server) {
 	cmd, addr, err := ss.ReadCmd()
 	if err != nil {
 		s.watcher.HandShake(ss.RemoteAddr(), err)
