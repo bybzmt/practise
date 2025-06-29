@@ -51,7 +51,7 @@ func (s *proxySocks) dial(addr socks.RawAddr) (net.Conn, error) {
 
 	ss := socks.NewClient(to, s.auth)
 
-	if err = ss.Dial(addr); err != nil {
+	if err = ss.DialTCP(addr); err != nil {
 		to.Close()
 		return nil, err
 	}

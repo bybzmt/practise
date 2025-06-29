@@ -12,7 +12,7 @@ func NewClient(c net.Conn, auth *SimpleAuth) *Client {
 	return &Client{socks: newSocks(c, auth)}
 }
 
-func (s *Client) Dial(addr RawAddr) error {
+func (s *Client) DialTCP(addr RawAddr) error {
 	if _, err := s.rw.Write([]byte{SOCKS_VER, 1, s.method}); err != nil {
 		return err
 	}

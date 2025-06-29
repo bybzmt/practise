@@ -60,18 +60,10 @@ func (s *proxyShadow2) dialShadow(addr socks.RawAddr) (_ net.Conn, err error) {
 
 	t2 := s.shadow(to)
 
-	if err = socks.SendCmd(t2, socks.CMD_CONNECT, addr); err != nil {
+	ss := socks.NewClient(t2, nil)
+	if err = ss.DialTCP(addr); err != nil {
 		return nil, err
 	}
 
-	cmd, addr, err := socks.ReadCmd(t2)
-	if err != nil {
-		return nil, err
-	}
-
-	if cmd != socks.SUCCESS {
-		return nil, err
-	}
-
-	return t2, nil
+	return ss, nil
 }

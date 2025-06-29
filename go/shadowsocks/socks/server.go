@@ -15,27 +15,22 @@ func NewServer(c net.Conn, auth *SimpleAuth) *Server {
 	return s
 }
 
-func (s *Server) HandShake() (RawAddr, error) {
-	if err := s.checkMethod(); err != nil {
-		return nil, err
+func (s *Server) HandShake(respErr bool) error {
+	if err := s.checkMethod(respErr); err != nil {
+		return err
 	}
 
 	if s.auth != nil {
 		if err := s.checkAuth(); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	cmd, addr, err := ReadCmd(s.rw)
-	if err != nil {
-		return nil, err
-	}
+	return nil
+}
 
-	if cmd != CMD_CONNECT {
-		return nil, ErrCmd
-	}
-
-	return addr, nil
+func (s *Server) ReadCmd() (byte, RawAddr, error) {
+	return ReadCmd(s.rw)
 }
 
 func (s *Server) RespDial(rep byte) error {
@@ -61,7 +56,7 @@ func (s *Server) checkAuth() error {
 	return sendAuthResp(s.rw, true)
 }
 
-func (s *Server) checkMethod() error {
+func (s *Server) checkMethod(respErr bool) error {
 	req := [2]byte{}
 
 	if _, err := io.ReadFull(s.rw, req[:]); err != nil {
@@ -78,7 +73,9 @@ func (s *Server) checkMethod() error {
 	}
 
 	if idx := bytes.IndexByte(methods, s.method); idx < 0 {
-		s.rw.Write([]byte{SOCKS_VER, METHOD_INVALID})
+		if respErr {
+			s.rw.Write([]byte{SOCKS_VER, METHOD_INVALID})
+		}
 		return ErrMethodFail
 	}
 

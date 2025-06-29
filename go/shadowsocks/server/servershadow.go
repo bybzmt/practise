@@ -23,6 +23,7 @@ func (s *serverShadow) Serve(from net.Conn) {
 	addr, err := socks.ReadRawAddr(from)
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
+        return;
 	}
 
 	if s.forbid.MatchRawAddr(addr) {

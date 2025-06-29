@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	NATIVE      = "NATIVE"
-	SOCKS       = "SOCKS"
-	SHADOWSOCKS = "SHADOWSOCKS"
-	RELAY       = "RELAY"
-	SSH         = "SSH"
+	NATIVE       = "NATIVE"
+	SOCKS        = "SOCKS"
+	SHADOWSOCKS  = "SHADOWSOCKS"
+	RELAY        = "RELAY"
+	SSH          = "SSH"
 )
 
 type Config struct {

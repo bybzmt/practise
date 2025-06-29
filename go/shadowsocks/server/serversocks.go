@@ -21,9 +21,25 @@ func (s *serverSocks) Serve(from net.Conn) {
 
 	ss := socks.NewServer(from, s.auth)
 
-	addr, err := ss.HandShake()
+	err := ss.HandShake(true)
 	if err != nil {
 		s.watcher.HandShake(from.RemoteAddr(), err)
+		return
+	}
+
+	s.serveSocks(ss)
+}
+
+func (s *serverSocks) serveSocks(ss *socks.Server) {
+	cmd, addr, err := ss.ReadCmd()
+	if err != nil {
+		s.watcher.HandShake(ss.RemoteAddr(), err)
+		ss.RespDial(socks.FAIL)
+		return
+	}
+
+	if cmd != socks.CMD_CONNECT {
+		ss.RespDial(socks.FAIL)
 		return
 	}
 
@@ -45,7 +61,7 @@ func (s *serverSocks) Serve(from net.Conn) {
 		return
 	}
 
-	pw := s.watcher.Create(server.Name(), from.RemoteAddr(), addr)
+	pw := s.watcher.Create(server.Name(), ss.RemoteAddr(), addr)
 
 	to, err := server.Shadow(addr)
 	if err != nil {
