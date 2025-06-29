@@ -1,4 +1,4 @@
-package client
+package server
 
 import (
 	"net"
@@ -36,9 +36,14 @@ func (s *clientShadow2) Serve(from net.Conn) {
 		return
 	}
 
-	server := s.match(addr)
+	maddr := s.ruleAddr
+	if maddr == nil {
+		maddr = addr
+	}
+
+	server := s.match(maddr)
 	if server == nil {
-		s.watcher.NoServer(addr)
+		s.watcher.NoServer(maddr)
 		socks.SendCmd(from, socks.ERR_FORBIDDEN, nil)
 		return
 	}

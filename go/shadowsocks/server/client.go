@@ -1,4 +1,4 @@
-package client
+package server
 
 import (
 	"errors"
@@ -84,6 +84,15 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 			clientBase: base,
 		}
 		c.auth = f.Auth
+
+		if f.RuleAddr != "" {
+			addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+			if err != nil {
+				return nil, err
+			}
+			c.ruleAddr = addr
+		}
+
 		return c, nil
 
 	case RELAY:
@@ -95,12 +104,29 @@ func newClient(f *ClientConfig, servers []*ServerConfig) (Client, error) {
 			return nil, err
 		}
 		c.RelayTo = addr
+
+		if f.RuleAddr != "" {
+			addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+			if err != nil {
+				return nil, err
+			}
+			c.ruleAddr = addr
+		}
 		return c, nil
 
 	case SHADOWSOCKS:
 		c := &clientShadow{
 			clientBase: base,
 		}
+
+		if f.RuleAddr != "" {
+			addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+			if err != nil {
+				return nil, err
+			}
+			c.ruleAddr = addr
+		}
+
 		var key []byte
 		t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
 		if err != nil {

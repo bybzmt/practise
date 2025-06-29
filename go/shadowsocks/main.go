@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	ss "ss/client"
+	ss "ss/server"
 
 	"github.com/BurntSushi/toml"
 )

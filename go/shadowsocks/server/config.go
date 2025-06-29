@@ -1,4 +1,4 @@
-package client
+package server
 
 import (
 	"ss/socks"
@@ -24,6 +24,7 @@ type ClientConfig struct {
 	Type        string
 	Addr        string
 	RelayTo     string
+	RuleAddr    string
 	Auth        *socks.SimpleAuth
 	Timeout     int
 	IdleTimeout int
@@ -101,5 +102,9 @@ func (c *ClientConfig) fillDefault() {
 
 	if c.Forbid == nil {
 		c.Forbid = []string{"127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"}
+	}
+
+	if c.Type == "" && c.RelayTo != "" {
+        c.Type = "RELAY"
 	}
 }

@@ -27,10 +27,6 @@ func (r *Rules) Add(rule string) {
 		r.IP.Add(*ipnet)
 	} else if isValidDomain(rule) {
 		r.Host.Add(rule)
-	} else if isSuffixDomain(rule) {
-		suffix := regexp.QuoteMeta(rule[1:])
-
-		r.Regs = append(r.Regs, *regexp.MustCompile("^.+" + suffix + "$"))
 	} else {
 		reg, err := syntax.Parse(rule, syntax.Perl)
 		if err != nil {

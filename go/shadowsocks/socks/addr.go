@@ -147,6 +147,7 @@ func ParseRawAddr(addr string) (RawAddr, error) {
 	raw := make([]byte, 1+1+len(h)+2)
 	raw[0] = ATYP_DOMAINNAME
 	raw[1] = uint8(len(h))
+	copy(raw[2:], h)
 	raw[len(raw)-2] = uint8((port & 0xff00) >> 8)
 	raw[len(raw)-1] = uint8(port & 0xff)
 

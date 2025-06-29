@@ -1,4 +1,4 @@
-package client
+package server
 
 import (
 	"net"
@@ -10,6 +10,7 @@ import (
 type clientBase struct {
 	net.Listener
 	addr        string
+	ruleAddr    socks.RawAddr
 	servers     []Proxy
 	idleTimeout time.Duration
 	timeout     time.Duration
