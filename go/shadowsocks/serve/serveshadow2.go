@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"net"
+	"ss/shadow"
 	"ss/socks"
 	"ss/utils"
 	"time"
@@ -12,6 +13,28 @@ import (
 type serveShadow2 struct {
 	serveBase
 	shadow utils.Creater
+}
+
+func newServeShadow2(f *ServeConfig, proxy []Proxy) (*serveShadow2, error) {
+	c := &serveShadow2{
+		serveBase: newServeBase(f, proxy),
+	}
+
+	if f.RuleAddr != "" {
+		addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+		if err != nil {
+			return nil, err
+		}
+		c.ruleAddr = addr
+	}
+
+	var key []byte
+	t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
+	if err != nil {
+		return nil, err
+	}
+	c.shadow = t.StreamConn
+	return c, nil
 }
 
 func (s *serveShadow2) Serve(from net.Conn) {
@@ -44,21 +67,16 @@ func (s *serveShadow2) serveTCP(addr socks.RawAddr, conn net.Conn) {
 		return
 	}
 
-	maddr := s.ruleAddr
-	if maddr == nil {
-		maddr = addr
-	}
-
-	server := s.match(maddr)
+	server := s.match(addr)
 	if server == nil {
-		s.watcher.NoServer(maddr)
+		s.watcher.NoServer(addr)
 		socks.SendCmd(conn, socks.ERR_FORBIDDEN, nil)
 		return
 	}
 
 	pw := s.watcher.Create(server.Name(), conn.RemoteAddr(), addr)
 
-	to, err := server.Shadow(addr)
+	to, err := server.Dial(addr)
 	if err != nil {
 		socks.SendCmd(conn, socks.FAIL, nil)
 		pw.ShadowInvalid(err)

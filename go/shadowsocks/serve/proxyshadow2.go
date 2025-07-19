@@ -3,9 +3,11 @@ package serve
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
+	"ss/shadow"
 	"ss/socks"
 	"ss/utils"
 	"time"
@@ -15,6 +17,26 @@ type proxyShadow2 struct {
 	proxyBase
 	addr   string
 	shadow utils.Creater
+}
+
+func newProxyShadow2(f *ServeConfig, v *ProxyConfig) (*proxyShadow2, error) {
+	if v.Auth == nil {
+		return nil, errors.New("shadowsocks Auth nil")
+	}
+
+	var key []byte
+	t, err := shadow.PickCipher(v.Auth.Username, key, v.Auth.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	s2 := &proxyShadow2{
+		proxyBase: newProxyBase(f.Timeout, v),
+		addr:      v.Addr,
+		shadow:    t.StreamConn,
+	}
+	s2.init()
+	return s2, nil
 }
 
 func (s *proxyShadow2) init() {
@@ -30,7 +52,12 @@ func (s *proxyShadow2) init() {
 	}
 }
 
-func (s *proxyShadow2) Shadow(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxyShadow2) Dial(a net.Addr) (net.Conn, error) {
+	addr, err := socks.Addr2RawAddr(a)
+	if err != nil {
+		return nil, err
+	}
+
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {

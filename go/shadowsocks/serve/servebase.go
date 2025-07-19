@@ -2,7 +2,6 @@ package serve
 
 import (
 	"net"
-	"ss/socks"
 	"ss/utils"
 	"time"
 )
@@ -10,8 +9,8 @@ import (
 type serveBase struct {
 	net.Listener
 	addr        string
-	ruleAddr    socks.RawAddr
-	servers     []Proxy
+	ruleAddr    net.Addr
+	proxys      []Proxy
 	idleTimeout time.Duration
 	timeout     time.Duration
 	watcher     utils.Watcher
@@ -19,14 +18,37 @@ type serveBase struct {
 	forbid      utils.Rules
 }
 
+func newServeBase(f *ServeConfig, proxys []Proxy) serveBase {
+	timeout := time.Duration(f.Timeout) * time.Second
+	idleTimeout := time.Duration(f.IdleTimeout) * time.Second
+
+	base := serveBase{}
+	base.addr = f.Addr
+	base.timeout = timeout
+	base.idleTimeout = idleTimeout
+	base.proxys = proxys
+	base.watcher = utils.DefaultWatcher
+	base.forbid.Init()
+	for _, t := range f.Forbid {
+		base.forbid.Add(t)
+	}
+
+	return base
+}
+
 func (s *serveBase) Listen() (err error) {
 	s.Listener, err = net.Listen("tcp", s.addr)
 	return
 }
 
-func (s *serveBase) match(addr socks.RawAddr) Proxy {
-	for _, t := range s.servers {
-		if t.Match(addr) {
+func (s *serveBase) match(addr net.Addr) Proxy {
+	maddr := s.ruleAddr
+	if maddr == nil {
+		maddr = addr
+	}
+
+	for _, t := range s.proxys {
+		if t.Match(maddr) {
 			return t
 		}
 	}

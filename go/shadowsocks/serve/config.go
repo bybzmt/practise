@@ -52,10 +52,6 @@ func (c *Config) FillDefault() {
 		c.StateTick = &a
 	}
 
-	for _, cf := range c.Serve {
-		cf.fillDefault()
-	}
-
 	var serve []*ServeConfig
 	var proxy []*ProxyConfig
 
@@ -63,7 +59,17 @@ func (c *Config) FillDefault() {
 		if cf.Disable {
 			continue
 		}
+
+		cf.fillDefault()
 		serve = append(serve, cf)
+	}
+
+	if len(serve) == 0 {
+		t := &ServeConfig{
+			Addr: "127.0.0.1:1080",
+		}
+		t.fillDefault()
+		serve = append(serve, t)
 	}
 
 	for _, cs := range c.Proxy {
@@ -71,22 +77,13 @@ func (c *Config) FillDefault() {
 			continue
 		}
 
-		if !cs.Disable && cs.DefaultRule {
-			defaultServer = true
-		}
-
-		if cs.Type == "" {
-			cs.Type = SHADOWSOCKS2
-		}
+		cs.fillDefault()
 
 		proxy = append(proxy, cs)
-	}
 
-	if len(serve) == 0 {
-		serve = append(serve, &ServeConfig{
-			Addr: "127.0.0.1:1080",
-		})
-		serve[0].fillDefault()
+		if cs.DefaultRule {
+			defaultServer = true
+		}
 	}
 
 	if !defaultServer {
@@ -121,5 +118,11 @@ func (c *ServeConfig) fillDefault() {
 		} else {
 			c.Type = SOCKS
 		}
+	}
+}
+
+func (c *ProxyConfig) fillDefault() {
+	if c.Type == "" {
+		c.Type = SHADOWSOCKS2
 	}
 }

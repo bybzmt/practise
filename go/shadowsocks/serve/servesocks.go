@@ -12,6 +12,24 @@ type serveSocks struct {
 	auth *socks.SimpleAuth
 }
 
+func newServeSocks(f *ServeConfig, proxy []Proxy) (*serveSocks, error) {
+	c := &serveSocks{
+		serveBase: newServeBase(f, proxy),
+	}
+
+	c.auth = f.Auth
+
+	if f.RuleAddr != "" {
+		addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+		if err != nil {
+			return nil, err
+		}
+		c.ruleAddr = addr
+	}
+
+	return c, nil
+}
+
 func (s *serveSocks) Serve(from net.Conn) {
 	defer from.Close()
 
@@ -49,21 +67,16 @@ func (s *serveSocks) serveSocksCmd(ss *socks.Server) {
 		return
 	}
 
-	maddr := s.ruleAddr
-	if maddr == nil {
-		maddr = addr
-	}
-
-	server := s.match(maddr)
+	server := s.match(addr)
 	if server == nil {
-		s.watcher.NoServer(maddr)
+		s.watcher.NoServer(addr)
 		ss.RespDial(socks.ERR_FORBIDDEN)
 		return
 	}
 
 	pw := s.watcher.Create(server.Name(), ss.RemoteAddr(), addr)
 
-	to, err := server.Shadow(addr)
+	to, err := server.Dial(addr)
 	if err != nil {
 		ss.RespDial(socks.FAIL)
 		pw.ShadowInvalid(err)

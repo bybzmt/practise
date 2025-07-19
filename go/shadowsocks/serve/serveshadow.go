@@ -3,6 +3,7 @@ package serve
 import (
 	"errors"
 	"net"
+	"ss/shadow"
 	"ss/socks"
 	"ss/utils"
 	"time"
@@ -11,6 +12,28 @@ import (
 type serveShadow struct {
 	serveBase
 	shadow utils.Creater
+}
+
+func newServeShadow(f *ServeConfig, proxy []Proxy) (*serveShadow, error) {
+	c := &serveShadow{
+		serveBase: newServeBase(f, proxy),
+	}
+
+	if f.RuleAddr != "" {
+		addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+		if err != nil {
+			return nil, err
+		}
+		c.ruleAddr = addr
+	}
+
+	var key []byte
+	t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
+	if err != nil {
+		return nil, err
+	}
+	c.shadow = t.StreamConn
+	return c, nil
 }
 
 func (s *serveShadow) Serve(from net.Conn) {
@@ -34,20 +57,15 @@ func (s *serveShadow) Serve(from net.Conn) {
 		return
 	}
 
-	maddr := s.ruleAddr
-	if maddr == nil {
-		maddr = taddr
-	}
-
-	server := s.match(maddr)
+	server := s.match(taddr)
 	if server == nil {
-		s.watcher.NoServer(maddr)
+		s.watcher.NoServer(taddr)
 		return
 	}
 
 	pw := s.watcher.Create(server.Name(), faddr, taddr)
 
-	to, err := server.Shadow(taddr)
+	to, err := server.Dial(taddr)
 	if err != nil {
 		pw.ShadowInvalid(err)
 		return

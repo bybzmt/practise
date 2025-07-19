@@ -1,6 +1,7 @@
 package serve
 
 import (
+	"net"
 	"ss/socks"
 	"ss/utils"
 	"time"
@@ -15,15 +16,33 @@ type proxyBase struct {
 	timeout     time.Duration
 }
 
+func newProxyBase(timeout int, v *ProxyConfig) proxyBase {
+	timeout2 := time.Duration(timeout) * time.Second
+
+	base := proxyBase{
+		defaultRule: v.DefaultRule,
+		timeout:     timeout2,
+	}
+	base.SetRules(v.Rules)
+	base.SetDNS(v.DNS)
+
+	return base
+}
+
 func (s *proxyBase) Name() string {
 	return s.name
 }
 
-func (s *proxyBase) Match(addr socks.RawAddr) bool {
-	if s.rule.MatchRawAddr(addr) {
-		return !s.defaultRule
+func (s *proxyBase) Match(addr net.Addr) bool {
+	raddr, err := socks.Addr2RawAddr(addr)
+	if err != nil {
+		return false
 	}
-	return s.defaultRule
+
+	if s.rule.MatchRawAddr(raddr) {
+		return true
+	}
+	return false
 }
 
 func (s *proxyBase) SetRules(rules []string) {

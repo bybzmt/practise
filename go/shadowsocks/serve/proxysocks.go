@@ -15,6 +15,16 @@ type proxySocks struct {
 	auth *socks.SimpleAuth
 }
 
+func newProxySocks(f *ServeConfig, v *ProxyConfig) (*proxySocks, error) {
+	s2 := &proxySocks{
+		proxyBase: newProxyBase(f.Timeout, v),
+		addr:      v.Addr,
+		auth:      v.Auth,
+	}
+	s2.init()
+	return s2, nil
+}
+
 func (s *proxySocks) init() {
 	s.name = fmt.Sprintf("SocksProxy(%s)", s.addr)
 	s.dnsDialer = func(network, addr string) (net.Conn, error) {
@@ -26,7 +36,12 @@ func (s *proxySocks) init() {
 	}
 }
 
-func (s *proxySocks) Shadow(addr socks.RawAddr) (net.Conn, error) {
+func (s *proxySocks) Dial(a net.Addr) (net.Conn, error) {
+	addr, err := socks.Addr2RawAddr(a)
+	if err != nil {
+		return nil, err
+	}
+
 	if s.dns != nil && addr.ToIP() == nil {
 		ipaddr, err := s.dns.LookupIPAddr(context.Background(), addr.Host())
 		if err != nil {
