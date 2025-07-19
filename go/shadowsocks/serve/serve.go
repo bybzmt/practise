@@ -77,8 +77,6 @@ func newServer(f *ServeConfig, proxy []*ProxyConfig) (Serve, error) {
 	}
 
 	switch strings.ToUpper(f.Type) {
-	case "":
-		fallthrough
 	case SOCKS:
 		c := &serveSocks{
 			serveBase: base,
@@ -116,9 +114,28 @@ func newServer(f *ServeConfig, proxy []*ProxyConfig) (Serve, error) {
 
 	case SHADOWSOCKS:
 		c := &serveShadow{
-			serveSocks: serveSocks{
-				serveBase: base,
-			},
+			serveBase: base,
+		}
+
+		if f.RuleAddr != "" {
+			addr, err := socks.ParseRawAddr(f.RuleAddr + ":0")
+			if err != nil {
+				return nil, err
+			}
+			c.ruleAddr = addr
+		}
+
+		var key []byte
+		t, err := shadow.PickCipher(f.Auth.Username, key, f.Auth.Password)
+		if err != nil {
+			return nil, err
+		}
+		c.shadow = t.StreamConn
+		return c, nil
+
+	case SHADOWSOCKS2:
+		c := &serveShadow2{
+			serveBase: base,
 		}
 
 		if f.RuleAddr != "" {
@@ -203,8 +220,6 @@ func newProxy(timeout int, v *ProxyConfig) (Proxy, error) {
 		s2.init()
 		return s2, nil
 
-	case "":
-		fallthrough
 	case SHADOWSOCKS:
 		if v.Auth == nil {
 			return nil, errors.New("shadowsocks Auth nil")
@@ -217,6 +232,25 @@ func newProxy(timeout int, v *ProxyConfig) (Proxy, error) {
 		}
 
 		s2 := &proxyShadow{
+			proxyBase: base,
+			addr:      v.Addr,
+			shadow:    t.StreamConn,
+		}
+		s2.init()
+		return s2, nil
+
+	case SHADOWSOCKS2:
+		if v.Auth == nil {
+			return nil, errors.New("shadowsocks Auth nil")
+		}
+
+		var key []byte
+		t, err := shadow.PickCipher(v.Auth.Username, key, v.Auth.Password)
+		if err != nil {
+			return nil, err
+		}
+
+		s2 := &proxyShadow2{
 			proxyBase: base,
 			addr:      v.Addr,
 			shadow:    t.StreamConn,

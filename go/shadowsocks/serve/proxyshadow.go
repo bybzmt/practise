@@ -44,7 +44,7 @@ func (s *proxyShadow) Shadow(addr socks.RawAddr) (net.Conn, error) {
 	return s.dialShadow(addr)
 }
 
-func (s *proxyShadow) dialShadow(addr socks.RawAddr) (_ net.Conn, err error) {
+func (s *proxyShadow) dialShadow(addr socks.RawAddr) (net.Conn, error) {
 	to, err := net.DialTimeout("tcp", s.addr, s.timeout)
 	if err != nil {
 		return nil, err
@@ -58,12 +58,10 @@ func (s *proxyShadow) dialShadow(addr socks.RawAddr) (_ net.Conn, err error) {
 
 	to.SetWriteDeadline(time.Now().Add(s.timeout))
 
-	t2 := s.shadow(to)
-
-	ss := socks.NewClient(t2, nil)
-	if err = ss.DialTCP(addr); err != nil {
-		return nil, err
+	c2 := &delayConn{
+		Conn: s.shadow(to),
+		req:  addr,
 	}
 
-	return ss, nil
+	return c2, nil
 }

@@ -5,11 +5,12 @@ import (
 )
 
 const (
-	NATIVE      = "NATIVE"
-	SOCKS       = "SOCKS"
-	SHADOWSOCKS = "SHADOWSOCKS"
-	RELAY       = "RELAY"
-	SSH         = "SSH"
+	NATIVE       = "NATIVE"
+	SOCKS        = "SOCKS"
+	SHADOWSOCKS  = "SHADOWSOCKS"
+	SHADOWSOCKS2 = "SHADOWSOCKS2"
+	RELAY        = "RELAY"
+	SSH          = "SSH"
 )
 
 type Config struct {
@@ -66,12 +67,16 @@ func (c *Config) FillDefault() {
 	}
 
 	for _, cs := range c.Proxy {
-		if cs.Disable || (!cs.DefaultRule && cs.Rules == nil) {
+		if cs.Disable {
 			continue
 		}
 
 		if !cs.Disable && cs.DefaultRule {
 			defaultServer = true
+		}
+
+		if cs.Type == "" {
+			cs.Type = SHADOWSOCKS2
 		}
 
 		proxy = append(proxy, cs)

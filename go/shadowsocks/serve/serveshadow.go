@@ -1,6 +1,7 @@
 package serve
 
 import (
+	"errors"
 	"net"
 	"ss/socks"
 	"ss/utils"
@@ -8,7 +9,7 @@ import (
 )
 
 type serveShadow struct {
-	serveSocks
+	serveBase
 	shadow utils.Creater
 }
 
@@ -20,13 +21,40 @@ func (s *serveShadow) Serve(from net.Conn) {
 
 	from = s.shadow(from)
 
-	ss := socks.NewServer(from, s.auth)
+	faddr := from.RemoteAddr()
 
-	err := ss.HandShake(false)
+	taddr, err := socks.ReadRawAddr(from)
 	if err != nil {
-		s.watcher.HandShake(from.RemoteAddr(), err)
+		s.watcher.HandShake(faddr, err)
 		return
 	}
 
-	s.serveSocksCmd(ss)
+	if s.forbid.MatchRawAddr(taddr) {
+		s.watcher.HandShake(faddr, errors.New("forbidden "+taddr.String()))
+		return
+	}
+
+	maddr := s.ruleAddr
+	if maddr == nil {
+		maddr = taddr
+	}
+
+	server := s.match(maddr)
+	if server == nil {
+		s.watcher.NoServer(maddr)
+		return
+	}
+
+	pw := s.watcher.Create(server.Name(), faddr, taddr)
+
+	to, err := server.Shadow(taddr)
+	if err != nil {
+		pw.ShadowInvalid(err)
+		return
+	}
+	defer to.Close()
+
+	pw.Proxy()
+	err = utils.Relay(s.connTick(from), s.connTick(to))
+	pw.Relay(err)
 }
