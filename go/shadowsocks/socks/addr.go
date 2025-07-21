@@ -55,6 +55,11 @@ func (r RawAddr) ToIP() net.IP {
 	switch r[0] {
 	case ATYP_IPV4, ATYP_IPV6:
 		return net.IP(r[1 : len(r)-2])
+
+	case ATYP_DOMAINNAME:
+		if ip := net.ParseIP(r.Host()); ip != nil {
+			return ip
+		}
 	}
 
 	return nil

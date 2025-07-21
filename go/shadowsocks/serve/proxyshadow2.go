@@ -92,7 +92,7 @@ func (s *proxyShadow2) dialShadowTCP(addr socks.RawAddr) (_ net.Conn, err error)
 	socks.SendCmd(buf, socks.CMD_CONNECT, addr)
 
 	c2 := &delayConn{
-		Conn: s.shadow(to),
+		Conn: t2,
 		req:  buf.Bytes(),
 		resp: func(c net.Conn) error {
 			cmd, _, err := socks.ReadCmd(t2)
@@ -101,6 +101,9 @@ func (s *proxyShadow2) dialShadowTCP(addr socks.RawAddr) (_ net.Conn, err error)
 			}
 
 			if cmd != socks.SUCCESS {
+				if cmd == socks.ERR_FORBIDDEN {
+					return errForbidden
+				}
 				return socks.ErrCmd
 			}
 

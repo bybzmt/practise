@@ -108,15 +108,15 @@ func (s *ipNets) Add(n net.IPNet) {
 func (s *ipNets) Match(ip net.IP) bool {
 	if t := ip.To4(); t != nil {
 		for _, n := range s.v4 {
-			t = t.Mask(n.mask)
-			if ok := n.ips.match(t); ok {
+			t2 := t.Mask(n.mask)
+			if ok := n.ips.match(t2); ok {
 				return true
 			}
 		}
 	} else if t := ip.To16(); t != nil {
 		for _, n := range s.v6 {
-			t = t.Mask(n.mask)
-			if ok := n.ips.match(t); ok {
+			t2 := t.Mask(n.mask)
+			if ok := n.ips.match(t2); ok {
 				return true
 			}
 		}

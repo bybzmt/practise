@@ -30,7 +30,6 @@ type ServeConfig struct {
 	Auth        *socks.SimpleAuth
 	Timeout     int
 	IdleTimeout int
-	Forbid      []string
 	Disable     bool
 }
 
@@ -42,6 +41,7 @@ type ProxyConfig struct {
 	DefaultRule bool
 	Rules       []string
 	DNS         []string
+	Forbid      []string
 }
 
 func (c *Config) FillDefault() {
@@ -88,10 +88,12 @@ func (c *Config) FillDefault() {
 
 	if !defaultServer {
 		if c.DefaultServer == nil || *c.DefaultServer == true {
-			proxy = append(proxy, &ProxyConfig{
+			cs := &ProxyConfig{
 				Type:        NATIVE,
 				DefaultRule: true,
-			})
+			}
+			cs.fillDefault()
+			proxy = append(proxy, cs)
 		}
 	}
 
@@ -108,10 +110,6 @@ func (c *ServeConfig) fillDefault() {
 		c.IdleTimeout = 120
 	}
 
-	if c.Forbid == nil {
-		c.Forbid = []string{"127.0.0.1/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"}
-	}
-
 	if c.Type == "" {
 		if c.RelayTo != "" {
 			c.Type = RELAY
@@ -124,5 +122,11 @@ func (c *ServeConfig) fillDefault() {
 func (c *ProxyConfig) fillDefault() {
 	if c.Type == "" {
 		c.Type = SHADOWSOCKS2
+	}
+
+	if c.Type == NATIVE {
+		if c.Forbid == nil {
+			c.Forbid = []string{"127.0.0.1/8", "10.0.0.1/8", "172.16.0.1/12", "192.168.0.1/16"}
+		}
 	}
 }

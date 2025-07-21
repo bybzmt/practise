@@ -1,7 +1,6 @@
 package serve
 
 import (
-	"errors"
 	"net"
 	"ss/shadow"
 	"ss/socks"
@@ -49,11 +48,6 @@ func (s *serveShadow) Serve(from net.Conn) {
 	taddr, err := socks.ReadRawAddr(from)
 	if err != nil {
 		s.watcher.HandShake(faddr, err)
-		return
-	}
-
-	if s.forbid.MatchRawAddr(taddr) {
-		s.watcher.HandShake(faddr, errors.New("forbidden "+taddr.String()))
 		return
 	}
 

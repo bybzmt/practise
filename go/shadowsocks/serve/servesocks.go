@@ -61,12 +61,6 @@ func (s *serveSocks) serveSocksCmd(ss *socks.Server) {
 		return
 	}
 
-	if s.forbid.MatchRawAddr(addr) {
-		utils.Debug.Println("forbidden", addr.String())
-		ss.RespDial(socks.ERR_FORBIDDEN)
-		return
-	}
-
 	server := s.match(addr)
 	if server == nil {
 		s.watcher.NoServer(addr)
@@ -78,7 +72,11 @@ func (s *serveSocks) serveSocksCmd(ss *socks.Server) {
 
 	to, err := server.Dial(addr)
 	if err != nil {
-		ss.RespDial(socks.FAIL)
+		if err == errForbidden {
+			ss.RespDial(socks.ERR_FORBIDDEN)
+		} else {
+			ss.RespDial(socks.FAIL)
+		}
 		pw.ShadowInvalid(err)
 		return
 	}

@@ -62,6 +62,11 @@ func (r *Rules) MatchRawAddr(addr socks.RawAddr) bool {
 
 	case socks.ATYP_DOMAINNAME:
 		host := addr.Host()
+
+		if ip := net.ParseIP(host); ip != nil {
+			return r.IP.Match(addr.ToIP())
+		}
+
 		if r.Host.Match(host) {
 			return true
 		}

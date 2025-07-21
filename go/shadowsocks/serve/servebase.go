@@ -15,7 +15,6 @@ type serveBase struct {
 	timeout     time.Duration
 	watcher     utils.Watcher
 	traffic     utils.Traffic
-	forbid      utils.Rules
 }
 
 func newServeBase(f *ServeConfig, proxys []Proxy) serveBase {
@@ -28,10 +27,6 @@ func newServeBase(f *ServeConfig, proxys []Proxy) serveBase {
 	base.idleTimeout = idleTimeout
 	base.proxys = proxys
 	base.watcher = utils.DefaultWatcher
-	base.forbid.Init()
-	for _, t := range f.Forbid {
-		base.forbid.Add(t)
-	}
 
 	return base
 }

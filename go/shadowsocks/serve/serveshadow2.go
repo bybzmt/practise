@@ -2,7 +2,6 @@ package serve
 
 import (
 	"bytes"
-	"errors"
 	"net"
 	"ss/shadow"
 	"ss/socks"
@@ -61,12 +60,6 @@ func (s *serveShadow2) Serve(from net.Conn) {
 }
 
 func (s *serveShadow2) serveTCP(addr socks.RawAddr, conn net.Conn) {
-	if s.forbid.MatchRawAddr(addr) {
-		s.watcher.HandShake(conn.RemoteAddr(), errors.New("forbidden "+addr.String()))
-		socks.SendCmd(conn, socks.ERR_FORBIDDEN, nil)
-		return
-	}
-
 	server := s.match(addr)
 	if server == nil {
 		s.watcher.NoServer(addr)
@@ -78,7 +71,12 @@ func (s *serveShadow2) serveTCP(addr socks.RawAddr, conn net.Conn) {
 
 	to, err := server.Dial(addr)
 	if err != nil {
-		socks.SendCmd(conn, socks.FAIL, nil)
+		if err == errForbidden {
+			socks.SendCmd(conn, socks.ERR_FORBIDDEN, nil)
+		} else {
+			socks.SendCmd(conn, socks.FAIL, nil)
+		}
+
 		pw.ShadowInvalid(err)
 		return
 	}

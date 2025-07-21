@@ -34,6 +34,10 @@ func (s *proxyBase) Name() string {
 }
 
 func (s *proxyBase) Match(addr net.Addr) bool {
+	if s.defaultRule {
+		return true
+	}
+
 	raddr, err := socks.Addr2RawAddr(addr)
 	if err != nil {
 		return false
@@ -42,6 +46,7 @@ func (s *proxyBase) Match(addr net.Addr) bool {
 	if s.rule.MatchRawAddr(raddr) {
 		return true
 	}
+
 	return false
 }
 
